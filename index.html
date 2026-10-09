@@ -9,53 +9,87 @@
        max-width:600px;margin:0 auto;padding:30px 20px}
   h1{font-size:2rem;margin-bottom:.2em;text-align:center}
   p.sub{opacity:.7;margin-top:0;text-align:center}
-  ul{list-style:none;padding:0;margin-top:30px}
-  li{margin:15px 0}
-  a{display:block;padding:18px 22px;background:#fff;border:3px solid #2A2540;
-    border-radius:18px;text-decoration:none;color:#2A2540;font-weight:700;
-    font-size:1.1rem;box-shadow:5px 5px 0 rgba(42,37,64,.85);transition:.15s}
+  h2{font-size:1.3rem;margin-top:35px;margin-bottom:15px;padding-bottom:8px;
+     border-bottom:3px solid #FFC93C; color:#2A2540}
+  ul{list-style:none;padding:0;margin:0}
+  li{margin:12px 0}
+  a{display:block;padding:16px 20px;background:#fff;border:3px solid #2A2540;
+    border-radius:16px;text-decoration:none;color:#2A2540;font-weight:700;
+    font-size:1.05rem;box-shadow:4px 4px 0 rgba(42,37,64,.85);transition:.15s}
   a:hover{background:#FFC93C;transform:translate(-2px,-2px)}
-  .cargando{text-align:center;opacity:.6;font-style:italic}
+  .cargando{text-align:center;opacity:.6;font-style:italic;margin-top:40px}
 </style>
 </head>
 <body>
   <h1>📚 Presentaciones de Clase</h1>
   <p class="sub">Toca una para abrirla.</p>
-  <ul id="lista"><li class="cargando">Cargando presentaciones...</li></ul>
+  <div id="contenedor"><p class="cargando">Cargando presentaciones...</p></div>
 
 <script>
-  // ⚠️ Estos son tus datos. No los cambies.
   const USUARIO = "JosiasEmiliano";
   const REPO = "BNMM";
-  
-  // Esta es la dirección de la API de GitHub que lista los archivos
   const API_URL = `https://api.github.com/repos/${USUARIO}/${REPO}/contents/`;
 
   fetch(API_URL)
     .then(respuesta => respuesta.json())
     .then(archivos => {
-      const lista = document.getElementById('lista');
+      const contenedor = document.getElementById('contenedor');
       
-      // Filtramos: solo queremos archivos .html, y excluimos el index.html
+      // 1. Filtramos solo los HTML (excepto el index)
       const presentaciones = archivos
-        .filter(archivo => archivo.name.toLowerCase().endsWith('.html') && archivo.name.toLowerCase() !== 'index.html')
-        .sort((a, b) => a.name.localeCompare(b.name)); // Orden alfabético
+        .filter(archivo => archivo.name.toLowerCase().endsWith('.html') && archivo.name.toLowerCase() !== 'index.html');
 
       if (presentaciones.length === 0) {
-        lista.innerHTML = '<li class="cargando">Aún no hay presentaciones subidas.</li>';
+        contenedor.innerHTML = '<p class="cargando">Aún no hay presentaciones subidas.</p>';
         return;
       }
 
-      // Creamos los botones automáticamente
-      lista.innerHTML = presentaciones.map(archivo => {
-        // Quitamos el .html y cambiamos guiones por espacios para que se vea bonito
-        const titulo = archivo.name.replace('.html', '').replace(/-/g, ' ');
-        return `<li><a href="${archivo.name}">📄 ${titulo}</a></li>`;
-      }).join('');
+      // 2. Agrupamos por Semana
+      const grupos = {};
+      presentaciones.forEach(archivo => {
+        // Busca el patrón "Semana-XX" en el nombre
+        const match = archivo.name.match(/semana-(\d+)/i);
+        let grupo = '📌 Otras Presentaciones';
+        if (match) {
+            grupo = `📅 Semana ${parseInt(match[1])}`;
+        }
+        if (!grupos[grupo]) grupos[grupo] = [];
+        grupos[grupo].push(archivo);
+      });
+
+      // 3. Ordenamos las semanas numéricamente
+      const semanasOrdenadas = Object.keys(grupos).sort((a, b) => {
+          const numA = parseInt(a.replace(/\D/g, '')) || 999;
+          const numB = parseInt(b.replace(/\D/g, '')) || 999;
+          return numA - numB;
+      });
+
+      // 4. Generamos el HTML
+      let html = '';
+      semanasOrdenadas.forEach(semana => {
+          html += `<h2>${semana}</h2><ul>`;
+          // Ordenamos las sesiones alfabéticamente
+          grupos[semana].sort((a,b) => a.name.localeCompare(b.name));
+          
+          grupos[semana].forEach(archivo => {
+              // Convertimos "Semana-01-Sesion-2.html" en "Sesión 2"
+              let titulo = archivo.name.replace('.html', '');
+              const sesionMatch = titulo.match(/sesion-(\d+)/i);
+              if(sesionMatch){
+                  titulo = `Sesión ${parseInt(sesionMatch[1])}`;
+              } else {
+                  titulo = titulo.replace(/-/g, ' ');
+              }
+              html += `<li><a href="${archivo.name}">📄 ${titulo}</a></li>`;
+          });
+          html += `</ul>`;
+      });
+      
+      contenedor.innerHTML = html;
     })
     .catch(error => {
-      document.getElementById('lista').innerHTML = 
-        '<li class="cargando">⚠️ Error al cargar la lista. Recarga la página en un momento.</li>';
+      document.getElementById('contenedor').innerHTML = 
+        '<p class="cargando">⚠️ Error al cargar la lista. Recarga la página en un momento.</p>';
     });
 </script>
 </body>
