@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lógica Proposicional · Clase de 120 minutos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1f1a3d;
+  --paper:#fff8e1;
+  --white:#fffdf6;
+  --yellow:#ffd23f;
+  --pink:#ff5d8f;
+  --blue:#3ec1f3;
+  --green:#4cd964;
+  --purple:#8c6cf0;
+  --orange:#ff8c42;
+  --red:#ff4d4d;
+  --phase:#ff5d8f;
+  --r:26px;
+  --sh:6px 6px 0 var(--ink), 0 14px 28px rgba(31,26,61,.16);
+  --sh-sm:4px 4px 0 var(--ink), 0 8px 16px rgba(31,26,61,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'Nunito',system-ui,sans-serif;color:var(--ink);background:var(--paper);
+  background-image:radial-gradient(rgba(31,26,61,.09) 2px,transparent 2px);
+  background-size:28px 28px;transition:background-color .5s;
+}
+h1,h2,h3,h4,.fred{font-family:'Fredoka','Nunito',sans-serif}
+button{font-family:'Fredoka','Nunito',sans-serif}
+
+/* ---------- Decoración flotante ---------- */
+.deco{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.deco span{position:absolute;font-size:3rem;opacity:.35;animation:float 7s ease-in-out infinite}
+.deco span:nth-child(1){top:14%;left:3%}
+.deco span:nth-child(2){top:70%;left:5%;animation-delay:-2s;font-size:2.4rem}
+.deco span:nth-child(3){top:18%;right:4%;animation-delay:-4s}
+.deco span:nth-child(4){top:66%;right:3%;animation-delay:-1s;font-size:2.6rem}
+.deco span:nth-child(5){top:42%;left:1.5%;animation-delay:-3s;font-size:2rem}
+.deco span:nth-child(6){top:44%;right:1.5%;animation-delay:-5s;font-size:2rem}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-18px) rotate(6deg)}}
+
+/* ---------- Barra superior ---------- */
+.topbar{position:fixed;top:0;left:0;right:0;height:78px;display:flex;align-items:center;gap:14px;padding:0 26px;z-index:20}
+.pill{font-family:'Fredoka';font-weight:600;font-size:1.05rem;border:3px solid var(--ink);border-radius:999px;padding:8px 18px;background:var(--phase);box-shadow:3px 3px 0 var(--ink);white-space:nowrap;transition:background .4s}
+.pill.time{background:var(--white)}
+.timer{margin-left:auto;display:flex;align-items:center;gap:8px}
+.timer .clock{font-family:'Fredoka';font-weight:700;font-size:1.5rem;min-width:118px;text-align:center;background:var(--white);border:3px solid var(--ink);border-radius:999px;padding:5px 16px;box-shadow:3px 3px 0 var(--ink)}
+.timer .clock.running{background:#d6f8dc}
+.timer .clock.over{background:var(--red);color:#fff;animation:pulse .8s infinite}
+.timer.hidden{visibility:hidden}
+.ibtn{width:46px;height:46px;border-radius:50%;border:3px solid var(--ink);background:var(--yellow);font-size:1.25rem;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .12s, box-shadow .12s;display:grid;place-items:center}
+.ibtn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+
+/* ---------- Escenario ---------- */
+.deck{position:fixed;top:78px;bottom:92px;left:0;right:0;z-index:5}
+.slide{position:absolute;inset:0;padding:14px 56px 22px;overflow-y:auto;opacity:0;visibility:hidden;
+  transform:translateX(90px) rotate(1.2deg) scale(.97);
+  transition:opacity .45s ease, transform .6s cubic-bezier(.2,1.35,.4,1), visibility .45s}
+.slide.past{transform:translateX(-90px) rotate(-1.2deg) scale(.97)}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.inner{max-width:1260px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:22px}
+.notes{display:none}
+
+.kicker{display:inline-block;align-self:flex-start;font-family:'Fredoka';font-weight:600;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--white);padding:6px 16px;border-radius:999px;transform:rotate(-2deg)}
+h2.title{font-size:clamp(2rem,3.9vw,3.4rem);line-height:1.08;font-weight:700}
+h2.title mark{background:linear-gradient(transparent 55%,var(--phase) 55%);color:inherit;padding:0 .12em;border-radius:6px}
+p,li{font-size:clamp(1.1rem,1.6vw,1.45rem);line-height:1.45;font-weight:700}
+.sub{font-size:clamp(1.15rem,1.8vw,1.6rem);font-weight:700;opacity:.85}
+
+.grid{display:grid;gap:22px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:34px;align-items:center}
+@media (max-width:980px){.g2,.g3,.g4,.g5,.split{grid-template-columns:1fr}.slide{padding:14px 20px 22px}}
+
+.card{background:var(--white);border:4px solid var(--ink);border-radius:var(--r);box-shadow:var(--sh);padding:22px 26px;position:relative}
+.card h3{font-size:clamp(1.3rem,2vw,1.8rem);font-weight:700;margin-bottom:8px}
+.card .emoji{font-size:2.8rem;line-height:1;margin-bottom:8px;display:block}
+.c-y{background:#fff1a8}.c-p{background:#ffd6e3}.c-b{background:#cdf0ff}.c-g{background:#d3f8d9}.c-v{background:#e4dbff}.c-o{background:#ffe0c7}
+.tilt-l{transform:rotate(-1.2deg)}.tilt-r{transform:rotate(1.2deg)}
+.card ul{padding-left:1.2em}
+.card li{margin:4px 0}
+
+.btn{font-weight:600;font-size:1.12rem;border:3px solid var(--ink);border-radius:999px;padding:10px 22px;background:var(--yellow);color:var(--ink);box-shadow:4px 4px 0 var(--ink);cursor:pointer;transition:transform .12s, box-shadow .12s, background .2s}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.btn.alt{background:var(--white)}
+.btn.pink{background:var(--pink);color:#fff}
+.btn.blue{background:var(--blue)}
+.btn.green{background:var(--green)}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.center{justify-content:center;text-align:center}
+
+.note-badge{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;background:var(--pink);color:#fff;font-family:'Fredoka';font-weight:600;font-size:1.15rem;border:3px solid var(--ink);border-radius:999px;padding:8px 20px;box-shadow:3px 3px 0 var(--ink);animation:wiggle 2.4s ease-in-out infinite}
+@keyframes wiggle{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+.literal{font-size:clamp(1.45rem,2.5vw,2.2rem);line-height:1.38;font-weight:800}
+.literal b{background:var(--yellow);padding:0 .2em;border-radius:6px}
+.sym{font-family:'Fredoka';font-weight:700;display:inline-grid;place-items:center;min-width:1.6em;height:1.6em;padding:0 .3em;border:3px solid var(--ink);border-radius:12px;background:var(--white);box-shadow:2px 2px 0 var(--ink);margin:0 .15em}
+
+.vchip,.fchip,.nchip{display:inline-block;font-family:'Fredoka';font-weight:700;padding:2px 14px;border:3px solid var(--ink);border-radius:999px;box-shadow:2px 2px 0 var(--ink)}
+.vchip{background:var(--green)}.fchip{background:var(--red);color:#fff}.nchip{background:#bdbad0}
+
+/* ---------- Mascotas V y F ---------- */
+.mascots{display:flex;gap:34px;justify-content:center;margin:6px 0}
+.mascot{position:relative;width:150px;height:150px;border-radius:46% 54% 50% 50%;border:5px solid var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:var(--sh);animation:bob 3s ease-in-out infinite}
+.mascot.v{background:var(--green)}
+.mascot.f{background:var(--pink);animation-delay:-1.5s;border-radius:54% 46% 50% 50%}
+.mascot b{font-family:'Fredoka';font-size:3.3rem;color:#fff;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;line-height:1}
+.eyes{display:flex;gap:14px;margin-bottom:2px}
+.eyes i{width:26px;height:30px;background:#fff;border:3px solid var(--ink);border-radius:50%;position:relative;animation:blink 4s infinite}
+.eyes i::after{content:'';position:absolute;width:11px;height:13px;background:var(--ink);border-radius:50%;left:6px;top:8px}
+.mouth{width:34px;height:16px;border:4px solid var(--ink);border-top:0;border-radius:0 0 30px 30px;background:#fff;margin-top:4px}
+.mascot.f .mouth{width:20px;height:20px;border-radius:50%;border:4px solid var(--ink);background:#7a1030}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+
+.title-xl{font-size:clamp(2.8rem,6.4vw,5.6rem);line-height:1;font-weight:700;text-align:center;text-shadow:5px 5px 0 var(--yellow)}
+.phase-strip{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.phase-chip{font-family:'Fredoka';font-weight:600;font-size:1.2rem;border:3px solid var(--ink);border-radius:20px;padding:10px 20px;box-shadow:var(--sh-sm);text-align:center}
+.phase-chip small{display:block;font-size:.95rem;font-weight:500}
+.hint{text-align:center;font-weight:800;opacity:.7;font-size:1.05rem}
+kbd{font-family:'Fredoka';background:var(--white);border:2px solid var(--ink);border-radius:8px;padding:1px 8px;box-shadow:2px 2px 0 var(--ink)}
+
+/* ---------- Quiz V / F / Nulo ---------- */
+.quiz .phrase{font-size:clamp(1.25rem,1.9vw,1.6rem);font-weight:800;line-height:1.35;min-height:4.2em}
+.quiz .num{position:absolute;top:-20px;left:-14px;width:46px;height:46px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:'Fredoka';font-weight:700;font-size:1.4rem;border:3px solid var(--white)}
+.opts{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.opt{flex:1;font-weight:700;font-size:1.15rem;border:3px solid var(--ink);border-radius:16px;padding:10px 6px;background:var(--white);box-shadow:3px 3px 0 var(--ink);cursor:pointer;transition:transform .12s}
+.opt:active{transform:translate(3px,3px);box-shadow:none}
+.opt.correct{background:var(--green);animation:pop .4s}
+.opt.wrong{background:var(--red);color:#fff;animation:shake .4s}
+.explain{max-height:0;overflow:hidden;opacity:0;transition:max-height .5s, opacity .4s, margin .4s}
+.explain.show{max-height:260px;opacity:1;margin-top:14px}
+.explain p{font-size:1.1rem;background:var(--paper);border:3px dashed var(--ink);border-radius:16px;padding:10px 14px}
+
+/* ---------- Revelar ---------- */
+.reveal{opacity:0;transform:scale(.6) rotate(-4deg);transition:opacity .35s, transform .5s cubic-bezier(.2,1.6,.4,1)}
+.reveal.show{opacity:1;transform:none}
+.tap{cursor:pointer;user-select:none}
+.tap .ans{display:inline-block;opacity:0;transform:scale(.3);transition:all .4s cubic-bezier(.2,1.6,.4,1)}
+.tap.show .ans{opacity:1;transform:scale(1)}
+.tap .q-hint{font-size:.9rem;opacity:.6}
+.tap.show .q-hint{display:none}
+.boom{font-family:'Fredoka';font-weight:700;font-size:clamp(1.8rem,3.4vw,3rem);padding:12px 30px;border:4px solid var(--ink);border-radius:24px;box-shadow:var(--sh);display:inline-block}
+
+.sentence{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:center;font-size:clamp(1.4rem,2.4vw,2.1rem);font-weight:800}
+.piece{background:var(--white);border:4px solid var(--ink);border-radius:20px;padding:12px 20px;box-shadow:var(--sh-sm);text-align:center}
+.piece .ans{display:block;margin-top:6px}
+.conn{font-family:'Fredoka';font-weight:700;font-size:clamp(1.8rem,3vw,2.6rem);background:var(--yellow);border:4px solid var(--ink);border-radius:50%;width:80px;height:80px;display:grid;place-items:center;box-shadow:var(--sh-sm)}
+
+/* ---------- Tablas de verdad ---------- */
+.tt{border-collapse:separate;border-spacing:0;border:4px solid var(--ink);border-radius:22px;overflow:hidden;box-shadow:var(--sh);background:var(--white);font-family:'Fredoka';font-weight:600;font-size:clamp(1.3rem,2.2vw,1.9rem);margin:0 auto}
+.tt th,.tt td{padding:9px 28px;text-align:center;border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transition:background .3s,color .3s}
+.tt tr>*:last-child{border-right:0}
+.tt tbody tr:last-child td{border-bottom:0}
+.tt th{background:var(--phase)}
+.tt th.res{background:var(--yellow)}
+.tt th.ctxh{font-size:1rem;background:#e9e6ff}
+.tt td.v{background:#c8f7d0;color:#0f7a2a}
+.tt td.f{background:#ffd3da;color:#c0142f}
+.tt td.e{color:transparent}
+.tt td.q{background:#fff3b0;color:#b08900;cursor:pointer}
+.tt td.q:hover{background:#ffe27a}
+.tt td.p{background:#eef7ff;cursor:pointer;min-width:90px}
+.tt td.p:hover{background:#d8eeff}
+.tt td.ok{background:var(--green);color:var(--ink)}
+.tt td.bad{background:var(--red);color:#fff;animation:shake .4s}
+.tt td.ctx{font-family:'Nunito';font-size:1.05rem;font-weight:800;text-align:left;max-width:360px;padding:9px 16px}
+.tt tr.hl td{background:var(--red)!important;color:#fff!important}
+.tt td.pop{animation:pop .45s}
+.tt-ctrl{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap;align-items:center}
+.score{font-family:'Fredoka';font-weight:700;font-size:1.3rem}
+@keyframes pop{0%{transform:scale(.4)}70%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+
+/* ---------- Operadores ---------- */
+.op-card{text-align:center;padding:18px 14px}
+.op-card .big{font-family:'Fredoka';font-weight:700;font-size:2.8rem;line-height:1;width:76px;height:76px;margin:0 auto 10px;display:grid;place-items:center;background:var(--white);border:4px solid var(--ink);border-radius:50%;box-shadow:3px 3px 0 var(--ink)}
+.op-card h3{font-size:1.25rem;margin-bottom:2px}
+.op-card .nick{font-family:'Fredoka';font-weight:500;font-size:1rem;opacity:.75;margin-bottom:8px}
+.op-card p{font-size:1.02rem;line-height:1.35}
+.op-hero{display:flex;align-items:center;gap:18px}
+.op-hero .big{font-family:'Fredoka';font-weight:700;font-size:3.4rem;width:100px;height:100px;flex:none;display:grid;place-items:center;background:var(--yellow);border:5px solid var(--ink);border-radius:50%;box-shadow:var(--sh-sm);animation:bob 3.4s ease-in-out infinite}
+.rule{font-family:'Fredoka';font-weight:600;font-size:clamp(1.3rem,2.1vw,1.8rem);line-height:1.3;background:var(--ink);color:var(--white);border-radius:20px;padding:14px 20px;border:4px solid var(--ink);box-shadow:4px 4px 0 var(--phase)}
+.prem{display:flex;gap:12px;align-items:flex-start;margin:8px 0}
+.prem .lbl{font-family:'Fredoka';font-weight:700;font-size:1.4rem;width:46px;height:46px;flex:none;display:grid;place-items:center;border:3px solid var(--ink);border-radius:14px;background:var(--phase);box-shadow:2px 2px 0 var(--ink)}
+
+/* ---------- Construcción tabla base ---------- */
+.steps .step{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+.steps .n{width:48px;height:48px;flex:none;border-radius:50%;display:grid;place-items:center;font-family:'Fredoka';font-weight:700;font-size:1.4rem;border:3px solid var(--ink);background:var(--yellow);box-shadow:2px 2px 0 var(--ink)}
+.formula{font-family:'Fredoka';font-weight:700;font-size:clamp(1.6rem,2.6vw,2.4rem);text-align:center}
+.formula sup{font-size:.6em}
+
+/* ---------- Desafío ---------- */
+.ch-card{text-align:center}
+.ch-card .expr{font-family:'Fredoka';font-weight:700;font-size:clamp(2rem,3.4vw,3rem)}
+.ch-card .sub-expr{font-family:'Fredoka';font-weight:600;font-size:1.4rem;margin:6px 0 12px;opacity:.85}
+.ch-card .result{margin-top:14px}
+.ch-card .result .boom{font-size:2rem;padding:6px 24px}
+.ch-card .result p{font-size:1.05rem;margin-top:10px}
+
+/* ---------- Lista de cotejo ---------- */
+.check{display:flex;align-items:center;gap:14px;padding:10px 6px;cursor:pointer;font-size:clamp(1.1rem,1.6vw,1.35rem);font-weight:800}
+.check input{display:none}
+.check .box{width:38px;height:38px;flex:none;border:4px solid var(--ink);border-radius:12px;background:var(--white);display:grid;place-items:center;font-size:1.5rem;box-shadow:2px 2px 0 var(--ink);transition:background .2s}
+.check input:checked + .box{background:var(--green)}
+.check input:checked + .box::after{content:'✔'}
+.check input:checked ~ span{text-decoration:line-through;opacity:.6}
+
+/* ---------- Timeline (guión) ---------- */
+.tl h3{display:flex;justify-content:space-between;align-items:center}
+.tl h3 span{font-size:1rem;background:var(--ink);color:#fff;border-radius:999px;padding:4px 12px}
+.tl li{font-size:1.08rem}
+
+/* ---------- Navegación inferior ---------- */
+.nav{position:fixed;bottom:0;left:0;right:0;height:92px;display:flex;align-items:center;gap:14px;padding:0 26px;z-index:20}
+.navbtn{width:62px;height:62px;border-radius:50%;border:4px solid var(--ink);background:var(--phase);font-size:1.9rem;font-weight:700;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .12s, box-shadow .12s, background .4s;display:grid;place-items:center;color:var(--ink)}
+.navbtn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.navbtn:disabled{opacity:.35;cursor:default}
+.track{flex:1;display:flex;gap:5px;height:22px;align-items:center}
+.seg{flex:1;height:18px;border:3px solid var(--ink);border-radius:999px;background:var(--white);cursor:pointer;transition:transform .25s, background .3s;padding:0}
+.seg.done{background:var(--c)}
+.seg.cur{transform:scaleY(1.5);box-shadow:2px 2px 0 var(--ink)}
+.counter{font-family:'Fredoka';font-weight:700;font-size:1.25rem;min-width:78px;text-align:center;background:var(--white);border:3px solid var(--ink);border-radius:999px;padding:6px 10px;box-shadow:3px 3px 0 var(--ink)}
+
+/* ---------- Panel de notas del docente ---------- */
+#notesPanel{position:fixed;right:22px;bottom:104px;width:min(480px,92vw);max-height:62vh;overflow:auto;background:#2b2457;color:#fff;border:4px solid var(--ink);border-radius:22px;padding:20px 22px;box-shadow:var(--sh);z-index:30;opacity:0;transform:translateY(24px) scale(.96);pointer-events:none;transition:all .3s}
+#notesPanel.open{opacity:1;transform:none;pointer-events:auto}
+#notesPanel h4{font-size:1.25rem;color:var(--yellow);margin-bottom:8px}
+#notesPanel p,#notesPanel li{font-size:1.02rem;font-weight:700;line-height:1.45}
+#notesPanel ul{padding-left:1.2em}
+#notesPanel li{margin:4px 0}
+</style>
+</head>
+<body>
+
+<div class="deco"><span>⭐</span><span>🌱</span><span>☁️</span><span>🔬</span><span>💧</span><span>🌙</span></div>
+
+<header class="topbar">
+  <div class="pill" id="phasePill">¡Bienvenidos!</div>
+  <div class="pill time" id="timePill">120 min</div>
+  <div class="timer" id="timer">
+    <div class="clock" id="clock" title="Temporizador de la actividad">00:00</div>
+    <button class="ibtn" id="tPlay" title="Iniciar / pausar temporizador">▶</button>
+    <button class="ibtn" id="tReset" title="Reiniciar temporizador">↺</button>
+  </div>
+</header>
+
+<main class="deck" id="deck">
+
+<!-- ===================== PORTADA ===================== -->
+<section class="slide" data-phase="portada" data-time="120 min en total" data-title="Portada">
+  <div class="inner">
+    <div class="mascots">
+      <div class="mascot v"><div class="eyes"><i></i><i></i></div><b>V</b><div class="mouth"></div></div>
+      <div class="mascot f"><div class="eyes"><i></i><i></i></div><b>F</b><div class="mouth"></div></div>
+    </div>
+    <h1 class="title-xl">¿Verdadero o Falso?</h1>
+    <p class="sub" style="text-align:center">Lógica proposicional: el idioma con el que la ciencia valida causa y efecto 🔬</p>
+    <div class="phase-strip">
+      <div class="phase-chip" style="background:#ffe0c7">🚀 Inicio<small>20 min · Activación y enganche</small></div>
+      <div class="phase-chip" style="background:#cdf0ff">🧠 Desarrollo<small>60 min · Exploración y explicación</small></div>
+      <div class="phase-chip" style="background:#d3f8d9">🏁 Cierre<small>40 min · Elaboración y evaluación</small></div>
+    </div>
+    <p class="hint">Avanza con <kbd>→</kbd> retrocede con <kbd>←</kbd> · <kbd>N</kbd> notas del docente · <kbd>F</kbd> pantalla completa</p>
+  </div>
+  <div class="notes">
+    <h4>🎬 Antes de empezar</h4>
+    <p>Pon la presentación en pantalla completa (tecla F). Cada actividad tiene su temporizador arriba a la derecha (▶ para iniciar). La tecla N abre estas notas en cualquier diapositiva.</p>
+  </div>
+</section>
+
+<!-- ===================== PREPARACIÓN DOCENTE ===================== -->
+<section class="slide" data-phase="docente" data-time="Antes de la clase" data-title="Preparación previa del docente">
+  <div class="inner">
+    <span class="kicker">🍎 Solo docente · Preparación previa</span>
+    <h2 class="title">Serás el <mark>puente</mark> entre el lenguaje cotidiano y la lógica matemática</h2>
+    <div class="grid g4">
+      <div class="card c-y tilt-l">
+        <span class="emoji">🗣️</span>
+        <h3>Enunciado ≠ Proposición</h3>
+        <p style="font-size:1.05rem">Enunciado: cualquier frase ("¡Qué hermoso día!", "¿Qué hora es?"). Proposición: enunciado declarativo con valor de verdad exclusivo, V o F, sin ambigüedad. Opiniones y preguntas no entran.</p>
+      </div>
+      <div class="card c-b tilt-r">
+        <span class="emoji">🔢</span>
+        <h3>Regla de filas</h3>
+        <p style="font-size:1.05rem">Con <b>n</b> proposiciones hay <b>2<sup>n</sup></b> combinaciones. Con A y B: 2² = <b>4 filas</b> (V-V, V-F, F-V, F-F).</p>
+      </div>
+      <div class="card c-p tilt-l">
+        <span class="emoji">🔗</span>
+        <h3>5 conectores</h3>
+        <p style="font-size:1.02rem">∼ invierte · ∧ exige perfección · ∨ es indulgente · → es una promesa ("Si llueve (V), entonces no vengo (F)" = promesa rota) · ↔ es un espejo.</p>
+      </div>
+      <div class="card c-g tilt-r">
+        <span class="emoji">🌍</span>
+        <h3>Contexto científico</h3>
+        <p style="font-size:1.05rem">La lógica no es un juego de letras: valida relaciones de causa y efecto en la naturaleza (congelamiento del agua, astronomía).</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>🍎 Lo que necesitas dominar</h4>
+    <ul>
+      <li><b>Negación (∼ o ¬):</b> invierte el valor. Lo V se hace F, lo F se hace V.</li>
+      <li><b>Conjunción (∧, "y"):</b> exige perfección. Solo es V si TODAS son V.</li>
+      <li><b>Disyunción (∨, "o"):</b> es indulgente. Es V si AL MENOS UNA es V.</li>
+      <li><b>Condicional (→, "Si... entonces"):</b> es una promesa. Solo es F cuando la condición se cumple (V) pero la consecuencia no (F).</li>
+      <li><b>Bicondicional (↔, "Sí y solo sí"):</b> es un espejo. Solo es V si ambas tienen el MISMO valor (V-V o F-F).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== INICIO 0-5 ===================== -->
+<section class="slide" data-phase="inicio" data-time="0'-5'" data-title="Bienvenida y conexión" data-block="b1" data-dur="5">
+  <div class="inner">
+    <span class="kicker">🚀 Inicio · 0'-5' · Bienvenida y conexión</span>
+    <h2 class="title">¡Hola, científicos! ¿Qué <mark>fenómenos naturales</mark> analizamos la sesión pasada?</h2>
+    <div class="grid g4">
+      <div class="card c-b tilt-l" style="text-align:center"><span class="emoji">🌧️</span><h3>La lluvia</h3></div>
+      <div class="card c-g tilt-r" style="text-align:center"><span class="emoji">🌱</span><h3>Desarrollo de plantas</h3></div>
+      <div class="card c-y tilt-l" style="text-align:center"><span class="emoji">🌽</span><h3>Nixtamalización</h3></div>
+      <div class="card c-p tilt-r" style="text-align:center"><span class="emoji">🤔</span><h3>¿Cuál más recuerdas?</h3></div>
+    </div>
+    <p class="sub" style="text-align:center">🙋 Levanta la mano y cuéntanos qué pasaba en cada fenómeno.</p>
+  </div>
+  <div class="notes">
+    <h4>⏱ 0-5 min · Bienvenida y conexión</h4>
+    <p>Saluda y pide a los alumnos que recuerden los fenómenos naturales analizados la sesión anterior (ej. lluvia, desarrollo de plantas, nixtamalización). Recaba sus respuestas.</p>
+  </div>
+</section>
+
+<!-- ===================== INICIO 5-15 ===================== -->
+<section class="slide" data-phase="inicio" data-time="5'-15'" data-title="Dinámica: Verdadero, Falso o Nulo" data-block="b2" data-dur="10">
+  <div class="inner">
+    <span class="kicker">🚀 Inicio · 5'-15' · Dinámica de pizarrón</span>
+    <h2 class="title">¿<mark>Verdadero</mark>, <mark>Falso</mark> o <mark>Nulo</mark>?</h2>
+    <div class="grid g3">
+      <div class="card c-y quiz" data-ans="V">
+        <div class="num">1</div>
+        <p class="phrase">"El agua hierve a los 100°C a nivel del mar."</p>
+        <div class="opts"><button class="opt" data-v="V">✅ V</button><button class="opt" data-v="F">❌ F</button><button class="opt" data-v="N">🚫 Nulo</button></div>
+        <div class="explain"><p><span class="vchip">V</span> Es un hecho verificable: ¡es una proposición verdadera!</p></div>
+      </div>
+      <div class="card c-g quiz" data-ans="F">
+        <div class="num">2</div>
+        <p class="phrase">"Las plantas de frijol crecen mejor escuchando música de Mozart."</p>
+        <div class="opts"><button class="opt" data-v="V">✅ V</button><button class="opt" data-v="F">❌ F</button><button class="opt" data-v="N">🚫 Nulo</button></div>
+        <div class="explain"><p><span class="fchip">F</span> Requiere el método científico para comprobarse... y puede resultar Falsa.</p></div>
+      </div>
+      <div class="card c-p quiz" data-ans="N">
+        <div class="num">3</div>
+        <p class="phrase">"¿A qué hora oscurece hoy?"</p>
+        <div class="opts"><button class="opt" data-v="V">✅ V</button><button class="opt" data-v="F">❌ F</button><button class="opt" data-v="N">🚫 Nulo</button></div>
+        <div class="explain"><p><span class="nchip">Nulo</span> Es una pregunta: no puede ser ni V ni F. ¡No es proposición!</p></div>
+      </div>
+    </div>
+    <p class="sub" style="text-align:center">🔍 Misión: separar los <b>hechos</b> de las <b>opiniones</b> (y de las preguntas).</p>
+  </div>
+  <div class="notes">
+    <h4>⏱ 5-15 min · "Verdadero, Falso o Nulo"</h4>
+    <p>Escribe en el pizarrón las 3 frases y pide a los estudiantes que determinen su valor de verdad. Guía la reflexión:</p>
+    <ul>
+      <li>Frase 1: es <b>V</b>.</li>
+      <li>Frase 2: requiere método científico, pero puede ser <b>F</b>.</li>
+      <li>Frase 3: no puede ser ni V ni F porque es una <b>pregunta</b>.</li>
+    </ul>
+    <p>Haz clic en las opciones para revelar la respuesta de cada frase.</p>
+  </div>
+</section>
+
+<!-- ===================== INICIO 15-20 ===================== -->
+<section class="slide" data-phase="inicio" data-time="15'-20'" data-title="Transición a la composición" data-block="b3" data-dur="5">
+  <div class="inner">
+    <span class="kicker">🚀 Inicio · 15'-20' · Transición a la composición</span>
+    <h2 class="title">¿Qué sucede si unimos dos realidades con la palabra <mark>"Y"</mark> o la palabra <mark>"O"</mark>?</h2>
+    <div class="sentence">
+      <div class="piece tap">"El agua es líquida"<span class="ans"><span class="vchip">V</span></span><span class="q-hint">toca para ver</span></div>
+      <div class="conn">Y</div>
+      <div class="piece tap">"el hielo es caliente"<span class="ans"><span class="fchip">F</span></span><span class="q-hint">toca para ver</span></div>
+    </div>
+    <p class="sub" style="text-align:center">¿Toda esa frase completa es verdad o mentira?</p>
+    <div class="row center">
+      <button class="btn pink" data-reveal="r-trans">🎤 ¡Revelar!</button>
+    </div>
+    <div class="row center">
+      <div class="boom reveal" id="r-trans" style="background:var(--red);color:#fff">¡MENTIRA! Una parte falla 💥</div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>⏱ 15-20 min · Transición</h4>
+    <p>Lanza la pregunta: "¿Qué sucede si unimos dos realidades con la palabra 'y' o la palabra 'o'?". Ejemplo hablado: "El agua es líquida Y el hielo es caliente". ¿Toda la frase es verdad o mentira? Respuesta: <b>mentira</b>, porque una parte falla.</p>
+  </div>
+</section>
+
+<!-- ===================== DESARROLLO 20-30 (a) ===================== -->
+<section class="slide" data-phase="desarrollo" data-time="20'-30'" data-title="Formalización de conceptos" data-block="b4" data-dur="10">
+  <div class="inner">
+    <span class="kicker">🧠 Desarrollo · 20'-30' · Formalización de conceptos</span>
+    <h2 class="title">La ciencia usa la <mark>Lógica</mark> para evitar confusiones</h2>
+    <div class="grid g2">
+      <div class="card c-o tilt-l">
+        <span class="emoji">💬</span>
+        <h3>Enunciado</h3>
+        <p>Cualquier frase. "¡Qué hermoso día!" · "¿Qué hora es?"</p>
+      </div>
+      <div class="card c-b tilt-r">
+        <span class="emoji">⚖️</span>
+        <h3>Proposición lógica</h3>
+        <p>Enunciado declarativo que <b>obligatoriamente</b> es <span class="vchip">V</span> o <span class="fchip">F</span>. Sin ambigüedades.</p>
+      </div>
+      <div class="card c-y tilt-r">
+        <span class="emoji">🧩</span>
+        <h3>Proposición simple</h3>
+        <p>Una sola idea. <br><b>A</b> = "El Sol es una estrella."</p>
+      </div>
+      <div class="card c-g tilt-l">
+        <span class="emoji">🔗</span>
+        <h3>Proposición compuesta</h3>
+        <p>Dos o más simples unidas por un conector. <br>"El Sol es una estrella <b>Y</b> la Tierra gira." → <b>A ∧ B</b></p>
+      </div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>⏱ 20-30 min · Formalización</h4>
+    <p>Explica que la ciencia utiliza la Lógica para evitar confusiones. Define qué es una proposición simple y qué es una compuesta. Recalca: las opiniones o preguntas no son proposiciones.</p>
+  </div>
+</section>
+
+<!-- ===================== DESARROLLO 20-30 (b) Concepto 1 ===================== -->
+<section class="slide" data-phase="desarrollo" data-time="20'-30'" data-title="Concepto imprescindible 1" data-block="b4" data-dur="10">
+  <div class="inner">
+    <span class="note-badge">📓 Concepto imprescindible 1 · ¡Cópialo LITERAL en tu libreta!</span>
+    <div class="card c-y" style="padding:34px 40px">
+      <h3 style="font-size:2.2rem;margin-bottom:14px">1. Proposición Lógica</h3>
+      <p class="literal">Es un enunciado que describe un <b>hecho verificable</b> y que puede ser únicamente <b>Verdadero (V)</b> o <b>Falso (F)</b>, nunca ambos ni ninguna otra cosa. No son opiniones ni sentimientos.</p>
+    </div>
+    <div class="mascots" style="transform:scale(.7);margin:-20px 0">
+      <div class="mascot v"><div class="eyes"><i></i><i></i></div><b>V</b><div class="mouth"></div></div>
+      <div class="mascot f"><div class="eyes"><i></i><i></i></div><b>F</b><div class="mouth"></div></div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>📓 Dictado (evidencia esperada)</h4>
+    <p>Pide a los alumnos que apunten de manera literal este concepto en sus libretas. Dicta: "Proposición asume un solo valor (V o F)".</p>
+  </div>
+</section>
+
+<!-- ===================== DESARROLLO 30-45 (a) ===================== -->
+<section class="slide" data-phase="desarrollo" data-time="30'-45'" data-title="Estructura de la Tabla de Verdad" data-block="b5" data-dur="15">
+  <div class="inner">
+    <span class="kicker">🧠 Desarrollo · 30'-45' · Estructura de la tabla de verdad</span>
+    <h2 class="title">El <mark>truco</mark> para rellenar la tabla sin equivocarte</h2>
+    <div class="split">
+      <div>
+        <table class="tt" id="build">
+          <thead><tr><th>A</th><th>B</th></tr></thead>
+          <tbody>
+            <tr><td class="e" data-c="A">V</td><td class="e" data-c="B">V</td></tr>
+            <tr><td class="e" data-c="A">V</td><td class="e" data-c="B">F</td></tr>
+            <tr><td class="e" data-c="A">F</td><td class="e" data-c="B">V</td></tr>
+            <tr><td class="e" data-c="A">F</td><td class="e" data-c="B">F</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card c-b steps">
+        <div class="step"><div class="n">1</div><p><b>Columna B:</b> alterna de uno en uno → V, F, V, F</p></div>
+        <div class="row" style="margin:-4px 0 14px 62px"><button class="btn blue" data-fill="B">✏️ Rellenar B</button></div>
+        <div class="step"><div class="n">2</div><p><b>Columna A:</b> alterna de dos en dos → V, V, F, F</p></div>
+        <div class="row" style="margin:-4px 0 14px 62px"><button class="btn" data-fill="A">✏️ Rellenar A</button><button class="btn alt" data-fill="reset">↺ Borrar</button></div>
+        <div class="formula">n proposiciones → 2<sup>n</sup> filas<br>2<sup>2</sup> = <span style="background:var(--yellow);padding:0 .3em;border-radius:10px;border:3px solid var(--ink)">4</span></div>
+      </div>
+    </div>
+    <div class="row center"><div class="boom reveal" id="r-comb" style="background:var(--green)">🎉 4 combinaciones: V-V · V-F · F-V · F-F</div></div>
+  </div>
+  <div class="notes">
+    <h4>⏱ 30-45 min · Tabla de verdad</h4>
+    <p>Dibuja en el pizarrón una tabla en blanco con las columnas A y B.</p>
+    <p><b>Tip de enseñanza:</b> Columna B alterna V, F, V, F. Columna A alterna de a dos V, V, F, F. Así logran las 4 combinaciones (V-V, V-F, F-V, F-F). Usa los botones para construirla paso a paso.</p>
+  </div>
+</section>
+
+<!-- ===================== DESARROLLO 30-45 (b) Concepto 2 ===================== -->
+<section class="slide" data-phase="desarrollo" data-time="30'-45'" data-title="Concepto imprescindible 2" data-block="b5" data-dur="15">
+  <div class="inner">
+    <span class="note-badge">📓 Concepto imprescindible 2 · Dibuja esta tabla EXACTAMENTE así</span>
+    <h2 class="title">2. Estructura <mark>base</mark> de 2 proposiciones</h2>
+    <table class="tt" style="font-size:clamp(1.6rem,2.8vw,2.4rem)">
+      <thead><tr><th>A</th><th>B</th></tr></thead>
+      <tbody>
+        <tr><td class="v">V</td><td class="v">V</td></tr>
+        <tr><td class="v">V</td><td class="f">F</td></tr>
+        <tr><td class="f">F</td><td class="v">V</td></tr>
+        <tr><td class="f">F</td><td class="f">F</td></tr>
+      </tbody>
+    </table>
+    <p class="sub" style="text-align:center">✍️ Esta tabla es la base de TODOS los ejercicios de hoy.</p>
+  </div>
+  <div class="notes">
+    <h4>📓 Evidencia esperada</h4>
+    <p>Pide que dibujen esta tabla base exactamente así en su libreta. Al final se revisará que esté trazada correctamente.</p>
+  </div>
+</section>
+
+<!-- ===================== DESARROLLO 45-70 Operadores (Concepto 3) ===================== -->
+<section class="slide" data-phase="desarrollo" data-time="45'-70'" data-title="Operadores lógicos" data-block="b6" data-dur="25">
+  <div class="inner">
+    <span class="note-badge">📓 Concepto imprescindible 3 · Apunte vital: ¡cópialo literal!</span>
+    <h2 class="title">3. Reglas de los <mark>operadores lógicos</mark></h2>
+    <div class="grid g5">
+      <div class="card c-y op-card"><div class="big">∧</div><h3>Conjunción</h3><div class="nick">Y · el perfeccionista 🎯</div><p>Solo es Verdadera si TODAS son verdaderas.</p></div>
+      <div class="card c-b op-card"><div class="big">∨</div><h3>Disyunción</h3><div class="nick">O · el indulgente 😊</div><p>Es Verdadera si AL MENOS UNA es verdadera.</p></div>
+      <div class="card c-p op-card"><div class="big">→</div><h3>Implicación</h3><div class="nick">Si... entonces · la promesa 🤝</div><p>Solo es Falsa cuando la causa ocurre (V) pero la consecuencia falla (F).</p></div>
+      <div class="card c-g op-card"><div class="big">↔</div><h3>Bicondicional</h3><div class="nick">Sí y solo sí · el espejo 🪞</div><p>Solo es Verdadera si ambas tienen el mismo valor de verdad.</p></div>
+      <div class="card c-v op-card"><div class="big">∼</div><h3>Negación</h3><div class="nick">No · el rebelde 🔄</div><p>Cambia el valor de Verdad a Falsedad, y viceversa.</p></div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>⏱ 45-70 min · Operadores lógicos</h4>
+    <p>Dicta y explica uno por uno los 5 operadores con sus reglas mnemotécnicas. Pide que los copien literal. Las siguientes diapositivas desarrollan cada operador con ejemplos ambientales y su tabla de verdad.</p>
+  </div>
+</section>
+
+<!-- Negación -->
+<section class="slide" data-phase="desarrollo" data-time="45'-70'" data-title="Negación" data-block="b6" data-dur="25">
+  <div class="inner">
+    <span class="kicker">🧠 Desarrollo · 45'-70' · Operador 1 de 5</span>
+    <div class="split">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div class="op-hero"><div class="big">∼</div><h2 class="title">Negación: <mark>el rebelde</mark></h2></div>
+        <div class="rule">Invierte el valor: lo V se hace F, lo F se hace V.</div>
+        <div class="card c-v">
+          <div class="prem"><div class="lbl">A</div><p>"El agua hierve a 100°C a nivel del mar." <span class="vchip">V</span></p></div>
+          <div class="prem tap"><div class="lbl">∼A</div><p>"El agua NO hierve a 100°C a nivel del mar." <span class="ans"><span class="fchip">F</span></span><span class="q-hint"> (toca)</span></p></div>
+        </div>
+      </div>
+      <div data-tt="neg"></div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>🔄 Negación (∼ o ¬)</h4>
+    <p>Invierte el valor. Su tabla solo necesita 2 filas porque trabaja con una proposición (2¹ = 2). Haz clic en los "?" para revelar.</p>
+  </div>
+</section>
+
+<!-- Conjunción -->
+<section class="slide" data-phase="desarrollo" data-time="45'-70'" data-title="Conjunción (Y)" data-block="b6" data-dur="25">
+  <div class="inner">
+    <span class="kicker">🧠 Desarrollo · 45'-70' · Operador 2 de 5</span>
+    <div class="split">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div class="op-hero"><div class="big">∧</div><h2 class="title">Conjunción "Y": <mark>el perfeccionista</mark></h2></div>
+        <div class="rule">Solo es Verdadera si TODAS son verdaderas.</div>
+        <div class="card c-y">
+          <div class="prem"><div class="lbl">A</div><p>"El Sol es una estrella." <span class="vchip">V</span></p></div>
+          <div class="prem"><div class="lbl">B</div><p>"La Tierra gira." <span class="vchip">V</span></p></div>
+          <p class="tap" style="margin-top:8px">A ∧ B es... <span class="ans"><span class="boom" style="font-size:1.5rem;padding:4px 18px;background:var(--green)">¡VERDADERA!</span></span><span class="q-hint"> (toca)</span></p>
+        </div>
+      </div>
+      <div data-tt="and"></div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>🎯 Conjunción (∧, "y")</h4>
+    <p>Exige perfección. Ejemplo: A = El Sol es una estrella, B = La Tierra gira. A y B es Verdadera porque ambas lo son. Basta que una falle para que todo sea F (recuerda el ejemplo del hielo caliente).</p>
+  </div>
+</section>
+
+<!-- Disyunción -->
+<section class="slide" data-phase="desarrollo" data-time="45'-70'" data-title="Disyunción (O)" data-block="b6" data-dur="25">
+  <div class="inner">
+    <span class="kicker">🧠 Desarrollo · 45'-70' · Operador 3 de 5</span>
+    <div class="split">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div class="op-hero"><div class="big">∨</div><h2 class="title">Disyunción "O": <mark>el indulgente</mark></h2></div>
+        <div class="rule">Es Verdadera si AL MENOS UNA es verdadera.</div>
+        <div class="card c-b">
+          <div class="prem"><div class="lbl">A</div><p>"Hoy llueve." 🌧️</p></div>
+          <div class="prem"><div class="lbl">B</div><p>"Hoy hace sol." ☀️</p></div>
+          <p style="margin-top:8px">Si pasa <b>al menos una</b>, la frase <b>A ∨ B</b> es verdad.</p>
+        </div>
+      </div>
+      <div data-tt="or"></div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>😊 Disyunción (∨, "o")</h4>
+    <p>Es indulgente. A = Hoy llueve, B = Hoy hace sol. Si pasa al menos una, la frase A o B es verdad. Solo es F cuando ninguna ocurre (F-F).</p>
+  </div>
+</section>
+
+<!-- Implicación -->
+<section class="slide" data-phase="desarrollo" data-time="45'-70'" data-title="Implicación (Si... entonces)" data-block="b6" data-dur="25">
+  <div class="inner">
+    <span class="kicker">🧠 Desarrollo · 45'-70' · Operador 4 de 5</span>
+    <div class="split">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="op-hero"><div class="big">→</div><h2 class="title">Implicación: <mark>la promesa</mark></h2></div>
+        <div class="rule">Solo es Falsa cuando la causa ocurre (V) pero la consecuencia falla (F).</div>
+        <div class="card c-p">
+          <div class="prem"><div class="lbl">A</div><p>"Hay sequía." 🏜️</p></div>
+          <div class="prem"><div class="lbl">B</div><p>"Las plantas mueren." 🥀</p></div>
+          <p style="margin-top:6px;font-size:1.15rem">Si hay sequía y las plantas <b>NO</b> mueren (V → F), mi regla ecológica estaba equivocada: <span class="fchip">F</span></p>
+        </div>
+        <p style="font-size:1.1rem">🤝 "Si llueve (V), entonces no vengo (F)" = <b>promesa rota</b>.</p>
+      </div>
+      <div data-tt="imp" data-hl="1"></div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>🤝 Condicional / Implicación (→)</h4>
+    <p>Es como una promesa: solo es Falsa cuando la condición se cumple (V) y la consecuencia no (F). Ejemplo ambiental: A = Hay sequía, B = Las plantas mueren. Si hay sequía y las plantas NO mueren (V → F), la regla ecológica estaba equivocada. Da más ejemplos de causa-efecto.</p>
+  </div>
+</section>
+
+<!-- Bicondicional -->
+<section class="slide" data-phase="desarrollo" data-time="45'-70'" data-title="Bicondicional (Sí y solo sí)" data-block="b6" data-dur="25">
+  <div class="inner">
+    <span class="kicker">🧠 Desarrollo · 45'-70' · Operador 5 de 5</span>
+    <div class="split">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div class="op-hero"><div class="big">↔</div><h2 class="title">Bicondicional: <mark>el espejo</mark></h2></div>
+        <div class="rule">Solo es Verdadera si ambas tienen el MISMO valor de verdad (V-V o F-F).</div>
+        <div class="card c-g">
+          <div class="prem"><div class="lbl">A</div><p>"Es de día." 🌞</p></div>
+          <div class="prem"><div class="lbl">B</div><p>"El Sol está sobre el horizonte." 🌅</p></div>
+          <p style="margin-top:8px">A ↔ B: "Es de día <b>sí y solo sí</b> el Sol está sobre el horizonte." 🪞 Se reflejan.</p>
+        </div>
+      </div>
+      <div data-tt="bic"></div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>🪞 Bicondicional (↔)</h4>
+    <p>Es un espejo: solo es Verdadera si ambas tienen exactamente el mismo valor (V-V o F-F). Si una dice V y la otra F, el espejo se rompe.</p>
+  </div>
+</section>
+
+<!-- ===================== DESARROLLO 70-80 Práctica guiada ===================== -->
+<section class="slide" data-phase="desarrollo" data-time="70'-80'" data-title="Práctica guiada rápida" data-block="b7" data-dur="10">
+  <div class="inner">
+    <span class="kicker">🧠 Desarrollo · 70'-80' · Práctica guiada rápida</span>
+    <div class="split">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <h2 class="title">¡Todos juntos! Tabla completa de <mark>A ∨ B</mark></h2>
+        <div class="card c-b">
+          <p>👆 Toca cada casilla de la columna amarilla para elegir <b>V</b> o <b>F</b>.</p>
+          <p style="margin-top:8px">🧠 Recuerda: el "O" es <b>indulgente</b>, basta con que AL MENOS UNA sea V.</p>
+        </div>
+      </div>
+      <div data-tt="or" data-mode="practice"></div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>⏱ 70-80 min · Práctica guiada</h4>
+    <p>Haz una tabla de verdad completa en el pizarrón junto con ellos combinando A ∨ B. Pide respuestas fila por fila, rellena las casillas y pulsa "Comprobar".</p>
+  </div>
+</section>
+
+<!-- ===================== CIERRE 80-100 ===================== -->
+<section class="slide" data-phase="cierre" data-time="80'-100'" data-title="Ejercicio de implicación causal" data-block="b8" data-dur="20">
+  <div class="inner">
+    <span class="kicker">🏁 Cierre · 80'-100' · Ejercicio de implicación causal</span>
+    <h2 class="title">📒 En tu cuaderno: ¿cuándo se <mark>rompe</mark> la regla del hielo? 🧊</h2>
+    <div class="split" style="grid-template-columns:.8fr 1.2fr">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card c-b">
+          <div class="prem"><div class="lbl">A</div><p>"La temperatura desciende a 0°C." 🌡️</p></div>
+          <div class="prem"><div class="lbl">B</div><p>"El agua se congela." 🧊</p></div>
+        </div>
+        <div class="card c-y"><p>1️⃣ Traza la tabla de verdad de <b>A → B</b>.<br>2️⃣ Explica por qué <b>V-F</b> es la única combinación lógicamente falsa.</p></div>
+        <button class="btn pink" data-reveal="r-ice">💡 Ver explicación</button>
+        <div class="card c-p reveal" id="r-ice"><p style="font-size:1.1rem">Si hace 0°C (V) pero el agua NO se congela (F), la "promesa" de la naturaleza se rompe: en un entorno natural común eso <b>no debería pasar</b>. En las otras filas la regla nunca se contradice.</p></div>
+      </div>
+      <div data-tt="imp" data-hl="1" data-ctxh="¿Qué pasa en la naturaleza?" data-ctx="Hace 0°C y el agua se congela|Hace 0°C y el agua NO se congela ⚠️|No hace 0°C y el agua se congela|No hace 0°C y el agua no se congela"></div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>⏱ 80-100 min · Implicación causal</h4>
+    <p>Pide que resuelvan el caso en su cuaderno. Proposiciones: A = La temperatura desciende a 0°C, B = El agua se congela. Deben trazar la tabla de verdad para A → B e identificar por qué la combinación V-F (hace 0°C pero el agua NO se congela) es la única lógicamente falsa en un entorno natural común.</p>
+  </div>
+</section>
+
+<!-- ===================== CIERRE 100-115 ===================== -->
+<section class="slide" data-phase="cierre" data-time="100'-115'" data-title="Desafío 1: Verdad dentro de las ciencias" data-block="b9" data-dur="15">
+  <div class="inner">
+    <span class="kicker">🏁 Cierre · 100'-115' · Individual, en tu cuaderno</span>
+    <h2 class="title">🏆 Desafío 1: <mark>Verdad dentro de las ciencias</mark></h2>
+    <div class="grid g2">
+      <div class="card c-v"><div class="prem"><div class="lbl">A</div><p>"La Luna tiene luz propia." 🌙 <br><small>Pista:</small> <span class="fchip">Falso</span></p></div></div>
+      <div class="card c-y"><div class="prem"><div class="lbl">B</div><p>"El Sol es una estrella." ☀️ <br><small>Pista:</small> <span class="vchip">Verdadero</span></p></div></div>
+    </div>
+    <div class="grid g3">
+      <div class="card ch-card c-b">
+        <div class="expr">1) A ∧ B</div><div class="sub-expr">A y B</div>
+        <button class="btn" data-reveal="d1">🔓 Revelar</button>
+        <div class="result reveal" id="d1"><div class="sub-expr">F ∧ V</div><span class="boom" style="background:var(--red);color:#fff">F</span><p>La conjunción exige que TODAS sean V.</p></div>
+      </div>
+      <div class="card ch-card c-g">
+        <div class="expr">2) A ∨ B</div><div class="sub-expr">A o B</div>
+        <button class="btn" data-reveal="d2">🔓 Revelar</button>
+        <div class="result reveal" id="d2"><div class="sub-expr">F ∨ V</div><span class="boom" style="background:var(--green)">V</span><p>Basta con que AL MENOS UNA sea V.</p></div>
+      </div>
+      <div class="card ch-card c-p">
+        <div class="expr">3) ∼A</div><div class="sub-expr">No A</div>
+        <button class="btn" data-reveal="d3">🔓 Revelar</button>
+        <div class="result reveal" id="d3"><div class="sub-expr">∼F</div><span class="boom" style="background:var(--green)">V</span><p>"La Luna NO tiene luz propia" es Verdadero.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>⏱ 100-115 min · Desafío 1</h4>
+    <p>Escribe en el pizarrón "Desafío 1" con las premisas A = "La Luna tiene luz propia" (pista: Falso) y B = "El Sol es una estrella" (pista: Verdadero). Pide que evalúen individualmente en su cuaderno: 1) A ∧ B, 2) A ∨ B, 3) ∼A. Revela las respuestas solo al terminar el tiempo.</p>
+  </div>
+</section>
+
+<!-- ===================== CIERRE 115-120 ===================== -->
+<section class="slide" data-phase="cierre" data-time="115'-120'" data-title="Plenaria y evidencias" data-block="b10" data-dur="5">
+  <div class="inner">
+    <span class="kicker">🏁 Cierre · 115'-120' · Plenaria y evidencias</span>
+    <h2 class="title">✅ Lista de <mark>cotejo</mark>: ¿tu cuaderno tiene todo?</h2>
+    <div class="split">
+      <div class="card c-y">
+        <label class="check"><input type="checkbox"><span class="box"></span><span>Concepto 1: Proposición lógica (literal)</span></label>
+        <label class="check"><input type="checkbox"><span class="box"></span><span>Concepto 2: Tabla base A y B trazada correctamente</span></label>
+        <label class="check"><input type="checkbox"><span class="box"></span><span>Concepto 3: Reglas de los 5 operadores</span></label>
+        <label class="check"><input type="checkbox"><span class="box"></span><span>Tabla de verdad A → B del agua congelándose</span></label>
+        <label class="check"><input type="checkbox"><span class="box"></span><span>Desafío 1 con el valor final de cada composición</span></label>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px;align-items:center;text-align:center">
+        <div class="rule">🔬 La lógica nos ayuda a <b>formalizar</b> las explicaciones científicas.</div>
+        <div class="mascots" style="transform:scale(.8)">
+          <div class="mascot v"><div class="eyes"><i></i><i></i></div><b>V</b><div class="mouth"></div></div>
+          <div class="mascot f"><div class="eyes"><i></i><i></i></div><b>F</b><div class="mouth"></div></div>
+        </div>
+        <h2 class="title">¡Hasta la próxima, científicos! 👋</h2>
+      </div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>⏱ 115-120 min · Plenaria y evidencias</h4>
+    <p>Revisa cuadernos para asegurar que la tabla base esté trazada correctamente y que el Desafío 1 indique el valor final de cada composición lógica. Revisa la lista de cotejo (tabla trazada y coherencia). Refuerza cómo la lógica ayuda a formalizar las explicaciones científicas. Despedida.</p>
+  </div>
+</section>
+
+<!-- ===================== GUIÓN RÁPIDO ===================== -->
+<section class="slide" data-phase="docente" data-time="Síntesis" data-title="Guión rápido de clase">
+  <div class="inner">
+    <span class="kicker">🍎 Solo docente · Guión rápido de clase</span>
+    <h2 class="title">La clase en <mark>una mirada</mark></h2>
+    <div class="grid g3 tl">
+      <div class="card c-o">
+        <h3>🚀 Inicio <span>00'-20'</span></h3>
+        <ul>
+          <li>Recabar fenómenos naturales de la sesión previa.</li>
+          <li>Dinámica de pizarrón: 3 frases (1 cierta, 1 falsa, 1 pregunta). Separar hechos de opiniones.</li>
+          <li>Reflexión: ¿qué pasa si uno dos frases con "Y" o con "O"?</li>
+        </ul>
+      </div>
+      <div class="card c-b">
+        <h3>🧠 Desarrollo <span>20'-80'</span></h3>
+        <ul>
+          <li>Dictar concepto: proposición asume un solo valor (V o F).</li>
+          <li>Pizarrón: armar las 4 filas (combinaciones V/F de A y B).</li>
+          <li>Explicar 5 operadores (∼, ∧, ∨, →, ↔) con reglas mnemotécnicas.</li>
+          <li>Ejemplos ambientales con la implicación (causa-efecto).</li>
+        </ul>
+      </div>
+      <div class="card c-g">
+        <h3>🏁 Cierre <span>80'-120'</span></h3>
+        <ul>
+          <li>Cuaderno: tabla de verdad del agua congelándose (A → B).</li>
+          <li>Pizarrón: "Desafío 1" (Luna y Sol).</li>
+          <li>Evaluar con Conjunción, Disyunción y Negación.</li>
+          <li>Lista de cotejo (cuadernos con tabla trazada y coherencia). Despedida.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>🗂 Síntesis</h4>
+    <p>Resumen del cronograma completo para consulta rápida.</p>
+  </div>
+</section>
+
+</main>
+
+<aside id="notesPanel"></aside>
+
+<nav class="nav">
+  <button class="navbtn" id="prev" title="Anterior (←)">‹</button>
+  <div class="track" id="track"></div>
+  <div class="counter" id="counter">1 / 1</div>
+  <button class="ibtn" id="notesBtn" title="Notas del docente (N)">📝</button>
+  <button class="ibtn" id="fsBtn" title="Pantalla completa (F)">⛶</button>
+  <button class="navbtn" id="next" title="Siguiente (→)">›</button>
+</nav>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const PH={
+    portada:{name:'¡Bienvenidos! 👋',color:'#ff5d8f'},
+    docente:{name:'🍎 Solo docente',color:'#8c6cf0'},
+    inicio:{name:'🚀 Inicio · Activación y enganche',color:'#ff8c42'},
+    desarrollo:{name:'🧠 Desarrollo · Exploración y explicación',color:'#3ec1f3'},
+    cierre:{name:'🏁 Cierre · Elaboración y evaluación',color:'#4cd964'}
+  };
+  const $=id=>document.getElementById(id);
+  let cur=-1;
+
+  /* ---- Barra de progreso ---- */
+  const track=$('track');
+  slides.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='seg';
+    b.style.setProperty('--c',PH[s.dataset.phase].color);
+    b.title=(i+1)+'. '+(s.dataset.title||'');
+    b.onclick=()=>go(i);
+    track.appendChild(b);
+  });
+  const segs=[...track.children];
+
+  /* ---- Temporizador por actividad ---- */
+  let tBlock=null,tLeft=0,tInt=null;
+  const clock=$('clock'),tPlay=$('tPlay'),timerBox=$('timer');
+  const fmt=s=>{const a=Math.abs(s);return (s<0?'-':'')+String(Math.floor(a/60)).padStart(2,'0')+':'+String(a%60).padStart(2,'0');};
+  function renderT(){clock.textContent=fmt(tLeft);clock.classList.toggle('over',tLeft<=0&&tBlock&&tInt!==null);}
+  function stopT(){clearInterval(tInt);tInt=null;tPlay.textContent='▶';clock.classList.remove('running');}
+  function startT(){
+    if(tInt)return;
+    tPlay.textContent='⏸';clock.classList.add('running');
+    tInt=setInterval(()=>{tLeft--;renderT();},1000);
+  }
+  tPlay.onclick=()=>{tInt?stopT():startT();};
+  $('tReset').onclick=()=>{stopT();const s=slides[cur];tLeft=(+s.dataset.dur||0)*60;clock.classList.remove('over');renderT();};
+
+  /* ---- Navegación ---- */
+  function go(n){
+    n=Math.max(0,Math.min(slides.length-1,n));
+    if(n===cur)return;
+    cur=n;
+    slides.forEach((s,i)=>{s.classList.toggle('active',i===n);s.classList.toggle('past',i<n);});
+    const s=slides[n],ph=PH[s.dataset.phase];
+    document.documentElement.style.setProperty('--phase',ph.color);
+    $('phasePill').textContent=ph.name;
+    $('timePill').textContent='⏰ '+s.dataset.time+(s.dataset.title&&s.dataset.phase!=='portada'?' · '+s.dataset.title:'');
+    $('counter').textContent=(n+1)+' / '+slides.length;
+    segs.forEach((g,i)=>{g.classList.toggle('done',i<=n);g.classList.toggle('cur',i===n);});
+    $('prev').disabled=n===0;$('next').disabled=n===slides.length-1;
+    const nt=s.querySelector('.notes');
+    $('notesPanel').innerHTML=nt?nt.innerHTML:'<p>Sin notas.</p>';
+    const b=s.dataset.block||null;
+    if(b!==tBlock){
+      stopT();tBlock=b;tLeft=(+s.dataset.dur||0)*60;clock.classList.remove('over');renderT();
+      timerBox.classList.toggle('hidden',!b);
+    }
+    history.replaceState(null,'','#'+(n+1));
+  }
+  $('prev').onclick=()=>go(cur-1);
+  $('next').onclick=()=>go(cur+1);
+  $('notesBtn').onclick=()=>$('notesPanel').classList.toggle('open');
+  function fs(){if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}else{document.exitFullscreen();}}
+  $('fsBtn').onclick=fs;
+  document.addEventListener('keydown',e=>{
+    const k=e.key;
+    if(k==='ArrowRight'||k==='PageDown'){e.preventDefault();go(cur+1);}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k==='End'){go(slides.length-1);}
+    else if(k==='n'||k==='N'){$('notesPanel').classList.toggle('open');}
+    else if(k==='f'||k==='F'){fs();}
+    else if(k==='t'||k==='T'){tInt?stopT():startT();}
+  });
+
+  /* ---- Revelar genérico ---- */
+  document.querySelectorAll('[data-reveal]').forEach(b=>{
+    b.addEventListener('click',()=>{const t=$(b.dataset.reveal);if(t)t.classList.toggle('show');});
+  });
+  document.querySelectorAll('.tap').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('show')));
+
+  /* ---- Quiz V/F/Nulo ---- */
+  document.querySelectorAll('.quiz').forEach(q=>{
+    const opts=[...q.querySelectorAll('.opt')];
+    opts.forEach(o=>o.addEventListener('click',()=>{
+      opts.forEach(x=>x.classList.remove('correct','wrong'));
+      if(o.dataset.v===q.dataset.ans){o.classList.add('correct');}
+      else{o.classList.add('wrong');opts.find(x=>x.dataset.v===q.dataset.ans).classList.add('correct');}
+      q.querySelector('.explain').classList.add('show');
+    }));
+  });
+
+  /* ---- Construcción de la tabla base ---- */
+  const build=$('build');
+  document.querySelectorAll('[data-fill]').forEach(b=>b.addEventListener('click',()=>{
+    const c=b.dataset.fill;
+    const cells=[...build.querySelectorAll('td')];
+    if(c==='reset'){cells.forEach(td=>{td.className='e';});$('r-comb').classList.remove('show');return;}
+    cells.filter(td=>td.dataset.c===c).forEach((td,i)=>{
+      setTimeout(()=>{td.className=(td.textContent.trim()==='V'?'v':'f')+' pop';
+        const done=cells.every(x=>!x.classList.contains('e'));
+        if(done)$('r-comb').classList.add('show');
+      },i*260);
+    });
+  }));
+
+  /* ---- Tablas de verdad ---- */
+  const OPS={
+    neg:{sym:'∼A',uni:true,f:a=>!a},
+    and:{sym:'A ∧ B',f:(a,b)=>a&&b},
+    or:{sym:'A ∨ B',f:(a,b)=>a||b},
+    imp:{sym:'A → B',f:(a,b)=>!a||b},
+    bic:{sym:'A ↔ B',f:(a,b)=>a===b}
+  };
+  const VF=x=>x?'V':'F';
+  document.querySelectorAll('[data-tt]').forEach(box=>{
+    const op=OPS[box.dataset.tt];
+    const mode=box.dataset.mode||'reveal';
+    const hl=box.dataset.hl!==undefined?+box.dataset.hl:-1;
+    const ctx=box.dataset.ctx?box.dataset.ctx.split('|'):null;
+    const rows=op.uni?[[true],[false]]:[[true,true],[true,false],[false,true],[false,false]];
+    let h='<table class="tt"><thead><tr><th>A</th>'+(op.uni?'':'<th>B</th>')+'<th class="res">'+op.sym+'</th>'+(ctx?'<th class="ctxh">'+(box.dataset.ctxh||'')+'</th>':'')+'</tr></thead><tbody>';
+    rows.forEach((r,i)=>{
+      const ans=VF(op.f(...r));
+      h+='<tr data-i="'+i+'">'+r.map(x=>'<td class="'+(x?'v':'f')+'">'+VF(x)+'</td>').join('')+
+        (mode==='practice'?'<td class="p" data-ans="'+ans+'"></td>':'<td class="q" data-ans="'+ans+'">?</td>')+
+        (ctx?'<td class="ctx">'+ctx[i]+'</td>':'')+'</tr>';
+    });
+    h+='</tbody></table><div class="tt-ctrl">'+
+      (mode==='practice'
+        ?'<button class="btn green chk">✅ Comprobar</button><button class="btn alt rst">↺ Reiniciar</button><span class="score"></span>'
+        :'<button class="btn all">✨ Revelar todo</button><button class="btn alt rst">↺ Ocultar</button>')+'</div>';
+    box.innerHTML=h;
+    const resCells=[...box.querySelectorAll(mode==='practice'?'td.p':'td.q')];
+
+    if(mode==='practice'){
+      const score=box.querySelector('.score');
+      resCells.forEach(td=>td.addEventListener('click',()=>{
+        td.classList.remove('ok','bad');
+        td.textContent=td.textContent==='V'?'F':'V';
+        td.classList.remove('pop');void td.offsetWidth;td.classList.add('pop');
+        score.textContent='';
+      }));
+      box.querySelector('.chk').onclick=()=>{
+        let ok=0;
+        resCells.forEach(td=>{
+          td.classList.remove('ok','bad');
+          if(td.textContent===td.dataset.ans){td.classList.add('ok');ok++;}else{td.classList.add('bad');}
+        });
+        score.textContent=ok===resCells.length?'🎉 ¡'+ok+'/'+resCells.length+' perfecto!':'🧐 '+ok+'/'+resCells.length+' correctas';
+      };
+      box.querySelector('.rst').onclick=()=>{resCells.forEach(td=>{td.textContent='';td.className='p';});score.textContent='';};
+    }else{
+      const reveal=td=>{
+        if(!td.classList.contains('q'))return;
+        td.textContent=td.dataset.ans;
+        td.className=(td.dataset.ans==='V'?'v':'f')+' pop';
+        const tr=td.parentElement;
+        if(+tr.dataset.i===hl)tr.classList.add('hl');
+      };
+      resCells.forEach(td=>td.addEventListener('click',()=>reveal(td)));
+      box.querySelector('.all').onclick=()=>resCells.forEach((td,i)=>setTimeout(()=>reveal(td),i*220));
+      box.querySelector('.rst').onclick=()=>{
+        resCells.forEach(td=>{td.textContent='?';td.className='q';});
+        box.querySelectorAll('tr.hl').forEach(t=>t.classList.remove('hl'));
+      };
+    }
+  });
+
+  /* ---- Inicio ---- */
+  const start=parseInt(location.hash.slice(1),10);
+  go(isNaN(start)?0:start-1);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Suerte o Método? | Aportes mexicanos, método científico y lógica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1b3a;
+    --cream:#fff8e7;
+    --yellow:#ffd23f;
+    --orange:#ff7b29;
+    --pink:#ff4f8b;
+    --blue:#3a86ff;
+    --teal:#06d6a0;
+    --purple:#8338ec;
+    --red:#ef233c;
+    --t-yellow:#ffe58a;
+    --t-orange:#ffbe8f;
+    --t-pink:#ffb3cd;
+    --t-blue:#a9cbff;
+    --t-teal:#9ff3d6;
+    --t-purple:#d2b8ff;
+    --phase:#8338ec;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; overflow:hidden;
+    font-family:'Nunito',system-ui,sans-serif; color:var(--ink);
+    background-color:var(--phase);
+    background-image:radial-gradient(rgba(255,255,255,.28) 2.5px, transparent 3px);
+    background-size:28px 28px;
+    transition:background-color .6s ease;
+  }
+  body[data-phase="portada"]{--phase:#8338ec}
+  body[data-phase="inicio"]{--phase:#ff7b29}
+  body[data-phase="desarrollo"]{--phase:#3a86ff}
+  body[data-phase="cierre"]{--phase:#06c493}
+  body[data-phase="fin"]{--phase:#ff4f8b}
+
+  /* ---------- BARRA SUPERIOR ---------- */
+  .topbar{position:fixed; top:14px; left:24px; right:24px; height:56px; display:flex; align-items:center; gap:12px; z-index:5}
+  .chip{
+    font-family:'Fredoka',sans-serif; font-weight:700;
+    background:#fff; border:4px solid var(--ink); border-radius:999px;
+    padding:6px 18px; box-shadow:4px 4px 0 var(--ink);
+    font-size:clamp(14px,1.35vw,20px); white-space:nowrap;
+  }
+  .chip.phase{background:var(--yellow)}
+  .spacer{flex:1}
+  .clock{cursor:pointer; user-select:none}
+  .clock.running::before{content:"● "; color:var(--red); animation:blink 1s infinite}
+  .clock.late{background:var(--red); color:#fff}
+  .clock.late::before{color:#fff}
+  @keyframes blink{50%{opacity:.2}}
+
+  /* ---------- DIAPOSITIVAS ---------- */
+  .slide{
+    position:absolute; top:84px; bottom:104px; left:24px; right:24px;
+    background:var(--cream); border:5px solid var(--ink); border-radius:36px;
+    box-shadow:12px 12px 0 var(--ink);
+    padding:clamp(20px,3vw,48px);
+    display:none; flex-direction:column; gap:clamp(12px,1.6vw,24px);
+    overflow:auto;
+  }
+  .slide.active{display:flex; animation:pop .55s cubic-bezier(.34,1.56,.64,1)}
+  .slide.middle{justify-content:center}
+  @keyframes pop{from{transform:scale(.9) rotate(-1.2deg); opacity:0} to{transform:none; opacity:1}}
+  .notes{display:none}
+
+  h1,h2,h3{font-family:'Fredoka',sans-serif; margin:0; line-height:1.05}
+  h1{font-size:clamp(42px,6.2vw,104px); font-weight:700}
+  h2{font-size:clamp(30px,3.6vw,58px); font-weight:700}
+  h3{font-size:clamp(20px,2vw,32px); font-weight:600}
+  p,li{font-size:clamp(17px,1.6vw,26px); line-height:1.4; margin:0}
+  ul{margin:0; padding-left:1.1em}
+  li+li{margin-top:.35em}
+  strong{font-weight:900}
+  .kicker{font-family:'Fredoka',sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:.08em; font-size:clamp(14px,1.2vw,18px); color:var(--purple)}
+  .hl{background:var(--yellow); padding:0 .18em; border-radius:10px; box-decoration-break:clone; -webkit-box-decoration-break:clone}
+  .hl.pink{background:var(--t-pink)} .hl.teal{background:var(--t-teal)} .hl.blue{background:var(--t-blue)}
+  .muted{opacity:.75}
+
+  .cartoon-title{
+    color:#fff; -webkit-text-stroke:3px var(--ink); paint-order:stroke fill;
+    text-shadow:7px 7px 0 var(--ink); letter-spacing:.02em;
+  }
+
+  /* ---------- LAYOUTS ---------- */
+  .grid-2{display:grid; grid-template-columns:1.1fr .9fr; gap:clamp(16px,2.4vw,40px); align-items:center}
+  .grid-2.even{grid-template-columns:1fr 1fr; align-items:stretch}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.8vw,28px)}
+  .grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(12px,1.4vw,22px)}
+  .row{display:flex; gap:clamp(10px,1.2vw,18px); align-items:center; flex-wrap:wrap}
+  .stack{display:flex; flex-direction:column; gap:clamp(10px,1.3vw,20px)}
+  .center{text-align:center; align-items:center; justify-content:center}
+  @media (max-width:900px){
+    .grid-2,.grid-2.even,.grid-3,.grid-4{grid-template-columns:1fr}
+  }
+
+  /* ---------- TARJETAS ---------- */
+  .card{
+    background:#fff; border:4px solid var(--ink); border-radius:24px;
+    box-shadow:6px 6px 0 var(--ink); padding:clamp(14px,1.6vw,26px);
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .card.y{background:var(--t-yellow)} .card.o{background:var(--t-orange)} .card.p{background:var(--t-pink)}
+  .card.b{background:var(--t-blue)} .card.t{background:var(--t-teal)} .card.v{background:var(--t-purple)}
+  .card.tilt-l{transform:rotate(-1.5deg)} .card.tilt-r{transform:rotate(1.5deg)}
+  .card .emoji{font-size:clamp(34px,3.6vw,60px); line-height:1}
+  .tag{
+    display:inline-block; font-family:'Fredoka',sans-serif; font-weight:700;
+    font-size:clamp(14px,1.2vw,18px); background:var(--ink); color:#fff;
+    padding:4px 12px; border-radius:999px; align-self:flex-start;
+  }
+  .pill{
+    font-family:'Fredoka',sans-serif; font-weight:600; font-size:clamp(15px,1.4vw,22px);
+    background:#fff; border:3px solid var(--ink); border-radius:999px; padding:6px 16px;
+    box-shadow:3px 3px 0 var(--ink);
+  }
+
+  /* Burbuja de diálogo */
+  .bubble{
+    position:relative; background:#fff; border:5px solid var(--ink); border-radius:44px;
+    padding:clamp(22px,2.6vw,44px) clamp(26px,3.2vw,56px); box-shadow:9px 9px 0 var(--ink);
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(30px,4.4vw,74px); line-height:1.1;
+  }
+  .bubble.sm{font-size:clamp(22px,2.6vw,42px); border-radius:34px}
+  .bubble::after{
+    content:""; position:absolute; bottom:-25px; left:16%; width:42px; height:42px;
+    background:inherit; border-right:5px solid var(--ink); border-bottom:5px solid var(--ink);
+    transform:rotate(45deg) skew(12deg,12deg);
+  }
+  .bubble.right::after{left:auto; right:16%}
+
+  /* Sello "Apunten" */
+  .apunten{
+    display:inline-flex; align-items:center; gap:10px; align-self:flex-start;
+    background:var(--pink); color:#fff; font-family:'Fredoka',sans-serif; font-weight:700;
+    border:4px solid var(--ink); border-radius:16px; padding:6px 16px; box-shadow:4px 4px 0 var(--ink);
+    font-size:clamp(16px,1.5vw,24px); transform:rotate(-2deg); animation:wiggle 2.6s infinite;
+  }
+  @keyframes wiggle{0%,88%,100%{transform:rotate(-2deg)} 92%{transform:rotate(3deg)} 96%{transform:rotate(-4deg)}}
+
+  /* Imágenes */
+  .img-box{
+    border:4px solid var(--ink); border-radius:24px; overflow:hidden; background:var(--t-yellow);
+    box-shadow:7px 7px 0 var(--ink); display:flex; flex-direction:column;
+  }
+  .img-box img{width:100%; display:block; aspect-ratio:3/2; object-fit:cover; background:var(--t-yellow)}
+  .img-box.square img{aspect-ratio:1/1}
+  .img-hint{font-size:14px; padding:8px 12px; background:#fff; border-top:3px dashed var(--ink); line-height:1.35}
+  .img-box.broken img{display:none}
+  .img-box.broken::before{content:"🖼️"; display:block; font-size:64px; text-align:center; padding:28px 0 10px}
+  body.hide-hints .img-hint{display:none}
+
+  /* Fragmentos que aparecen con cada clic */
+  .frag{opacity:0; transform:translateY(18px) scale(.95); transition:opacity .35s, transform .45s cubic-bezier(.34,1.56,.64,1); pointer-events:none}
+  .frag.on{opacity:1; transform:none; pointer-events:auto}
+  .card.tilt-l.frag.on{transform:rotate(-1.5deg)} .card.tilt-r.frag.on{transform:rotate(1.5deg)}
+
+  /* Ecuación del nixtamal */
+  .equation{display:flex; align-items:center; justify-content:center; gap:clamp(8px,1.2vw,18px); flex-wrap:wrap}
+  .ing{display:flex; flex-direction:column; align-items:center; gap:6px; background:#fff; border:4px solid var(--ink); border-radius:22px; padding:12px 18px; box-shadow:5px 5px 0 var(--ink); min-width:110px}
+  .ing .e{font-size:clamp(36px,4vw,64px); line-height:1}
+  .ing span{font-family:'Fredoka',sans-serif; font-weight:600; font-size:clamp(15px,1.4vw,22px)}
+  .op{font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(30px,3.4vw,56px)}
+  .ing.star{background:var(--yellow); animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-8px) rotate(2deg)}}
+
+  /* Camino de la casualidad al rigor */
+  .path{display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; justify-content:center}
+  .path .card{flex:1 1 160px; text-align:center; align-items:center}
+  .path .arrow{align-self:center; font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(28px,3vw,48px)}
+
+  /* Elemento químico */
+  .element{
+    width:clamp(150px,15vw,230px); aspect-ratio:1; background:var(--t-blue); border:6px solid var(--ink); border-radius:26px;
+    box-shadow:8px 8px 0 var(--ink); display:flex; flex-direction:column; justify-content:center; align-items:center;
+    position:relative; transform:rotate(-4deg); flex:none; animation:float 3.5s ease-in-out infinite;
+  }
+  @keyframes float{50%{transform:rotate(-1deg) translateY(-8px)}}
+  .element .n{position:absolute; top:10px; left:16px; font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(18px,1.8vw,28px)}
+  .element .s{font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(70px,8vw,120px); line-height:1}
+  .element .nm{font-family:'Fredoka',sans-serif; font-weight:600; font-size:clamp(16px,1.5vw,22px)}
+
+  /* Disco tricromático */
+  .disc-wrap{display:flex; flex-direction:column; align-items:center; gap:14px}
+  .disc{
+    width:clamp(150px,16vw,250px); aspect-ratio:1; border-radius:50%; border:6px solid var(--ink);
+    background:conic-gradient(#ef233c 0 120deg, #06d6a0 0 240deg, #3a86ff 0 360deg);
+    box-shadow:8px 8px 0 var(--ink); position:relative; animation:spin 2.8s linear infinite;
+  }
+  .disc::after{content:""; position:absolute; inset:38%; border-radius:50%; background:var(--yellow); border:5px solid var(--ink)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* Pizarrón */
+  .board{
+    background:#24624d; color:#fdfdf5; border:12px solid #9a6332; border-radius:26px;
+    box-shadow:inset 0 0 50px rgba(0,0,0,.35), 7px 7px 0 var(--ink);
+    padding:clamp(16px,2vw,32px); display:flex; flex-direction:column; gap:12px;
+    background-image:radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.5px); background-size:6px 6px;
+  }
+  .board h3{color:var(--yellow)}
+  .board p,.board li{color:#fdfdf5}
+  .board .ex{border-top:3px dashed rgba(255,255,255,.5); padding-top:10px; font-style:italic}
+
+  .steps{list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; counter-reset:s}
+  .steps li{
+    counter-increment:s; display:flex; align-items:center; gap:14px; margin:0;
+    background:#fff; color:var(--ink); border:4px solid var(--ink); border-radius:20px; padding:12px 16px;
+    box-shadow:5px 5px 0 var(--ink); font-weight:800; font-family:'Fredoka',sans-serif;
+  }
+  .steps li::before{
+    content:counter(s); flex:none; width:2.1em; height:2.1em; border-radius:50%;
+    background:var(--c,var(--yellow)); border:3px solid var(--ink); display:grid; place-items:center; font-weight:700;
+  }
+  .steps li:nth-child(1){--c:var(--t-orange)} .steps li:nth-child(2){--c:var(--t-yellow)} .steps li:nth-child(3){--c:var(--t-teal)}
+  .steps li:nth-child(4){--c:var(--t-blue)} .steps li:nth-child(5){--c:var(--t-purple)} .steps li:nth-child(6){--c:var(--t-pink)} .steps li:nth-child(7){--c:var(--yellow)}
+
+  /* Símbolos lógicos */
+  .symbol{
+    font-family:'Cambria Math','STIX Two Math','Times New Roman',serif; font-weight:700;
+    font-size:clamp(100px,13vw,220px); line-height:1; width:clamp(170px,19vw,320px); aspect-ratio:1;
+    display:grid; place-items:center; border-radius:50%; border:6px solid var(--ink); box-shadow:9px 9px 0 var(--ink);
+    flex:none; animation:bob 3s ease-in-out infinite;
+  }
+  .symbol.u{background:var(--t-blue)} .symbol.e{background:var(--t-orange)}
+  .split{display:flex; flex-wrap:wrap; gap:10px; align-items:stretch}
+  .split > div{border:4px solid var(--ink); border-radius:18px; padding:10px 18px; box-shadow:4px 4px 0 var(--ink)}
+  .split small{display:block; font-family:'Fredoka',sans-serif; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:.08em}
+  .split span{font-family:'Fredoka',sans-serif; font-weight:600; font-size:clamp(20px,2.2vw,34px)}
+
+  .neg{display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:center}
+  .neg .card{text-align:center; font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(20px,2.2vw,34px)}
+  .neg .arrow{font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(28px,3vw,48px)}
+
+  .crows{font-size:clamp(34px,4vw,64px); letter-spacing:.1em; text-align:center}
+  .crow-white{display:inline-block; filter:grayscale(1) brightness(2.2) drop-shadow(0 0 0 #000); animation:bob 1.8s ease-in-out infinite}
+  .stamp{
+    display:inline-block; font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(30px,3.6vw,60px);
+    color:var(--red); border:6px solid var(--red); border-radius:16px; padding:2px 20px; transform:rotate(-8deg); background:#fff;
+  }
+
+  /* Temporizador */
+  .timer{
+    display:inline-flex; align-items:center; gap:10px; align-self:flex-start;
+    background:var(--ink); color:#fff; border-radius:22px; padding:8px 10px 8px 20px;
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(24px,2.6vw,42px);
+    box-shadow:5px 5px 0 rgba(27,27,58,.35);
+  }
+  .timer .lbl{font-size:clamp(14px,1.2vw,18px); font-weight:600; opacity:.8}
+  .timer button{
+    font:inherit; font-size:clamp(16px,1.6vw,24px); width:2.2em; height:2.2em; border-radius:14px;
+    border:3px solid #fff; background:var(--yellow); color:var(--ink); cursor:pointer;
+  }
+  .timer.done{animation:flash .6s 6; background:var(--red)}
+  @keyframes flash{50%{transform:scale(1.06)}}
+
+  /* Votación V / F */
+  .votes{display:flex; gap:clamp(14px,2vw,30px); justify-content:center; flex-wrap:wrap}
+  .vote{
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(28px,3.4vw,54px);
+    border:5px solid var(--ink); border-radius:28px; box-shadow:7px 7px 0 var(--ink); padding:14px 30px; cursor:pointer;
+    display:flex; align-items:center; gap:16px; color:var(--ink); transition:transform .1s, box-shadow .1s;
+  }
+  .vote:active{transform:translate(5px,5px); box-shadow:2px 2px 0 var(--ink)}
+  .vote.v{background:var(--t-teal)} .vote.f{background:var(--t-pink)}
+  .vote b{background:#fff; border:4px solid var(--ink); border-radius:16px; min-width:1.6em; text-align:center; padding:0 .2em}
+  .vote.bump b{animation:bump .35s}
+  @keyframes bump{50%{transform:scale(1.35)}}
+
+  /* ---------- NAVEGACIÓN INFERIOR ---------- */
+  .nav{position:fixed; bottom:20px; left:24px; right:24px; display:flex; align-items:center; gap:12px; z-index:5}
+  .btn{
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(16px,1.6vw,22px);
+    background:var(--yellow); color:var(--ink); border:4px solid var(--ink); border-radius:18px;
+    padding:10px 22px; box-shadow:5px 5px 0 var(--ink); cursor:pointer; transition:transform .1s, box-shadow .1s; white-space:nowrap;
+  }
+  .btn:active{transform:translate(4px,4px); box-shadow:1px 1px 0 var(--ink)}
+  .btn:disabled{opacity:.45; cursor:not-allowed}
+  .btn.small{padding:8px 14px; background:#fff; font-size:clamp(14px,1.3vw,18px)}
+  .btn.ghost{background:#fff}
+  .progress{flex:1; height:24px; background:#fff; border:4px solid var(--ink); border-radius:999px; overflow:hidden; box-shadow:4px 4px 0 var(--ink); min-width:80px}
+  .bar{height:100%; width:0; background:repeating-linear-gradient(45deg,var(--yellow) 0 14px,#ffe680 14px 28px); border-right:4px solid var(--ink); transition:width .45s cubic-bezier(.34,1.56,.64,1)}
+  @media (max-width:900px){ .nav .tools{display:none} }
+
+  /* ---------- PANEL DE NOTAS ---------- */
+  #notes{
+    position:fixed; top:84px; right:24px; bottom:104px; width:min(460px,92vw);
+    background:#fffbe0; border:5px solid var(--ink); border-radius:28px; box-shadow:9px 9px 0 var(--ink);
+    padding:22px 24px; overflow:auto; transform:translateX(130%); transition:transform .45s cubic-bezier(.34,1.56,.64,1); z-index:20;
+  }
+  #notes.open{transform:none}
+  #notes h3{margin-bottom:6px}
+  #notes .keys{font-size:14px; background:#fff; border:3px dashed var(--ink); border-radius:14px; padding:8px 12px; margin:10px 0 14px}
+  #notesBody p,#notesBody li{font-size:16px}
+  #notesBody p+p{margin-top:8px}
+  #notesBody ul{margin-top:6px}
+
+  /* ---------- GUION RÁPIDO (overlay) ---------- */
+  .overlay{position:fixed; inset:0; background:rgba(27,27,58,.62); display:none; place-items:center; z-index:30; padding:20px}
+  .overlay.open{display:grid}
+  .overlay .panel{
+    background:var(--cream); border:5px solid var(--ink); border-radius:30px; box-shadow:10px 10px 0 var(--ink);
+    width:min(980px,100%); max-height:88vh; overflow:auto; padding:clamp(18px,2.4vw,36px); display:flex; flex-direction:column; gap:16px;
+  }
+  .check{display:flex; gap:12px; align-items:flex-start; font-size:clamp(16px,1.4vw,21px); cursor:pointer; padding:6px 0}
+  .check input{width:24px; height:24px; accent-color:var(--pink); flex:none; margin-top:3px}
+  .check input:checked + span{text-decoration:line-through; opacity:.6}
+  .sub{padding-left:36px}
+
+  @media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important} }
+</style>
+</head>
+<body data-phase="portada">
+
+<!-- ===================== BARRA SUPERIOR ===================== -->
+<header class="topbar">
+  <span class="chip phase" id="phase">🎬 Bienvenida</span>
+  <span class="chip" id="time">⏱️</span>
+  <span class="spacer"></span>
+  <span class="chip clock" id="clock" title="Clic: iniciar/pausar el reloj de la clase · Tecla R: reiniciar">🕐 00:00 / 120:00</span>
+</header>
+
+<main id="deck">
+
+<!-- 1 · PORTADA -->
+<section class="slide middle" data-phase="portada" data-time="Bienvenida" data-end="0">
+  <div class="grid-2">
+    <div class="stack">
+      <span class="kicker">Clase de 120 minutos · Ciencia, tecnología y lógica</span>
+      <h1>¿Suerte o <span class="hl">Método</span>?</h1>
+      <p>Aportes mexicanos a la ciencia, el <strong>método científico</strong> y los <strong>cuantificadores</strong> de la lógica matemática.</p>
+      <div class="row">
+        <span class="pill">🌽 Nixtamalización</span>
+        <span class="pill">⚗️ Vanadio</span>
+        <span class="pill">💊 Noretisterona</span>
+        <span class="pill">📺 TV a color</span>
+      </div>
+    </div>
+    <div class="img-box">
+      <img src="https://placehold.co/900x600/FFD23F/1B1B3A?text=Portada+cartoon&font=poppins" alt="Ilustración estilo cartoon de un científico y estudiante resolviendo ecuaciones">
+    </div>
+  </div>
+  <aside class="notes">
+    <p><strong>Antes de empezar:</strong> pulsa el reloj (arriba a la derecha) para cronometrar la clase. Se pondrá en rojo si vas atrasado respecto al cronograma de cada diapositiva.</p>
+    <p>Ten lista tu <strong>lista de cotejo de participación</strong> para el cierre.</p>
+  </aside>
+</section>
+
+<!-- 2 · RUTA DE LA CLASE -->
+<section class="slide" data-phase="portada" data-time="Mapa de la sesión" data-end="0">
+  <span class="kicker">El plan de hoy</span>
+  <h2>La ruta de la clase 🗺️</h2>
+  <div class="grid-3">
+    <div class="card o tilt-l">
+      <span class="tag">0:00 a 0:30 · 30 min</span>
+      <h3>🌽 Inicio</h3>
+      <p><strong>Estudio de casos y enganche</strong></p>
+      <ul><li>Pregunta detonadora</li><li>Nixtamalización</li><li>Problematización</li><li>De la casualidad al rigor</li></ul>
+    </div>
+    <div class="card b">
+      <span class="tag">0:30 a 1:30 · 60 min</span>
+      <h3>🔬 Desarrollo</h3>
+      <p><strong>Explicación y trabajo aplicado</strong></p>
+      <ul><li>Aportes mexicanos</li><li>Conocimiento y método</li><li>Cuantificadores lógicos</li><li>Actividad en equipos</li></ul>
+    </div>
+    <div class="card t tilt-r">
+      <span class="tag">1:30 a 2:00 · 30 min</span>
+      <h3>🎤 Cierre</h3>
+      <p><strong>Plenaria y validación</strong></p>
+      <ul><li>Ciencia y calidad de vida</li><li>Validación lógica</li><li>Resumen y evaluación</li></ul>
+    </div>
+  </div>
+  <div class="row">
+    <span class="apunten">✏️ ¡Apunten en su libreta!</span>
+    <p>Cuando aparezca este sello, copia el concepto en tu cuaderno.</p>
+  </div>
+  <aside class="notes">
+    <p><strong>Conceptos Imprescindibles:</strong> pide a los alumnos que apunten explícitamente en sus libretas los conceptos marcados con el sello rosa: diferencia de conocimientos, las 7 etapas del método científico y los cuantificadores lógicos.</p>
+  </aside>
+</section>
+
+<!-- 3 · DIVISOR INICIO -->
+<section class="slide middle center" data-phase="inicio" data-time="0:00" data-end="10" style="background:var(--t-yellow)">
+  <span class="kicker">Fase 1 de 3</span>
+  <h1 class="cartoon-title" style="font-size:clamp(70px,11vw,180px)">INICIO</h1>
+  <h3>30 minutos · Estudio de casos y enganche</h3>
+  <aside class="notes"><p>Arranca con energía. El objetivo de esta fase es enganchar con algo cotidiano: la tortilla.</p></aside>
+</section>
+
+<!-- 4 · PREGUNTA DETONADORA -->
+<section class="slide middle" data-phase="inicio" data-time="0:00 - 0:10" data-end="10">
+  <span class="kicker">Pregunta detonadora</span>
+  <div class="grid-2">
+    <div class="stack" style="gap:44px">
+      <div class="bubble">¿Qué comerían si no existiera la <span class="hl">tortilla</span>? 🌮</div>
+      <div class="row">
+        <span class="pill">🙋 Participación 1</span><span class="pill">🙋 Participación 2</span>
+        <span class="pill">🙋 Participación 3</span><span class="pill">🙋 Participación 4</span>
+      </div>
+    </div>
+    <div class="img-box">
+      <img src="https://placehold.co/900x600/FF7B29/FFFFFF?text=Tortilla+preocupada&font=poppins" alt="Ilustración de una tortilla triste y preocupada">
+    </div>
+  </div>
+  <aside class="notes">
+    <p><strong>0:00 a 0:10 · Pregunta detonadora y narrativa.</strong></p>
+    <p>Escribe en el pizarrón: <em>"¿Qué comerían si no existiera la tortilla?"</em>. Escucha <strong>3 o 4 participaciones rápidas</strong>.</p>
+    <p>Luego pasa a la siguiente diapositiva y relata con entusiasmo la historia de la nixtamalización.</p>
+  </aside>
+</section>
+
+<!-- 5 · NIXTAMALIZACIÓN -->
+<section class="slide" data-phase="inicio" data-time="0:00 - 0:10" data-end="10">
+  <span class="kicker">Un avance tecnológico mesoamericano</span>
+  <h2>La <span class="hl">nixtamalización</span>: tecnología en la olla</h2>
+  <div class="grid-2">
+    <div class="stack">
+      <div class="equation">
+        <div class="ing"><span class="e">🌽</span><span>Maíz</span></div><span class="op">+</span>
+        <div class="ing"><span class="e">💧</span><span>Agua</span></div><span class="op">+</span>
+        <div class="ing"><span class="e">🪨</span><span>Cal o ceniza</span></div><span class="op">🔥➜</span>
+        <div class="ing star"><span class="e">🫓</span><span>Nixtamal</span></div>
+      </div>
+      <div class="grid-3">
+        <div class="card y frag"><span class="emoji">🔓</span><p>Rompe la <strong>hemicelulosa</strong> del maíz</p></div>
+        <div class="card t frag"><span class="emoji">💊</span><p>Libera la <strong>niacina</strong> (Vitamina B3)</p></div>
+        <div class="card b frag"><span class="emoji">🦴</span><p>Aminoácidos y <strong>calcio</strong> aprovechables</p></div>
+      </div>
+      <div class="card p frag"><p>⚠️ Sin este proceso: <strong>pelagra</strong> (desnutrición severa). <br>¡Salvó a un continente <span class="hl">antes de saber qué era una vitamina!</span></p></div>
+    </div>
+    <div class="img-box">
+      <img src="https://placehold.co/900x600/FFD23F/1B1B3A?text=Nixtamalizacion&font=poppins" alt="Mesoamericanos cocinando maíz con cal en una olla">
+    </div>
+  </div>
+  <aside class="notes">
+    <p><strong>Relato (con entusiasmo):</strong> cocinar el maíz con ceniza o cal salvó a todo un continente de la desnutrición antes de que supieran qué era una "vitamina".</p>
+    <p><strong>Dato científico clave:</strong> se cuece el maíz con agua y cal viva (hidróxido de calcio) o ceniza. Este proceso <strong>alcalino</strong> rompe la hemicelulosa del maíz, liberando la niacina (Vitamina B3) y haciendo biodisponibles los aminoácidos y el calcio. Sin esto, las culturas mesoamericanas habrían sufrido de pelagra.</p>
+    <p>Usa → para revelar cada efecto uno por uno.</p>
+  </aside>
+</section>
+
+<!-- 6 · PROBLEMATIZACIÓN -->
+<section class="slide" data-phase="inicio" data-time="0:10 - 0:20" data-end="20">
+  <span class="kicker">Problematización · ¡A debatir!</span>
+  <div class="grid-2 even" style="align-items:start">
+    <div class="bubble sm" style="background:var(--t-blue)">Si existiera <strong>otra forma</strong> de preparar el maíz, ¿qué <span class="hl">pasos</span> utilizarían para descubrirla? 🤔</div>
+    <div class="bubble sm right" style="background:var(--t-pink)">¿Cómo saber si esa información es <span class="hl">cierta</span>? 🧐</div>
+  </div>
+  <div class="row" style="margin-top:26px">
+    <div class="timer" data-min="5"><span class="lbl">Debate</span><span class="t">05:00</span><button title="Iniciar / pausar">▶</button><button title="Reiniciar">↺</button></div>
+  </div>
+  <div class="card y frag">
+    <h3>💡 A donde queremos llegar…</h3>
+    <p>Necesitamos un <span class="hl">MÉTODO</span> para no depender de la <strong>suerte</strong> o la <strong>casualidad</strong>.</p>
+  </div>
+  <aside class="notes">
+    <p><strong>0:10 a 0:20 · Problematización.</strong> Lanza ambas preguntas al grupo y deja que los alumnos debatan unos minutos (usa el temporizador si quieres).</p>
+    <p>Conduce sus respuestas hacia la necesidad de tener un <strong>"método"</strong> para no depender de la suerte o la casualidad. Revela la tarjeta amarilla al final.</p>
+  </aside>
+</section>
+
+<!-- 7 · TRANSICIÓN -->
+<section class="slide" data-phase="inicio" data-time="0:20 - 0:30" data-end="30">
+  <span class="kicker">Transición · Relato general</span>
+  <h2>De la <span class="hl pink">casualidad</span> al <span class="hl teal">rigor</span></h2>
+  <div class="path">
+    <div class="card o frag"><span class="emoji">🎲</span><h3>Casualidad</h3><p>"Funcionó… ¡de pura suerte!"</p></div>
+    <span class="arrow frag">➜</span>
+    <div class="card y frag"><span class="emoji">🔁</span><h3>Ensayo y error</h3><p>Probar, fallar, repetir.</p></div>
+    <span class="arrow frag">➜</span>
+    <div class="card b frag"><span class="emoji">🔬🧮</span><h3>Método científico + Lógica</h3><p>Pasos ordenados y verdades precisas.</p></div>
+    <span class="arrow frag">➜</span>
+    <div class="card t frag"><span class="emoji">🚀</span><h3>Desarrollo tecnológico</h3><p>Avances que podemos repetir y mejorar.</p></div>
+  </div>
+  <div class="grid-2">
+    <p class="frag" style="font-family:'Fredoka';font-weight:700;font-size:clamp(24px,2.8vw,44px)">Dejamos de <span class="hl pink">adivinar</span> y comenzamos a <span class="hl teal">estructurar</span>.</p>
+    <div class="img-box">
+      <img src="https://placehold.co/900x450/3A86FF/FFFFFF?text=De+la+suerte+al+metodo&font=poppins" alt="Evolución de probar a la suerte hasta usar el rigor del método científico">
+    </div>
+  </div>
+  <aside class="notes">
+    <p><strong>0:20 a 0:30 · Transición.</strong> Introduce cómo la humanidad pasó de la casualidad al rigor.</p>
+    <p>Explica de forma general cómo el <strong>método científico</strong> y la <strong>lógica matemática</strong> permitieron que dejáramos de adivinar y comenzáramos a estructurar el desarrollo tecnológico.</p>
+  </aside>
+</section>
+
+<!-- 8 · DIVISOR DESARROLLO -->
+<section class="slide middle center" data-phase="desarrollo" data-time="0:30" data-end="45" style="background:var(--t-blue)">
+  <span class="kicker">Fase 2 de 3</span>
+  <h1 class="cartoon-title" style="font-size:clamp(64px,10vw,170px)">DESARROLLO</h1>
+  <h3>60 minutos · Explicación y trabajo aplicado</h3>
+  <aside class="notes"><p>Aquí viene lo más denso: casos mexicanos, pizarrón y actividad. Cuida los tiempos con el reloj.</p></aside>
+</section>
+
+<!-- 9 · VANADIO -->
+<section class="slide" data-phase="desarrollo" data-time="0:30 - 0:45" data-end="45">
+  <span class="kicker">Aporte mexicano · Química</span>
+  <div class="grid-2">
+    <div class="stack">
+      <div class="row" style="gap:28px">
+        <div class="element"><span class="n">23</span><span class="s">V</span><span class="nm">Vanadio</span></div>
+        <h2>El elemento que México <span class="hl">descubrió primero</span></h2>
+      </div>
+      <div class="grid-2 even">
+        <div class="card"><p>📅 <strong>1801</strong></p><p>👨‍🔬 <strong>Andrés Manuel del Río</strong>, científico español-mexicano</p></div>
+        <div class="card"><p>⛏️ Mina <strong>Purísima del Cardenal</strong>, Zimapán, Hidalgo</p><p>🏷️ Lo llamó <strong>"Eritronio"</strong></p></div>
+      </div>
+      <div class="card o frag tilt-l"><p>😱 <strong>Plot twist:</strong> años después, el sueco <strong>Sefström</strong> lo "redescubrió" y lo nombró <strong>Vanadio</strong>.</p></div>
+      <div class="card t frag"><p>🎯 <strong>Necesidad resuelta:</strong> conocer y aprovechar nuestros minerales. Hoy es vital en <span class="hl">aleaciones de acero aeroespacial</span>. ✈️</p></div>
+    </div>
+    <div class="img-box">
+      <img src="https://placehold.co/900x600/A9CBFF/1B1B3A?text=Mina+de+Zimapan&font=poppins" alt="Ilustración de Andrés Manuel del Río en la mina de Purísima del Cardenal">
+    </div>
+  </div>
+  <aside class="notes">
+    <p><strong>0:30 a 0:45 · Análisis de casos.</strong> Relato breve pero impactante.</p>
+    <p>El Vanadio (elemento 23) fue descubierto en 1801 por Andrés Manuel del Río en la mina de Purísima del Cardenal, Zimapán, Hidalgo. Él lo llamó "Eritronio". Años después, el sueco Sefström lo "redescubrió" y lo nombró Vanadio. Hoy es vital para aleaciones de acero aeroespacial.</p>
+    <p>Destaca qué necesidad específica resolvió.</p>
+  </aside>
+</section>
+
+<!-- 10 · NORETISTERONA -->
+<section class="slide" data-phase="desarrollo" data-time="0:30 - 0:45" data-end="45">
+  <span class="kicker">Aporte mexicano · Química farmacéutica</span>
+  <div class="grid-2">
+    <div class="stack">
+      <h2>Un joven de <span class="hl pink">25 años</span> que cambió la sociedad</h2>
+      <div class="row">
+        <span class="pill">💊 Noretisterona</span>
+        <span class="pill" style="font-family:'Cambria Math',serif">C₂₀H₂₆O₂</span>
+      </div>
+      <div class="grid-2 even">
+        <div class="card"><p>📅 Sintetizada en <strong>1951</strong></p><p>👨‍🔬 <strong>Luis Ernesto Miramontes</strong>, ingeniero químico mexicano</p></div>
+        <div class="card"><p>🏢 Laboratorios <strong>Syntex</strong>, en México</p><p>🎂 ¡Tenía solo <strong>25 años</strong>!</p></div>
+      </div>
+      <div class="card p frag tilt-r"><p>⭐ Es el compuesto activo que hizo posible la <strong>primera píldora anticonceptiva oral</strong>.</p></div>
+      <div class="card t frag"><p>🎯 <strong>Necesidad resuelta:</strong> un método confiable para planificar la familia. Resultado: <span class="hl">transformó la sociedad moderna</span>.</p></div>
+    </div>
+    <div class="img-box">
+      <img src="https://placehold.co/900x600/FFB3CD/1B1B3A?text=Laboratorio+Syntex&font=poppins" alt="El joven ingeniero químico Luis Ernesto Miramontes en el Laboratorio Syntex">
+    </div>
+  </div>
+  <aside class="notes">
+    <p>La Noretisterona fue sintetizada en 1951 por el ingeniero químico mexicano Luis Ernesto Miramontes (a los 25 años) en laboratorios Syntex en México. Es el compuesto activo que hizo posible la primera píldora anticonceptiva oral, transformando la sociedad moderna.</p>
+  </aside>
+</section>
+
+<!-- 11 · TV A COLOR -->
+<section class="slide" data-phase="desarrollo" data-time="0:30 - 0:45" data-end="45">
+  <span class="kicker">Aporte mexicano · Ingeniería</span>
+  <div class="grid-2">
+    <div class="stack">
+      <h2>La TV a color con <span class="hl">sello mexicano</span> 📺</h2>
+      <p><strong>Sistema Tricromático Secuencial de Campos</strong></p>
+      <div class="grid-2 even">
+        <div class="card"><p>📅 Patentado en <strong>1940</strong></p><p>👨‍🔧 <strong>Guillermo González Camarena</strong>, ¡a los <strong>23 años</strong>!</p></div>
+        <div class="card"><p>🎡 Un disco giratorio con filtros <strong style="color:#d61f36">rojo</strong>, <strong style="color:#05a77e">verde</strong> y <strong style="color:#2a6fe0">azul</strong></p></div>
+      </div>
+      <div class="card v frag tilt-l"><p>🚀 La <strong>NASA</strong> lo usó en la misión <strong>Voyager</strong> (1979) por su <strong>fiabilidad</strong>.</p></div>
+      <div class="card t frag"><p>🎯 <strong>Necesidad resuelta:</strong> <span class="hl">transmitir imágenes a color</span> de forma confiable.</p></div>
+    </div>
+    <div class="stack center">
+      <div class="disc-wrap"><div class="disc" title="Disco tricromático girando"></div><span class="pill">Así giraba el disco R · G · B</span></div>
+      <div class="img-box" style="width:100%">
+        <img src="https://placehold.co/900x500/D2B8FF/1B1B3A?text=TV+a+color+y+Voyager&font=poppins" alt="Concepto del sistema tricromático siendo utilizado en la sonda espacial Voyager">
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Sistema Tricromático Secuencial de Campos: patentado en 1940 por Guillermo González Camarena a los 23 años. Usaba filtros de colores (rojo, verde y azul) girando en un disco (como el que gira en pantalla). Fue utilizado por la NASA para la misión Voyager en 1979 debido a su fiabilidad.</p>
+    <p>Cierra el bloque: cada aporte resolvió una <strong>necesidad específica</strong>.</p>
+  </aside>
+</section>
+
+<!-- 12 · PIZARRÓN 1: TIPOS DE CONOCIMIENTO -->
+<section class="slide" data-phase="desarrollo" data-time="0:45 - 0:55" data-end="55">
+  <div class="row"><span class="kicker">Pizarrón · Parte 1</span><span class="apunten">✏️ ¡Apunten en su libreta!</span></div>
+  <h2>Dos formas de <span class="hl">conocer</span> el mundo</h2>
+  <div class="grid-2 even">
+    <div class="board">
+      <h3>🌿 Conocimiento Tradicional</h3>
+      <ul>
+        <li>Se adquiere por <strong>experiencia</strong> y <strong>práctica empírica</strong></li>
+        <li>Se basa en <strong>ensayo y error</strong></li>
+        <li>Se transmite <strong>de generación en generación</strong></li>
+      </ul>
+      <p class="ex">Ej. uso de hierbas medicinales 🍵</p>
+    </div>
+    <div class="board frag">
+      <h3>🔬 Conocimiento Científico</h3>
+      <ul>
+        <li>Es <strong>riguroso</strong> y <strong>sistemático</strong></li>
+        <li>Es <strong>comprobable</strong> y <strong>objetivo</strong></li>
+        <li>Se obtiene a través del <strong>método científico</strong></li>
+      </ul>
+      <p class="ex">Ej. explicar con datos por qué la cal libera la niacina 🧪</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p><strong>0:45 a 0:55 · Explicación en pizarrón.</strong> Divide el pizarrón en dos.</p>
+    <p><strong>Parte 1:</strong> compara el conocimiento tradicional (empírico, se pasa de generación en generación, basado en ensayo y error) vs. el conocimiento científico (sistemático, comprobable, objetivo).</p>
+    <p><strong>Concepto imprescindible 1:</strong> pide que lo apunten tal cual.</p>
+  </aside>
+</section>
+
+<!-- 13 · PIZARRÓN 2: MÉTODO CIENTÍFICO -->
+<section class="slide" data-phase="desarrollo" data-time="0:45 - 0:55" data-end="55">
+  <div class="row"><span class="kicker">Pizarrón · Parte 2</span><span class="apunten">✏️ ¡Apunten las 7 exactamente así!</span></div>
+  <h2>Las <span class="hl">7 etapas</span> del método científico</h2>
+  <ol class="steps">
+    <li class="frag">Observación 👀</li>
+    <li class="frag">Planteamiento del problema ❓</li>
+    <li class="frag">Marco teórico 📚</li>
+    <li class="frag">Hipótesis 💡</li>
+    <li class="frag">Experimentación 🧪</li>
+    <li class="frag">Análisis de resultados 📊</li>
+    <li class="frag">Conclusiones ✅</li>
+  </ol>
+  <aside class="notes">
+    <p><strong>Parte 2:</strong> enlista y explica rápidamente las etapas del método científico. Revela una por una con →.</p>
+    <p><strong>Concepto imprescindible 2:</strong> deben listar las 7 exactamente así: 1. Observación, 2. Planteamiento del problema, 3. Marco teórico, 4. Hipótesis, 5. Experimentación, 6. Análisis de resultados, 7. Conclusiones.</p>
+  </aside>
+</section>
+
+<!-- 14 · LÓGICA: INTRODUCCIÓN -->
+<section class="slide" data-phase="desarrollo" data-time="0:55 - 1:10" data-end="70">
+  <span class="kicker">Pizarrón · Lógica matemática</span>
+  <h2>¿Verdadero o falso? La ciencia necesita <span class="hl">herramientas precisas</span> 🧮</h2>
+  <div class="grid-2 even">
+    <div class="card y">
+      <span class="tag">Lógica proposicional</span>
+      <p>Solo dice si algo es <strong>V</strong> o <strong>F</strong>.</p>
+      <div class="row"><span class="pill">✅ V</span><span class="pill">❌ F</span></div>
+    </div>
+    <div class="card b frag">
+      <span class="tag">Lógica de predicados</span>
+      <p>Analiza la <strong>estructura interna</strong> de la oración.</p>
+      <div class="split">
+        <div style="background:var(--t-orange)"><small>Sujeto</small><span>Todos los metales</span></div>
+        <div style="background:var(--t-teal)"><small>Predicado</small><span>conducen electricidad</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="frag" style="font-family:'Fredoka';font-weight:600;font-size:clamp(22px,2.4vw,38px)">Las palabras que dicen <span class="hl">"cuántos"</span> cumplen algo se llaman <strong>cuantificadores</strong>.</p>
+  <aside class="notes">
+    <p><strong>0:55 a 1:10 · Lógica matemática.</strong> Explica que para que la ciencia valide sus ideas (para definir si un enunciado es verdadero o falso), necesita herramientas precisas.</p>
+    <p>A diferencia de la lógica proposicional (que solo dice si algo es V o F), la lógica de predicados analiza la estructura interna de la oración (Sujeto y Predicado).</p>
+  </aside>
+</section>
+
+<!-- 15 · CUANTIFICADOR UNIVERSAL -->
+<section class="slide" data-phase="desarrollo" data-time="0:55 - 1:10" data-end="70">
+  <div class="row"><span class="kicker">Cuantificador 1</span><span class="apunten">✏️ ¡Apunten en su libreta!</span></div>
+  <div class="grid-2">
+    <div class="stack">
+      <h2>Cuantificador <span class="hl blue">Universal</span></h2>
+      <div class="row"><span class="pill">"Todos"</span><span class="pill">"Ninguno"</span><span class="pill">💯 Abarca el 100% de un grupo</span></div>
+      <div class="board frag">
+        <h3>✍️ En el pizarrón:</h3>
+        <p style="font-family:'Fredoka';font-size:clamp(22px,2.4vw,38px)">"<strong>Todos</strong> los seres vivos están hechos de células." 🦠</p>
+      </div>
+      <div class="card frag"><p>Otro ejemplo: "<strong>Todos</strong> los metales conducen electricidad." ⚡</p></div>
+    </div>
+    <div class="stack center">
+      <div class="symbol u">∀</div>
+      <span class="pill">Se lee: "para todo"</span>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Cuantificador Universal (Todos / Ninguno): se representa con ∀. Afirma que una propiedad se cumple para <strong>todos</strong> los elementos de un conjunto.</p>
+    <p><strong>Concepto imprescindible 3a:</strong> utiliza la palabra "Todos" o "Ninguno". Abarca el 100% de un grupo.</p>
+  </aside>
+</section>
+
+<!-- 16 · CUANTIFICADOR EXISTENCIAL -->
+<section class="slide" data-phase="desarrollo" data-time="0:55 - 1:10" data-end="70">
+  <div class="row"><span class="kicker">Cuantificador 2</span><span class="apunten">✏️ ¡Apunten en su libreta!</span></div>
+  <div class="grid-2">
+    <div class="stack">
+      <h2>Cuantificador <span class="hl">Existencial</span></h2>
+      <div class="row"><span class="pill">"Al menos uno"</span><span class="pill">"Algunos"</span><span class="pill">🔎 Hay una excepción o un caso particular</span></div>
+      <div class="board frag">
+        <h3>✍️ En el pizarrón:</h3>
+        <p style="font-family:'Fredoka';font-size:clamp(22px,2.4vw,38px)">"<strong>Al menos un</strong> planeta del sistema solar tiene agua líquida." 🌍</p>
+      </div>
+      <div class="card frag"><p>Otro ejemplo: "<strong>Al menos un</strong> mamífero pone huevos." 🥚 ¡El ornitorrinco!</p></div>
+    </div>
+    <div class="stack center">
+      <div class="symbol e">∃</div>
+      <span class="pill">Se lee: "existe al menos uno"</span>
+      <div class="img-box square" style="width:min(100%,300px)">
+        <img src="https://placehold.co/600x600/FFBE8F/1B1B3A?text=Ornitorrinco&font=poppins" alt="Ornitorrinco, el mamífero que pone huevos">
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Cuantificador Existencial (Al menos uno / Algunos): se representa con ∃. Afirma que existe <strong>por lo menos un</strong> elemento que cumple la propiedad. Ej. el ornitorrinco.</p>
+    <p><strong>Concepto imprescindible 3b:</strong> utiliza las palabras "Al menos uno" o "Algunos". Indica que existe una excepción o un caso particular.</p>
+  </aside>
+</section>
+
+<!-- 17 · NEGACIONES -->
+<section class="slide" data-phase="desarrollo" data-time="0:55 - 1:10" data-end="70">
+  <span class="kicker">Negaciones · Cómo se refuta una teoría</span>
+  <h2>Basta <span class="hl pink">un solo caso</span> para derrumbar un "todos" 💥</h2>
+  <div class="stack">
+    <div class="neg">
+      <div class="card b">"Todos son…"</div><span class="arrow">➜</span><div class="card o">"Al menos uno <u>NO</u> es…"</div>
+    </div>
+    <div class="neg frag">
+      <div class="card b">"Ninguno es…"</div><span class="arrow">➜</span><div class="card o">"Al menos uno <u>SÍ</u> es…"</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card y frag">
+      <p style="font-family:'Fredoka';font-weight:700;font-size:clamp(20px,2.2vw,34px)">"Todos los cuervos son negros."</p>
+      <div class="crows">🐦‍⬛🐦‍⬛🐦‍⬛<span class="crow-white">🕊️</span>🐦‍⬛</div>
+      <div class="row" style="justify-content:center"><span class="stamp">¡FALSO!</span></div>
+      <p>Encontramos <strong>un solo cuervo blanco</strong>.</p>
+    </div>
+    <div class="img-box frag">
+      <img src="https://placehold.co/900x600/FFE58A/1B1B3A?text=El+cuervo+blanco&font=poppins" alt="Ejemplo de un cuervo blanco para refutar la teoría">
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Explica cómo las negaciones sirven para <strong>refutar teorías científicas</strong>: basta con encontrar un solo cuervo blanco para negar que "todos los cuervos son negros".</p>
+    <p>La negación de "Todos son" es "Al menos uno NO es". La negación de "Ninguno es" es "Al menos uno SÍ es".</p>
+  </aside>
+</section>
+
+<!-- 18 · ACTIVIDAD MOMENTO 1 -->
+<section class="slide" data-phase="desarrollo" data-time="1:10 - 1:30" data-end="80">
+  <div class="row"><span class="kicker">Actividad · Momento 1 · En equipos o individual</span></div>
+  <h2>📓 Elige <span class="hl">un caso mexicano</span></h2>
+  <div class="row">
+    <span class="pill">🌽 Nixtamalización</span><span class="pill">⚗️ Vanadio</span><span class="pill">💊 Noretisterona</span><span class="pill">📺 TV a color</span>
+  </div>
+  <p>En tu cuaderno escribe:</p>
+  <div class="grid-3">
+    <div class="card o tilt-l"><span class="emoji">🙋</span><h3>1. Necesidad social original</h3><p>¿Qué problema tenía la gente?</p></div>
+    <div class="card b"><span class="emoji">🔬</span><h3>2. Conocimiento científico aplicado</h3><p>¿Qué ciencia lo resolvió?</p></div>
+    <div class="card t tilt-r"><span class="emoji">🚀</span><h3>3. Tecnología resultante</h3><p>¿Qué se creó gracias a eso?</p></div>
+  </div>
+  <div class="timer" data-min="10"><span class="lbl">Momento 1</span><span class="t">10:00</span><button title="Iniciar / pausar">▶</button><button title="Reiniciar">↺</button></div>
+  <aside class="notes">
+    <p><strong>1:10 a 1:30 · Actividad de los estudiantes</strong> (en equipos o individual). Sugerencia de reparto: 10 min Momento 1 + 10 min Momento 2.</p>
+    <p><strong>Momento 1:</strong> que elijan uno de los casos mexicanos expuestos y escriban en su cuaderno: la necesidad social original, el conocimiento científico aplicado y la tecnología resultante.</p>
+  </aside>
+</section>
+
+<!-- 19 · ACTIVIDAD MOMENTO 2 -->
+<section class="slide" data-phase="desarrollo" data-time="1:10 - 1:30" data-end="90">
+  <div class="row"><span class="kicker">Actividad · Momento 2</span></div>
+  <h2>🌦️ Elige un <span class="hl">fenómeno natural o cotidiano</span></h2>
+  <div class="row">
+    <span class="pill">🌧️ La lluvia</span><span class="pill">🌱 El crecimiento de una planta</span><span class="pill">♨️ La ebullición del agua</span><span class="pill">✨ …o el que tú quieras</span>
+  </div>
+  <p>Redacta <strong>dos afirmaciones</strong> sobre tu fenómeno:</p>
+  <div class="grid-2 even">
+    <div class="card b"><span class="tag">∀ Universal</span><p style="font-family:'Fredoka';font-size:clamp(20px,2.2vw,34px)">"<strong>Todos</strong> / <strong>Ninguno</strong> ______________"</p></div>
+    <div class="card o"><span class="tag">∃ Existencial</span><p style="font-family:'Fredoka';font-size:clamp(20px,2.2vw,34px)">"<strong>Al menos un</strong> / <strong>Algunos</strong> ______________"</p></div>
+  </div>
+  <div class="row">
+    <div class="card y" style="flex:1"><p>🧐 Luego analiza su <strong>validez</strong>: ¿es <strong>V</strong> o <strong>F</strong>? ¿Existe algún caso que lo niegue?</p></div>
+    <div class="timer" data-min="10"><span class="lbl">Momento 2</span><span class="t">10:00</span><button title="Iniciar / pausar">▶</button><button title="Reiniciar">↺</button></div>
+  </div>
+  <aside class="notes">
+    <p><strong>Momento 2:</strong> pídeles que elijan un fenómeno natural o cotidiano (ej. la lluvia, el crecimiento de una planta, la ebullición del agua) y redacten dos afirmaciones empleando cuantificadores lógicos (uno universal y uno existencial) para analizar su validez.</p>
+  </aside>
+</section>
+
+<!-- 20 · DIVISOR CIERRE -->
+<section class="slide middle center" data-phase="cierre" data-time="1:30" data-end="105" style="background:var(--t-teal)">
+  <span class="kicker">Fase 3 de 3</span>
+  <h1 class="cartoon-title" style="font-size:clamp(70px,11vw,180px)">CIERRE</h1>
+  <h3>30 minutos · Plenaria y validación</h3>
+  <aside class="notes"><p>Momento de escuchar a los equipos. Ten a la mano tu lista de cotejo.</p></aside>
+</section>
+
+<!-- 21 · PLENARIA 1 -->
+<section class="slide" data-phase="cierre" data-time="1:30 - 1:45" data-end="105">
+  <span class="kicker">Plenaria · Parte 1 · Tecnología y ciencia</span>
+  <div class="grid-2">
+    <div class="stack" style="gap:40px">
+      <div class="bubble sm" style="background:var(--t-yellow)">¿Cómo la <span class="hl teal">ciencia</span> y la <span class="hl blue">tecnología</span> mejoran nuestra <strong>calidad de vida</strong>? ❤️</div>
+      <div class="card">
+        <h3>🎤 Un integrante de cada equipo:</h3>
+        <ul><li>Comparte el <strong>avance mexicano</strong> que eligieron.</li><li>Lee en voz alta su <strong>conclusión</strong>.</li></ul>
+      </div>
+      <div class="timer" data-min="15"><span class="lbl">Plenaria 1</span><span class="t">15:00</span><button title="Iniciar / pausar">▶</button><button title="Reiniciar">↺</button></div>
+    </div>
+    <div class="img-box">
+      <img src="https://placehold.co/900x600/9FF3D6/1B1B3A?text=Plenaria&font=poppins" alt="Estudiantes participando emocionados en plenaria grupal">
+    </div>
+  </div>
+  <aside class="notes">
+    <p><strong>1:30 a 1:45 · Plenaria Parte 1.</strong> Pide a los estudiantes que elaboren una conclusión sobre cómo la ciencia y la tecnología mejoran la calidad de vida.</p>
+    <p>Un integrante de cada equipo comparte el ejemplo del avance mexicano que eligieron y lee su conclusión.</p>
+  </aside>
+</section>
+
+<!-- 22 · PLENARIA 2 -->
+<section class="slide" data-phase="cierre" data-time="1:45 - 1:55" data-end="115">
+  <span class="kicker">Plenaria · Parte 2 · Validación lógica</span>
+  <h2>🔍 Validación <span class="hl">colectiva</span></h2>
+  <p>Cada equipo comparte su <strong>fenómeno natural</strong> y lee en voz alta sus <strong>dos afirmaciones lógicas</strong>.</p>
+  <div class="grid-2 even">
+    <div class="bubble sm" style="background:var(--t-blue)">¿Es verdad que <span class="hl">TODOS</span> cumplen eso?</div>
+    <div class="bubble sm right" style="background:var(--t-orange)">¿O solo <span class="hl">ALGUNOS</span>?</div>
+  </div>
+  <div class="stack center" style="margin-top:18px">
+    <p><strong>¡Voten!</strong> El grupo decide:</p>
+    <div class="votes">
+      <button class="vote v" data-vote>✅ Verdadero <b>0</b></button>
+      <button class="vote f" data-vote>❌ Falso <b>0</b></button>
+    </div>
+    <div class="row">
+      <button class="btn small" id="voteReset">↺ Nueva afirmación</button>
+      <div class="timer" data-min="10"><span class="lbl">Plenaria 2</span><span class="t">10:00</span><button title="Iniciar / pausar">▶</button><button title="Reiniciar">↺</button></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p><strong>1:45 a 1:55 · Plenaria Parte 2.</strong> Cada equipo comparte el fenómeno que eligió y lee sus dos afirmaciones. El resto del grupo, guiado por ti, las somete a "validación colectiva": ¿es verdad que <em>todos</em> cumplen eso? ¿O solo <em>algunos</em>?</p>
+    <p>Usa los botones V/F para registrar el voto del grupo y "Nueva afirmación" para reiniciar entre equipos. Recuerda: un solo contraejemplo basta para negar un "todos".</p>
+  </aside>
+</section>
+
+<!-- 23 · CIERRE Y EVALUACIÓN -->
+<section class="slide" data-phase="cierre" data-time="1:55 - 2:00" data-end="120">
+  <span class="kicker">Cierre y evaluación · Resumen de 1 minuto</span>
+  <h2>Del maíz a la lógica: la ciencia es <span class="hl">método</span>, no suerte 🌽➜🧮</h2>
+  <div class="grid-3">
+    <div class="card o frag"><span class="emoji">🇲🇽</span><h3>Los aportes mexicanos</h3><p>Resolvieron necesidades reales: nutrición, materiales, salud y comunicación.</p></div>
+    <div class="card b frag"><span class="emoji">🔬</span><h3>El método científico</h3><p>Convierte la casualidad en conocimiento comprobable.</p></div>
+    <div class="card t frag"><span class="emoji">∀ ∃</span><h3>Los cuantificadores</h3><p>Nos dicen <strong>cuántos</strong> cumplen algo y cómo refutar ideas.</p></div>
+  </div>
+  <div class="card y" style="flex-direction:row;align-items:center;gap:14px">
+    <span class="emoji">🧑‍🏫</span>
+    <p><strong>Docente:</strong> lista de cotejo de participación ✔️ · Retroalimentación <strong>sin juicios de valor</strong>.</p>
+  </div>
+  <aside class="notes">
+    <p><strong>1:55 a 2:00 · Cierre y evaluación.</strong> Haz un resumen de un minuto reforzando el propósito de la clase.</p>
+    <p>Llena tu <strong>lista de cotejo de participación</strong> durante esta fase para valorar la comprensión inicial, brindando <strong>retroalimentación sin juicios de valor</strong>.</p>
+  </aside>
+</section>
+
+<!-- 24 · CONCEPTOS IMPRESCINDIBLES -->
+<section class="slide" data-phase="cierre" data-time="1:55 - 2:00" data-end="120">
+  <div class="row"><span class="kicker">Conceptos imprescindibles</span><span class="apunten">✏️ ¿Ya están en tu libreta?</span></div>
+  <h2>Revisa tus apuntes ✅</h2>
+  <div class="grid-3">
+    <div class="card o">
+      <span class="tag">1 · Diferencia de conocimientos</span>
+      <p><strong>Tradicional:</strong> por experiencia y práctica empírica; se transmite de generación en generación (ej. hierbas medicinales).</p>
+      <p><strong>Científico:</strong> riguroso, sistemático, comprobable; se obtiene con el método científico.</p>
+    </div>
+    <div class="card b">
+      <span class="tag">2 · Las 7 etapas</span>
+      <ol style="margin:0;padding-left:1.2em">
+        <li>Observación</li><li>Planteamiento del problema</li><li>Marco teórico</li><li>Hipótesis</li>
+        <li>Experimentación</li><li>Análisis de resultados</li><li>Conclusiones</li>
+      </ol>
+    </div>
+    <div class="card t">
+      <span class="tag">3 · Cuantificadores lógicos</span>
+      <p><strong>∀ Universal:</strong> "Todos" o "Ninguno". Abarca el 100% de un grupo.</p>
+      <p><strong>∃ Existencial:</strong> "Al menos uno" o "Algunos". Indica que existe una excepción o un caso particular.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Verificación rápida: pide que levanten la mano quienes tengan los 3 conceptos completos en su libreta. Útil también para tu lista de cotejo.</p>
+  </aside>
+</section>
+
+<!-- 25 · FIN -->
+<section class="slide middle center" data-phase="fin" data-time="Fin de la sesión" data-end="120" style="background:var(--t-pink)">
+  <h1 class="cartoon-title" style="font-size:clamp(56px,8.5vw,140px)">¡Gracias, científicos!</h1>
+  <h3>Hoy dejamos de adivinar. 🔬🌽🧮</h3>
+  <div class="img-box" style="width:min(560px,90%)">
+    <img src="https://placehold.co/900x450/FF4F8B/FFFFFF?text=Hasta+la+proxima&font=poppins" alt="Estudiantes y docentes celebrando el cierre de la clase">
+  </div>
+  <aside class="notes"><p>Fin de la sesión. ¡Buen trabajo!</p></aside>
+</section>
+
+</main>
+
+<!-- ===================== NAVEGACIÓN ===================== -->
+<nav class="nav">
+  <button class="btn ghost" id="prev" title="Anterior (←)">◀ Atrás</button>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <span class="chip" id="count">1 / 1</span>
+  <span class="tools row" style="gap:8px">
+    <button class="btn small" id="bNotes" title="Notas del docente (N)">🧑‍🏫 Notas</button>
+    <button class="btn small" id="bGuion" title="Guión rápido (G)">📋 Guión</button>
+    <button class="btn small" id="bHints" title="Mostrar/ocultar descripciones de imágenes (I)">🖼️</button>
+    <button class="btn small" id="bFs" title="Pantalla completa (F)">⛶</button>
+  </span>
+  <button class="btn" id="next" title="Siguiente (→ o Espacio)">Siguiente ▶</button>
+</nav>
+
+<!-- ===================== PANEL DE NOTAS ===================== -->
+<aside id="notes">
+  <h3>🧑‍🏫 Notas del docente</h3>
+  <div class="keys">⌨️ → / Espacio: avanzar · ←: retroceder · N: notas · G: guión · I: descripciones de imágenes · F: pantalla completa · R: reiniciar reloj</div>
+  <div id="notesBody"></div>
+</aside>
+
+<!-- ===================== GUION RÁPIDO ===================== -->
+<div class="overlay" id="guion">
+  <div class="panel">
+    <div class="row" style="justify-content:space-between">
+      <h2>📋 Guión rápido de clase</h2>
+      <button class="btn small" id="closeGuion">✖ Cerrar</button>
+    </div>
+    <div class="card o">
+      <h3>🌽 Inicio (30 min)</h3>
+      <label class="check"><input type="checkbox"><span>Pregunta al grupo: <em>"¿Qué comerían si no existiera la tortilla?"</em></span></label>
+      <label class="check"><input type="checkbox"><span>Contar el relato de la nixtamalización (salud y nutrición).</span></label>
+      <label class="check"><input type="checkbox"><span>Preguntas de puente: <em>¿Cómo descubrir nuevos pasos? ¿Cómo saber si son ciertos?</em></span></label>
+      <label class="check"><input type="checkbox"><span>Intro: la lógica y el método científico evitan que dependamos de la casualidad.</span></label>
+    </div>
+    <div class="card b">
+      <h3>🔬 Desarrollo (60 min)</h3>
+      <label class="check"><input type="checkbox"><span>Relatar aportes MX: Vanadio, Noretisterona (anticonceptivo), TV a color.</span></label>
+      <label class="check"><input type="checkbox"><span>Pizarrón 1: diferencia entre Conocimiento Tradicional y Científico. <em>(Apunten)</em></span></label>
+      <label class="check"><input type="checkbox"><span>Pizarrón 2: 7 etapas del Método Científico. <em>(Apunten)</em></span></label>
+      <label class="check"><input type="checkbox"><span>Pizarrón 3: Cuantificadores Lógicos: Universal (Todos) vs Existencial (Al menos uno). <em>(Apunten)</em></span></label>
+      <label class="check"><input type="checkbox"><span>Actividad (Equipos/Ind):</span></label>
+      <label class="check sub"><input type="checkbox"><span>1. Elegir un caso MX → anotar: Necesidad, Conocimiento, Tecnología resultante.</span></label>
+      <label class="check sub"><input type="checkbox"><span>2. Elegir fenómeno cotidiano → redactar 2 afirmaciones usando los cuantificadores lógicos.</span></label>
+    </div>
+    <div class="card t">
+      <h3>🎤 Cierre (30 min)</h3>
+      <label class="check"><input type="checkbox"><span>Plenaria: equipos leen su caso MX y su conclusión sobre el impacto en la vida.</span></label>
+      <label class="check"><input type="checkbox"><span>Plenaria lógica: equipos leen sus 2 afirmaciones lógicas y el grupo las valida (¿Es V o F?).</span></label>
+      <label class="check"><input type="checkbox"><span>Llenar lista de cotejo de participación evaluando comprensión, sin juicios de valor.</span></label>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const slides = [...document.querySelectorAll('.slide')];
+  const phaseNames = {
+    portada: '🎬 Bienvenida',
+    inicio: '🌽 INICIO · 30 min',
+    desarrollo: '🔬 DESARROLLO · 60 min',
+    cierre: '🎤 CIERRE · 30 min',
+    fin: '⭐ ¡Fin!'
+  };
+  let cur = 0;
+
+  /* --- Descripciones de imágenes visibles + respaldo si no hay internet --- */
+  document.querySelectorAll('.img-box img').forEach(img => {
+    const hint = document.createElement('div');
+    hint.className = 'img-hint';
+    hint.textContent = '🎨 ' + img.alt;
+    img.after(hint);
+    img.addEventListener('error', () => img.parentElement.classList.add('broken'));
+  });
+
+  /* --- Navegación con fragmentos --- */
+  const frags = s => [...s.querySelectorAll('.frag')];
+
+  function go(n, revealAll) {
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    slides[cur].classList.remove('active');
+    cur = n;
+    const s = slides[cur];
+    frags(s).forEach(f => f.classList.toggle('on', !!revealAll));
+    s.classList.add('active');
+    s.scrollTop = 0;
+    render();
+  }
+
+  function next() {
+    const hidden = frags(slides[cur]).find(f => !f.classList.contains('on'));
+    if (hidden) { hidden.classList.add('on'); render(); return; }
+    if (cur < slides.length - 1) go(cur + 1, false);
+  }
+
+  function prev() {
+    const shown = frags(slides[cur]).filter(f => f.classList.contains('on'));
+    if (shown.length) { shown[shown.length - 1].classList.remove('on'); render(); return; }
+    if (cur > 0) go(cur - 1, true);
+  }
+
+  function render() {
+    const s = slides[cur];
+    const f = frags(s);
+    document.body.dataset.phase = s.dataset.phase;
+    $('#phase').textContent = phaseNames[s.dataset.phase] || '';
+    $('#time').textContent = '⏱️ ' + s.dataset.time;
+    $('#count').textContent = (cur + 1) + ' / ' + slides.length;
+    $('#bar').style.width = ((cur + 1) / slides.length * 100) + '%';
+    $('#prev').disabled = cur === 0 && !f.some(x => x.classList.contains('on'));
+    $('#next').disabled = cur === slides.length - 1 && f.every(x => x.classList.contains('on'));
+    const n = s.querySelector('.notes');
+    $('#notesBody').innerHTML = n ? n.innerHTML : '<p>Sin notas para esta diapositiva.</p>';
+    history.replaceState(null, '', '#' + (cur + 1));
+    checkLate();
+  }
+
+  /* --- Reloj general de la clase --- */
+  let elapsed = 0, run = null;
+  const fmt = sec => String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+  function drawClock() { $('#clock').textContent = '🕐 ' + fmt(elapsed) + ' / 120:00'; checkLate(); }
+  function checkLate() {
+    const end = +slides[cur].dataset.end || 0;
+    $('#clock').classList.toggle('late', !!run && end > 0 && elapsed > end * 60);
+  }
+  function toggleClock() {
+    if (run) { clearInterval(run); run = null; $('#clock').classList.remove('running'); }
+    else { run = setInterval(() => { elapsed++; drawClock(); }, 1000); $('#clock').classList.add('running'); }
+    drawClock();
+  }
+  function resetClock() { elapsed = 0; drawClock(); }
+  $('#clock').addEventListener('click', toggleClock);
+
+  /* --- Temporizadores de actividad --- */
+  document.querySelectorAll('.timer').forEach(t => {
+    const total = (+t.dataset.min || 5) * 60;
+    let left = total, id = null;
+    const out = t.querySelector('.t');
+    const [play, reset] = t.querySelectorAll('button');
+    const draw = () => { out.textContent = fmt(left); t.classList.toggle('done', left === 0); };
+    play.addEventListener('click', () => {
+      if (id) { clearInterval(id); id = null; play.textContent = '▶'; return; }
+      if (left === 0) left = total;
+      id = setInterval(() => {
+        left = Math.max(0, left - 1); draw();
+        if (left === 0) { clearInterval(id); id = null; play.textContent = '▶'; }
+      }, 1000);
+      play.textContent = '⏸';
+      draw();
+    });
+    reset.addEventListener('click', () => { clearInterval(id); id = null; left = total; play.textContent = '▶'; draw(); });
+    draw();
+  });
+
+  /* --- Votación V / F --- */
+  document.querySelectorAll('[data-vote]').forEach(b => b.addEventListener('click', () => {
+    const c = b.querySelector('b');
+    c.textContent = +c.textContent + 1;
+    b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
+  }));
+  $('#voteReset').addEventListener('click', () => document.querySelectorAll('[data-vote] b').forEach(c => c.textContent = 0));
+
+  /* --- Paneles --- */
+  const toggleNotes = () => $('#notes').classList.toggle('open');
+  const toggleGuion = () => $('#guion').classList.toggle('open');
+  const toggleHints = () => document.body.classList.toggle('hide-hints');
+  const toggleFs = () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+    else document.exitFullscreen && document.exitFullscreen();
+  };
+  $('#bNotes').addEventListener('click', toggleNotes);
+  $('#bGuion').addEventListener('click', toggleGuion);
+  $('#bHints').addEventListener('click', toggleHints);
+  $('#bFs').addEventListener('click', toggleFs);
+  $('#closeGuion').addEventListener('click', toggleGuion);
+  $('#guion').addEventListener('click', e => { if (e.target.id === 'guion') toggleGuion(); });
+  $('#prev').addEventListener('click', prev);
+  $('#next').addEventListener('click', next);
+
+  /* Quitar el foco de los botones para que Espacio no los vuelva a pulsar */
+  document.addEventListener('click', e => { const b = e.target.closest('button'); if (b) b.blur(); });
+
+  /* --- Teclado --- */
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('input, textarea')) return;
+    const k = e.key;
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(k)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(k)) { e.preventDefault(); prev(); }
+    else if (k === 'Home') go(0, false);
+    else if (k === 'End') go(slides.length - 1, true);
+    else if (k.toLowerCase() === 'n') toggleNotes();
+    else if (k.toLowerCase() === 'g') toggleGuion();
+    else if (k.toLowerCase() === 'i') toggleHints();
+    else if (k.toLowerCase() === 'f') toggleFs();
+    else if (k.toLowerCase() === 'r') resetClock();
+    else if (k === 'Escape') { $('#notes').classList.remove('open'); $('#guion').classList.remove('open'); }
+  });
+
+  /* --- Deslizar en pantallas táctiles --- */
+  let tx = null;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 60) (dx < 0 ? next : prev)();
+    tx = null;
+  });
+
+  /* --- Inicio --- */
+  const h = parseInt(location.hash.slice(1), 10);
+  go(isNaN(h) ? 0 : h - 1, false);
+  drawClock();
+})();
+</script>
+</body>
+</html>
