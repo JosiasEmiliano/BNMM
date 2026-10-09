@@ -15,14 +15,48 @@
     border-radius:18px;text-decoration:none;color:#2A2540;font-weight:700;
     font-size:1.1rem;box-shadow:5px 5px 0 rgba(42,37,64,.85);transition:.15s}
   a:hover{background:#FFC93C;transform:translate(-2px,-2px)}
+  .cargando{text-align:center;opacity:.6;font-style:italic}
 </style>
 </head>
 <body>
   <h1>📚 Presentaciones de Clase</h1>
   <p class="sub">Toca una para abrirla.</p>
-  <ul>
-    <li><a href="Sesion 2F.html">📄 Sesión 2F</a></li>
-    <li><a href="Sesion 3.html">📄 Sesión 3</a></li>
-  </ul>
+  <ul id="lista"><li class="cargando">Cargando presentaciones...</li></ul>
+
+<script>
+  // ⚠️ Estos son tus datos. No los cambies.
+  const USUARIO = "JosiasEmiliano";
+  const REPO = "BNMM";
+  
+  // Esta es la dirección de la API de GitHub que lista los archivos
+  const API_URL = `https://api.github.com/repos/${USUARIO}/${REPO}/contents/`;
+
+  fetch(API_URL)
+    .then(respuesta => respuesta.json())
+    .then(archivos => {
+      const lista = document.getElementById('lista');
+      
+      // Filtramos: solo queremos archivos .html, y excluimos el index.html
+      const presentaciones = archivos
+        .filter(archivo => archivo.name.toLowerCase().endsWith('.html') && archivo.name.toLowerCase() !== 'index.html')
+        .sort((a, b) => a.name.localeCompare(b.name)); // Orden alfabético
+
+      if (presentaciones.length === 0) {
+        lista.innerHTML = '<li class="cargando">Aún no hay presentaciones subidas.</li>';
+        return;
+      }
+
+      // Creamos los botones automáticamente
+      lista.innerHTML = presentaciones.map(archivo => {
+        // Quitamos el .html y cambiamos guiones por espacios para que se vea bonito
+        const titulo = archivo.name.replace('.html', '').replace(/-/g, ' ');
+        return `<li><a href="${archivo.name}">📄 ${titulo}</a></li>`;
+      }).join('');
+    })
+    .catch(error => {
+      document.getElementById('lista').innerHTML = 
+        '<li class="cargando">⚠️ Error al cargar la lista. Recarga la página en un momento.</li>';
+    });
+</script>
 </body>
 </html>
