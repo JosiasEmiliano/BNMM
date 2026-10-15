@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Por qué medimos? | Magnitud, Medición y Unidad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2b2140;
+    --paper:#fffaf0;
+    --orange:#ff8a3d;
+    --yellow:#ffd23f;
+    --blue:#3fa9f5;
+    --teal:#2ec4b6;
+    --pink:#ff5d8f;
+    --purple:#8e6cff;
+    --green:#5cd65c;
+    --red:#ff4d4d;
+    --shadow:0 8px 0 rgba(43,33,64,.18), 0 18px 34px rgba(43,33,64,.18);
+    --radius:28px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden}
+  body{
+    font-family:'Fredoka','Trebuchet MS','Comic Sans MS',sans-serif;
+    color:var(--ink);
+    background:#fff3d6;
+    background-image:radial-gradient(rgba(43,33,64,.08) 2px, transparent 2px);
+    background-size:28px 28px;
+  }
+  h1,h2,h3{font-family:'Baloo 2','Fredoka',sans-serif;line-height:1.05}
+
+  /* ---------- BARRA SUPERIOR ---------- */
+  .topbar{
+    position:fixed;top:0;left:0;right:0;height:64px;z-index:20;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:0 22px;background:var(--ink);color:#fff;
+    border-bottom:5px solid var(--yellow);
+  }
+  .brand{font-family:'Baloo 2';font-weight:800;font-size:1.25rem;display:flex;align-items:center;gap:10px}
+  .brand span{background:var(--yellow);color:var(--ink);border-radius:12px;padding:2px 10px}
+  .phase-pill{font-weight:700;padding:6px 16px;border-radius:999px;border:3px solid #fff;font-size:1rem;white-space:nowrap}
+  .clock{display:flex;align-items:center;gap:8px;font-weight:700}
+  .clock .time{background:#fff;color:var(--ink);border-radius:12px;padding:4px 12px;font-variant-numeric:tabular-nums;min-width:120px;text-align:center}
+  .mini-btn{
+    font-family:inherit;font-weight:700;cursor:pointer;border:3px solid var(--ink);
+    background:var(--yellow);color:var(--ink);border-radius:12px;padding:4px 10px;font-size:.95rem;
+    box-shadow:0 3px 0 rgba(0,0,0,.35);transition:transform .1s;
+  }
+  .mini-btn:active{transform:translateY(3px);box-shadow:none}
+
+  /* ---------- DIAPOSITIVAS ---------- */
+  .deck{position:fixed;top:64px;bottom:86px;left:0;right:0}
+  .slide{
+    position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+    padding:24px 5vw;overflow-y:auto;
+  }
+  .slide.active{display:flex;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+  @keyframes pop{0%{opacity:0;transform:scale(.92) translateY(20px)}100%{opacity:1;transform:none}}
+
+  .slide-head{width:100%;max-width:1200px;display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+  .tag{
+    font-weight:700;border:4px solid var(--ink);border-radius:999px;padding:6px 18px;font-size:1.05rem;
+    box-shadow:0 4px 0 rgba(43,33,64,.25);background:#fff;
+  }
+  .tag.time{background:var(--yellow)}
+  .title{font-size:clamp(2rem,4.4vw,3.6rem);font-weight:800;width:100%;max-width:1200px;margin-bottom:18px;
+    text-shadow:3px 3px 0 #fff, 5px 5px 0 rgba(43,33,64,.15)}
+
+  .card{
+    background:var(--paper);border:4px solid var(--ink);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:24px 28px;font-size:clamp(1.05rem,1.6vw,1.45rem);line-height:1.45;
+  }
+  .wrap{width:100%;max-width:1200px}
+  .grid{display:grid;gap:22px;width:100%;max-width:1200px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media (max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card h3{font-size:clamp(1.3rem,2.2vw,1.9rem);margin-bottom:8px}
+  .card ul{padding-left:1.2em}
+  .card li{margin:6px 0}
+  .emoji{font-size:clamp(2.5rem,5vw,4.2rem);display:block;margin-bottom:6px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.15))}
+  .c-orange{background:#ffe1cc}.c-yellow{background:#fff1b8}.c-blue{background:#d6edff}
+  .c-teal{background:#d0f5f1}.c-pink{background:#ffd9e5}.c-purple{background:#e6deff}
+  .c-green{background:#d9f7d9}.c-red{background:#ffd6d6}
+
+  .bubble{
+    position:relative;background:#fff;border:4px solid var(--ink);border-radius:36px;
+    padding:28px 36px;font-size:clamp(1.5rem,3vw,2.6rem);font-weight:700;text-align:center;box-shadow:var(--shadow);
+    max-width:1100px;
+  }
+  .bubble:after{
+    content:"";position:absolute;bottom:-30px;left:80px;width:40px;height:40px;background:#fff;
+    border-right:4px solid var(--ink);border-bottom:4px solid var(--ink);transform:rotate(45deg) skew(10deg,10deg);
+  }
+  .chalk{
+    background:#2f5d50;color:#fdfdf5;border:10px solid #a9743b;border-radius:22px;
+    padding:30px 40px;font-size:clamp(1.6rem,3.2vw,2.8rem);text-align:center;box-shadow:var(--shadow);
+    font-style:italic;max-width:1100px;
+  }
+  .teacher{
+    border:4px dashed var(--ink);background:#fff;border-radius:22px;padding:14px 20px;margin-top:18px;
+    font-size:clamp(.95rem,1.3vw,1.15rem);width:100%;max-width:1200px;
+  }
+  .teacher b:first-child{background:var(--purple);color:#fff;border-radius:10px;padding:2px 10px;margin-right:6px}
+  .note-tag{background:var(--pink);color:#fff;border-radius:12px;padding:3px 12px;font-weight:700;display:inline-block;margin-bottom:10px}
+
+  .big-btn{
+    font-family:'Baloo 2';font-weight:800;font-size:1.2rem;cursor:pointer;border:4px solid var(--ink);
+    background:var(--yellow);color:var(--ink);border-radius:18px;padding:10px 22px;
+    box-shadow:0 6px 0 var(--ink);transition:transform .1s, box-shadow .1s;margin-top:14px;
+  }
+  .big-btn:hover{filter:brightness(1.05)}
+  .big-btn:active{transform:translateY(6px);box-shadow:0 0 0 var(--ink)}
+  .hidden-reveal{display:none}
+  .hidden-reveal.show{display:block;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+
+  /* Ejemplo 5 kg */
+  .formula{display:flex;gap:20px;justify-content:center;align-items:stretch;flex-wrap:wrap;margin:10px 0}
+  .piece{
+    border:4px solid var(--ink);border-radius:24px;padding:16px 26px;text-align:center;box-shadow:var(--shadow);
+    min-width:200px;cursor:pointer;transition:transform .15s;
+  }
+  .piece:hover{transform:translateY(-4px) rotate(-1deg)}
+  .piece .val{font-family:'Baloo 2';font-size:clamp(2.4rem,5vw,4.2rem);font-weight:800}
+  .piece .lbl{font-weight:700;font-size:1.2rem;opacity:0;transition:opacity .3s}
+  .piece.on .lbl{opacity:1}
+
+  /* Antes / Después */
+  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;width:100%;max-width:1200px}
+  .vs .arrow{font-size:4rem;font-weight:800}
+  @media (max-width:900px){.vs{grid-template-columns:1fr}.vs .arrow{transform:rotate(90deg);text-align:center}}
+
+  /* Timeline */
+  .timeline{display:grid;grid-template-columns:20fr 30fr 35fr 35fr;gap:10px;width:100%;max-width:1200px}
+  .tl{border:4px solid var(--ink);border-radius:22px;padding:16px;box-shadow:var(--shadow);font-size:clamp(.9rem,1.25vw,1.12rem)}
+  .tl h3{font-size:clamp(1.1rem,1.7vw,1.5rem)}
+  .tl .mins{font-weight:800;background:#fff;border:3px solid var(--ink);border-radius:999px;padding:2px 10px;display:inline-block;margin-bottom:6px}
+  @media (max-width:900px){.timeline{grid-template-columns:1fr}}
+
+  /* Concepto para libreta */
+  .notebook{
+    background:#fff;border:4px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow);
+    width:100%;max-width:1100px;padding:30px 40px 30px 90px;position:relative;
+    background-image:repeating-linear-gradient(#fff 0 46px,#bfe0ff 46px 48px);
+    font-size:clamp(1.4rem,2.6vw,2.3rem);line-height:48px;
+  }
+  .notebook:before{content:"";position:absolute;left:62px;top:0;bottom:0;width:4px;background:var(--pink)}
+  .notebook .num{position:absolute;left:14px;top:24px;font-family:'Baloo 2';font-weight:800;font-size:2.2rem;
+    background:var(--yellow);border:4px solid var(--ink);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+  .notebook h3{font-size:clamp(1.6rem,3vw,2.6rem);color:var(--purple);line-height:48px}
+  .write-banner{
+    background:var(--pink);color:#fff;border:4px solid var(--ink);border-radius:18px;padding:8px 18px;
+    font-weight:700;font-size:clamp(1rem,1.6vw,1.35rem);margin-bottom:16px;box-shadow:0 5px 0 var(--ink);
+    animation:wiggle 2.5s infinite;
+  }
+  @keyframes wiggle{0%,90%,100%{transform:rotate(0)}93%{transform:rotate(-2deg)}96%{transform:rotate(2deg)}}
+
+  /* Blanks */
+  .blank{display:inline-block;min-width:170px;border-bottom:5px solid var(--ink);text-align:center;font-weight:800;color:transparent;transition:color .3s;padding:0 6px}
+  .blank.show{color:var(--purple);background:var(--yellow);border-radius:10px 10px 0 0}
+
+  /* Temporizador de actividad */
+  .timer-box{display:inline-flex;align-items:center;gap:12px;background:var(--ink);color:#fff;border-radius:20px;padding:10px 18px;margin-top:16px;border:4px solid var(--ink);box-shadow:var(--shadow)}
+  .timer-box .t{font-family:'Baloo 2';font-weight:800;font-size:2rem;background:#fff;color:var(--ink);border-radius:12px;padding:0 14px;font-variant-numeric:tabular-nums;min-width:110px;text-align:center}
+  .timer-box .t.done{background:var(--red);color:#fff;animation:wiggle .6s infinite}
+
+  /* Portada */
+  .cover h1{font-size:clamp(2.8rem,7vw,6rem);text-align:center;color:#fff;
+    -webkit-text-stroke:3px var(--ink);text-shadow:6px 6px 0 var(--ink);}
+  .cover .sub{font-size:clamp(1.3rem,2.4vw,2rem);font-weight:700;text-align:center;margin-top:14px}
+  .floaty{display:flex;gap:30px;font-size:clamp(3rem,7vw,6rem);margin-bottom:18px}
+  .floaty span{animation:float 3s ease-in-out infinite}
+  .floaty span:nth-child(2){animation-delay:.4s}.floaty span:nth-child(3){animation-delay:.8s}.floaty span:nth-child(4){animation-delay:1.2s}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-16px) rotate(6deg)}}
+
+  /* Fondos por fase */
+  .bg-intro{background:linear-gradient(160deg,#ffe0b8 0%,#ffb47a 100%)}
+  .bg-prep{background:linear-gradient(160deg,#ece4ff 0%,#c9b8ff 100%)}
+  .bg-f1{background:linear-gradient(160deg,#d8f0ff 0%,#8fd0ff 100%)}
+  .bg-f2{background:linear-gradient(160deg,#d4fbf6 0%,#86e3d9 100%)}
+  .bg-close{background:linear-gradient(160deg,#e3fbd5 0%,#9fe58a 100%)}
+  .bg-cover{background:linear-gradient(160deg,#ffd23f 0%,#ff8a3d 55%,#ff5d8f 100%)}
+
+  /* ---------- NAVEGACIÓN INFERIOR ---------- */
+  .nav{
+    position:fixed;bottom:0;left:0;right:0;height:86px;z-index:20;background:#fff;
+    border-top:5px solid var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:16px;
+  }
+  .nav-btn{
+    font-family:'Baloo 2';font-weight:800;font-size:1.25rem;cursor:pointer;border:4px solid var(--ink);
+    border-radius:18px;padding:8px 22px;box-shadow:0 6px 0 var(--ink);transition:transform .1s, box-shadow .1s;
+  }
+  .nav-btn:active{transform:translateY(6px);box-shadow:none}
+  .prev{background:var(--blue);color:#fff}.next{background:var(--green);color:var(--ink)}
+  .nav-btn:disabled{opacity:.4;cursor:not-allowed}
+  .progress-wrap{flex:1;display:flex;flex-direction:column;gap:6px;align-items:center}
+  .progress{width:100%;height:20px;border:4px solid var(--ink);border-radius:999px;background:#eee;overflow:hidden}
+  .bar{height:100%;width:0;background:repeating-linear-gradient(45deg,var(--yellow) 0 16px,var(--orange) 16px 32px);transition:width .4s}
+  .counter{font-weight:700;font-size:.95rem}
+  .hint{font-size:.8rem;opacity:.7}
+
+  /* Índice */
+  .index{position:fixed;inset:0;background:rgba(43,33,64,.7);z-index:50;display:none;align-items:center;justify-content:center;padding:30px}
+  .index.open{display:flex}
+  .index .panel{background:var(--paper);border:5px solid var(--ink);border-radius:var(--radius);padding:24px;max-width:900px;width:100%;max-height:85vh;overflow:auto;box-shadow:var(--shadow)}
+  .index ol{columns:2;gap:24px;padding-left:1.4em;font-size:1.05rem}
+  .index li{margin:5px 0;cursor:pointer;break-inside:avoid}
+  .index li:hover{color:var(--pink);text-decoration:underline}
+  @media (max-width:800px){.index ol{columns:1}.hint{display:none}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">📏 <span>¿Por qué medimos?</span></div>
+  <div class="phase-pill" id="phasePill">Portada</div>
+  <div class="clock">
+    ⏱️ Clase: <div class="time" id="classClock">00:00 / 120:00</div>
+    <button class="mini-btn" id="clockToggle">▶ Iniciar</button>
+    <button class="mini-btn" id="clockReset">↺</button>
+    <button class="mini-btn" id="indexBtn" title="Índice (tecla M)">☰</button>
+  </div>
+</header>
+
+<main class="deck" id="deck">
+
+  <!-- 1 PORTADA -->
+  <section class="slide bg-cover cover" data-phase="Portada" data-color="#ff5d8f" data-title="Portada">
+    <div class="floaty"><span>📏</span><span>⚖️</span><span>⏱️</span><span>🌡️</span></div>
+    <h1>¿Por qué medimos?</h1>
+    <p class="sub">Magnitud, Medición y Unidad de Medida<br>aplicadas al fenómeno de la congelación 🧊</p>
+    <div class="card" style="margin-top:22px;text-align:center;background:#fff">
+      🕑 Duración: <b>120 minutos</b> &nbsp;|&nbsp; Inicio · Desarrollo · Cierre
+    </div>
+  </section>
+
+  <!-- 2 PREPARACIÓN DOCENTE -->
+  <section class="slide bg-prep" data-phase="Preparación del docente" data-color="#8e6cff" data-title="Preparación previa del docente">
+    <div class="slide-head"><span class="tag" style="background:var(--purple);color:#fff">👩‍🏫 Solo para el docente</span><span class="tag time">Antes de la clase</span></div>
+    <h2 class="title">Preparación Previa del Docente</h2>
+    <div class="grid g2">
+      <div class="card c-purple">
+        <h3>1. Dominio Conceptual 🧠</h3>
+        <ul>
+          <li><b>Medición:</b> proceso sistemático de comparar una cantidad desconocida con una conocida (patrón o estándar).</li>
+          <li><b>Magnitud física:</b> propiedad de un cuerpo, sustancia o fenómeno que puede cuantificarse objetivamente: <b>Longitud</b> (extensión en una dimensión), <b>Masa</b> (cantidad de materia), <b>Tiempo</b> (duración o separación de acontecimientos), <b>Temperatura</b> (energía cinética promedio de las partículas).</li>
+          <li><b>Unidad de medida:</b> cantidad estandarizada de una magnitud física.</li>
+        </ul>
+      </div>
+      <div class="card c-yellow">
+        <h3>2. Enfoque Hermenéutico 🔍</h3>
+        La hermenéutica es el arte de la interpretación. Ayudar al alumno a transitar de una <i>interpretación subjetiva y cualitativa</i> ("hace mucho frío", "está pesado") a una <i>interpretación objetiva y cuantitativa</i> ("estamos a −2 °C", "tiene una masa de 5 kg").
+      </div>
+      <div class="card c-blue">
+        <h3>3. Fenómeno Ancla: La Congelación 🧊</h3>
+        La congelación (solidificación) es un cambio de estado físico. El agua pura a nivel del mar se congela a <b>0 °C (273.15 K)</b>. Medir transforma "el agua se hizo hielo" en un dato numérico que permite comparar (el agua salada se congela a una temperatura menor que el agua dulce).
+      </div>
+      <div class="card c-red">
+        <h3>4. Estandarización y Error Histórico 🚀</h3>
+        <i>Mars Climate Orbiter</i> (1999): una sonda de la NASA se estrelló en Marte porque un equipo usó el sistema inglés (libras, pulgadas) y otro el Sistema Internacional (newtons, metros). La estandarización es un <b>"logro colectivo"</b> vital para la comunicación científica.
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 AGENDA / GUIÓN RÁPIDO -->
+  <section class="slide bg-cover" data-phase="Guión de la clase" data-color="#ff8a3d" data-title="Guión rápido de clase">
+    <h2 class="title" style="text-align:center">🗺️ Nuestro viaje de hoy (120 min)</h2>
+    <div class="timeline">
+      <div class="tl c-orange"><span class="mins">00' – 20'</span><h3>🔥 Inicio</h3>
+        <ul style="padding-left:1.1em"><li>Pizarrón: <i>"El agua se congela cuando se siente muy helado"</i>.</li><li>Debate: ¿Qué es "muy helado"? (Subjetividad vs. Objetividad).</li><li>"Medir" como solución científica.</li></ul></div>
+      <div class="tl c-blue"><span class="mins">20' – 50'</span><h3>📚 Teoría</h3>
+        <ul style="padding-left:1.1em"><li>Ejemplo mochila: Masa (Magnitud), 5 (Medida), kg (Unidad).</li><li>4 magnitudes y sus instrumentos: Longitud (regla), Masa (báscula), Tiempo (cronómetro), Temperatura (termómetro).</li></ul></div>
+      <div class="tl c-teal"><span class="mins">50' – 85'</span><h3>🧊 Congelación y Estandarización</h3>
+        <ul style="padding-left:1.1em"><li>Reformular: <i>"El agua se congela a 0 °C"</i>.</li><li>El número nos permite comparar (agua dulce vs. salada).</li><li>Historia NASA (Mars Climate Orbiter).</li><li>Sin medición precisa, no hay ciencia.</li></ul></div>
+      <div class="tl c-green"><span class="mins">85' – 120'</span><h3>✍️ Evidencia y Cierre</h3>
+        <ul style="padding-left:1.1em"><li>Dictar los "Conceptos Imprescindibles".</li><li>Evidencia: relación Medición–Magnitud–Unidad en la congelación.</li><li>Lectura en voz alta y cierre.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- 4 INICIO 0-5 -->
+  <section class="slide bg-intro" data-phase="Inicio · El Enganche" data-color="#ff8a3d" data-title="Inicio: Bienvenida y encuadre">
+    <div class="slide-head"><span class="tag" style="background:var(--orange)">🔥 INICIO: El Enganche y la Afirmación Hermenéutica</span><span class="tag time">⏰ 0 – 5 min</span></div>
+    <h2 class="title">¡Bienvenidos, científicos! 👋</h2>
+    <div class="grid g2">
+      <div class="card c-yellow"><span class="emoji">🎯</span><h3>Propósito de la clase</h3>
+        Entender <b>por qué medimos</b> y cómo esto <b>cambia nuestra forma de ver la naturaleza</b>.</div>
+      <div class="card c-pink"><span class="emoji">🧭</span><h3>Hoy vamos a…</h3>
+        <ul><li>Descubrir por qué las opiniones no bastan en ciencia.</li><li>Distinguir Magnitud, Medición y Unidad.</li><li>Medir un fenómeno real: ¡la congelación! 🧊</li></ul></div>
+    </div>
+    <div class="teacher"><b>Docente</b> Saluda y establece el propósito de manera sencilla.</div>
+  </section>
+
+  <!-- 5 INICIO 5-20 DINÁMICA DE CHOQUE -->
+  <section class="slide bg-intro" data-phase="Inicio · El Enganche" data-color="#ff8a3d" data-title="Inicio: Dinámica de choque">
+    <div class="slide-head"><span class="tag" style="background:var(--orange)">🔥 INICIO · Dinámica de choque</span><span class="tag time">⏰ 5 – 20 min</span></div>
+    <h2 class="title">💥 Lee con atención esta afirmación…</h2>
+    <div class="chalk">"El agua se convierte en hielo cuando el clima se siente <u>muy, pero muy helado</u>". 🥶</div>
+    <div class="timer-box" data-min="15"><span>⏳ Dinámica</span><span class="t">15:00</span>
+      <button class="mini-btn t-start">▶</button><button class="mini-btn t-reset">↺</button></div>
+    <div class="teacher"><b>Docente</b> Escribe la afirmación en el pizarrón antes de iniciar el debate.</div>
+  </section>
+
+  <!-- 6 INTERVENCIÓN GP -->
+  <section class="slide bg-intro" data-phase="Inicio · El Enganche" data-color="#ff8a3d" data-title="Inicio: ¿Qué significa 'muy helado'?">
+    <div class="slide-head"><span class="tag" style="background:var(--orange)">🔥 INICIO · Intervención del GP</span><span class="tag time">⏰ 5 – 20 min</span></div>
+    <div class="bubble">🤔 ¿Qué significa "muy helado"?<br>¿Lo que es "muy helado" para alguien de <span style="color:var(--orange)">Guanajuato</span> 🌵 es lo mismo que para alguien de <span style="color:var(--blue)">Alaska</span> 🐻‍❄️?</div>
+    <div style="height:40px"></div>
+    <button class="big-btn" data-reveal="r-subj">💡 ¿Qué descubrimos?</button>
+    <div id="r-subj" class="hidden-reveal wrap" style="margin-top:16px">
+      <div class="grid g3">
+        <div class="card c-red"><span class="emoji">🗣️</span><h3>Lenguaje cotidiano</h3>Es <b>subjetivo</b>: depende de quién lo dice. No sirve para hacer ciencia.</div>
+        <div class="card c-green"><span class="emoji">📏</span><h3>La Medición</h3>Es la herramienta que nos da datos <b>objetivos</b>.</div>
+        <div class="card c-yellow"><span class="emoji">🦸</span><h3>¡Al rescate!</h3>Medir es el acto que <b>rescata a la ciencia de la simple opinión</b>.</div>
+      </div>
+    </div>
+    <div class="teacher"><b>Docente</b> Guía la discusión para que el grupo note que el lenguaje cotidiano es subjetivo; después introduce la medición como solución científica.</div>
+  </section>
+
+  <!-- 7 F1 20-35 CONCEPTOS -->
+  <section class="slide bg-f1" data-phase="Desarrollo F1 · Teoría" data-color="#3fa9f5" data-title="Fase 1: Magnitud, Medida y Unidad">
+    <div class="slide-head"><span class="tag" style="background:var(--blue);color:#fff">📚 DESARROLLO FASE 1: La Teoría Desmenuzada</span><span class="tag time">⏰ 20 – 35 min</span></div>
+    <h2 class="title">Si digo "5"… ¿qué significa? 🤷</h2>
+    <div class="card wrap" style="text-align:center">
+      <p>Haz clic en cada pieza para descubrir su nombre 👇 (ejemplo: la mochila 🎒)</p>
+      <div class="formula">
+        <div class="piece c-pink" onclick="this.classList.toggle('on')"><div class="val">🎒</div><div class="lbl">MAGNITUD: Masa</div></div>
+        <div class="piece c-yellow" onclick="this.classList.toggle('on')"><div class="val">5</div><div class="lbl">MEDICIÓN</div></div>
+        <div class="piece c-teal" onclick="this.classList.toggle('on')"><div class="val">kg</div><div class="lbl">UNIDAD: kilogramo</div></div>
+      </div>
+      <p><i>"Si digo '5', no significa nada. Si digo '5 kilogramos', 'kilogramo' es la <b>Unidad</b>, '5' es la <b>Medición</b>, y la 'Masa' es la <b>Magnitud</b> que estoy estudiando de esta mochila".</i></p>
+    </div>
+    <div class="grid g3" style="margin-top:18px">
+      <div class="card c-blue" style="text-align:center"><span class="emoji">🪑</span>Escritorio</div>
+      <div class="card c-blue" style="text-align:center"><span class="emoji">🎒</span>Mochila</div>
+      <div class="card c-blue" style="text-align:center"><span class="emoji">🕰️</span>Reloj de pared</div>
+    </div>
+    <div class="teacher"><b>Docente</b> Usa objetos del aula (escritorio, mochila, reloj de pared) para explicar las diferencias entre Magnitud, Medida y Unidad.</div>
+  </section>
+
+  <!-- 8 F1 35-50 4 MAGNITUDES -->
+  <section class="slide bg-f1" data-phase="Desarrollo F1 · Teoría" data-color="#3fa9f5" data-title="Fase 1: Las 4 magnitudes">
+    <div class="slide-head"><span class="tag" style="background:var(--blue);color:#fff">📚 DESARROLLO FASE 1 · Exploración de las 4 magnitudes</span><span class="tag time">⏰ 35 – 50 min</span></div>
+    <h2 class="title">Las 4 magnitudes estrella ⭐</h2>
+    <div class="grid g4">
+      <div class="card c-orange"><span class="emoji">📏</span><h3>Longitud</h3>Extensión de algo en una dimensión.<br><b>Instrumentos:</b> flexómetro / regla.</div>
+      <div class="card c-pink"><span class="emoji">⚖️</span><h3>Masa</h3>Cantidad de materia de un cuerpo.<br><b>Instrumentos:</b> balanza / báscula.</div>
+      <div class="card c-purple"><span class="emoji">⏱️</span><h3>Tiempo</h3>Duración o separación de acontecimientos.<br><b>Instrumento:</b> cronómetro.</div>
+      <div class="card c-teal"><span class="emoji">🌡️</span><h3>Temperatura</h3>Energía cinética promedio de las partículas.<br><b>Instrumento:</b> termómetro.</div>
+    </div>
+    <div class="teacher"><b>Docente</b> Define cada magnitud y explica con qué instrumentos se miden en el laboratorio y en la vida diaria.</div>
+  </section>
+
+  <!-- 9 F2 50-65 REFORMULACIÓN -->
+  <section class="slide bg-f2" data-phase="Desarrollo F2 · Congelación" data-color="#2ec4b6" data-title="Fase 2: Reformulación científica">
+    <div class="slide-head"><span class="tag" style="background:var(--teal)">🧊 DESARROLLO FASE 2: Aplicación al Fenómeno de Congelación</span><span class="tag time">⏰ 50 – 65 min</span></div>
+    <h2 class="title">Otorgando valor numérico a la naturaleza 🔢</h2>
+    <div class="vs">
+      <div class="card c-red"><span class="emoji">🥶</span><h3>Antes (opinión)</h3><i>"El agua se convierte en hielo cuando el clima se siente muy, pero muy helado".</i></div>
+      <div class="arrow">➜</div>
+      <div class="card c-green"><span class="emoji">🔬</span><h3>Ahora (ciencia)</h3><i>"El agua pura a nivel del mar transita del estado líquido al sólido al alcanzar una temperatura de <b style="font-size:1.4em">0 °C</b>".</i></div>
+    </div>
+    <div class="teacher"><b>Docente</b> Regresa a la afirmación inicial y reformúlala científicamente.</div>
+  </section>
+
+  <!-- 10 F2 INTERVENCIÓN HERMENÉUTICA -->
+  <section class="slide bg-f2" data-phase="Desarrollo F2 · Congelación" data-color="#2ec4b6" data-title="Fase 2: Reflexión hermenéutica">
+    <div class="slide-head"><span class="tag" style="background:var(--teal)">🧊 DESARROLLO FASE 2 · Intervención hermenéutica del GP</span><span class="tag time">⏰ 50 – 65 min</span></div>
+    <div class="grid g2">
+      <div class="card c-yellow"><span class="emoji">🌡️</span><h3>Al decir "0 °C"…</h3>
+        <ul><li>Ya <b>no dependemos</b> de si alguien tiene frío o no.</li><li>Asignamos un <b>valor numérico</b> a una característica natural.</li><li>¡Esto nos permite <b>comparar</b>!</li></ul></div>
+      <div class="card c-blue"><span class="emoji">🌊</span><h3>Pregunta para pensar</h3>
+        Si el agua del mar no se congela a <b>0 °C</b> sino a <b>−2 °C</b>…<br><b style="font-size:1.3em">¿qué podemos concluir?</b> 🤔
+        <br><button class="big-btn" data-reveal="r-sal">🔓 Revelar respuesta</button>
+        <div id="r-sal" class="hidden-reveal" style="margin-top:12px;background:#fff;border:3px solid var(--ink);border-radius:16px;padding:12px">
+          🧂 Que la <b>salinidad cambia las características del agua</b>, y solo lo sabemos porque podemos <b>medirlo</b> y <b>compararlo</b>.</div>
+      </div>
+    </div>
+    <div class="teacher"><b>Docente</b> Haz que reflexionen antes de revelar la respuesta esperada.</div>
+  </section>
+
+  <!-- 11 F2 65-85 REPRODUCIBILIDAD -->
+  <section class="slide bg-f2" data-phase="Desarrollo F2 · Estandarización" data-color="#2ec4b6" data-title="Fase 2: Hipótesis y reproducibilidad">
+    <div class="slide-head"><span class="tag" style="background:var(--teal)">🧊 DESARROLLO FASE 2 · Hipótesis y Reproducibilidad</span><span class="tag time">⏰ 65 – 85 min</span></div>
+    <h2 class="title">Un mismo idioma para toda la ciencia 🌎</h2>
+    <div class="vs">
+      <div class="card c-green" style="text-align:center"><span class="emoji">🇲🇽👩‍🔬</span><h3>Científica en México</h3>Mide en metros, segundos, °C…</div>
+      <div class="arrow">🤝</div>
+      <div class="card c-pink" style="text-align:center"><span class="emoji">🇯🇵👨‍🔬</span><h3>Científico en Japón</h3>…¡y él también!</div>
+    </div>
+    <div class="card c-yellow wrap" style="margin-top:20px;text-align:center">Para que un científico en México le crea a uno en Japón, <b>ambos deben usar el mismo idioma métrico</b>. 📐</div>
+  </section>
+
+  <!-- 12 MARS CLIMATE ORBITER -->
+  <section class="slide bg-f2" data-phase="Desarrollo F2 · Estandarización" data-color="#2ec4b6" data-title="Fase 2: Mars Climate Orbiter">
+    <div class="slide-head"><span class="tag" style="background:var(--teal)">🧊 DESARROLLO FASE 2 · Historia real</span><span class="tag time">⏰ 65 – 85 min</span></div>
+    <h2 class="title">🚀 El choque de la Mars Climate Orbiter (1999)</h2>
+    <div class="grid g3">
+      <div class="card c-blue"><span class="emoji">🇺🇸📐</span><h3>Equipo A</h3>Usó el <b>sistema inglés</b>: libras, pulgadas.</div>
+      <div class="card c-purple"><span class="emoji">🌍📏</span><h3>Equipo B</h3>Usó el <b>Sistema Internacional</b>: newtons, metros.</div>
+      <div class="card c-red"><span class="emoji">💥🔴</span><h3>Resultado</h3>La sonda de la NASA <b>se estrelló en Marte</b>.</div>
+    </div>
+    <div class="card c-yellow wrap" style="margin-top:20px;text-align:center;font-weight:700">⭐ La estandarización es un <u>logro colectivo vital</u> para la comunicación científica.</div>
+    <div class="teacher"><b>Docente</b> Relata la historia para ilustrar la importancia de la estandarización.</div>
+  </section>
+
+  <!-- 13 HIPÓTESIS -->
+  <section class="slide bg-f2" data-phase="Desarrollo F2 · Estandarización" data-color="#2ec4b6" data-title="Fase 2: Validar una hipótesis">
+    <div class="slide-head"><span class="tag" style="background:var(--teal)">🧊 DESARROLLO FASE 2 · Validación de hipótesis</span><span class="tag time">⏰ 65 – 85 min</span></div>
+    <div class="bubble">🧪 Hipótesis: "El agua con sal tarda más en congelarse"</div>
+    <div style="height:44px"></div>
+    <div class="grid g3">
+      <div class="card c-purple" style="text-align:center"><span class="emoji">⏱️</span><h3>Tiempo</h3>en <b>segundos (s)</b></div>
+      <div class="card c-teal" style="text-align:center"><span class="emoji">🌡️</span><h3>Temperatura</h3>en <b>grados Celsius (°C)</b></div>
+      <div class="card c-green" style="text-align:center"><span class="emoji">✅</span><h3>Validación</h3>Solo si <b>ambos científicos</b> usan los mismos estándares.</div>
+    </div>
+    <div class="card c-red wrap" style="margin-top:20px;text-align:center;font-weight:700">🚫 Sin medición precisa (números y unidades correctas), <u>no hay ciencia</u>.</div>
+  </section>
+
+  <!-- 14 CIERRE: CONCEPTOS IMPRESCINDIBLES INTRO -->
+  <section class="slide bg-close" data-phase="Cierre · Conceptos Imprescindibles" data-color="#5cd65c" data-title="Cierre: Conceptos Imprescindibles">
+    <div class="slide-head"><span class="tag" style="background:var(--green)">✍️ CIERRE: Generación de Evidencias y Conclusión</span><span class="tag time">⏰ 85 – 120 min</span></div>
+    <h2 class="title" style="text-align:center">📒 Conceptos Imprescindibles</h2>
+    <div class="card c-yellow wrap" style="text-align:center;font-size:clamp(1.3rem,2.4vw,2rem)">
+      <span class="emoji">✏️📓</span>
+      Saca tu libreta y <b>apunta explícitamente</b> los siguientes 4 conceptos.<br>
+      <span class="note-tag" style="margin-top:12px">⭐ ¡Son los apuntes clave para tu evaluación!</span>
+    </div>
+    <div class="teacher"><b>Docente</b> Dicta o escribe en el pizarrón cada concepto. Indica que son los apuntes clave para su evaluación.</div>
+  </section>
+
+  <!-- 15-18 CONCEPTOS -->
+  <section class="slide bg-close" data-phase="Cierre · Conceptos Imprescindibles" data-color="#5cd65c" data-title="Concepto 1: Magnitud Física">
+    <div class="write-banner">✏️ ¡Apunta este concepto en tu libreta!</div>
+    <div class="notebook"><div class="num">1</div><h3>Magnitud Física</h3>
+      "Es toda propiedad de los cuerpos o fenómenos que puede ser medida. Ejemplos: Longitud, Masa, Tiempo y Temperatura."</div>
+  </section>
+
+  <section class="slide bg-close" data-phase="Cierre · Conceptos Imprescindibles" data-color="#5cd65c" data-title="Concepto 2: Unidad de Medida">
+    <div class="write-banner">✏️ ¡Apunta este concepto en tu libreta!</div>
+    <div class="notebook"><div class="num">2</div><h3>Unidad de Medida</h3>
+      "Es una cantidad de referencia estandarizada que se usa para medir una magnitud. Ejemplo: el metro, el kilogramo, el segundo, los grados Celsius."</div>
+  </section>
+
+  <section class="slide bg-close" data-phase="Cierre · Conceptos Imprescindibles" data-color="#5cd65c" data-title="Concepto 3: Medición">
+    <div class="write-banner">✏️ ¡Apunta este concepto en tu libreta!</div>
+    <div class="notebook"><div class="num">3</div><h3>Medición</h3>
+      "Es el proceso científico de comparar una magnitud desconocida con una unidad de medida conocida para asignarle un valor numérico objetivo."</div>
+  </section>
+
+  <section class="slide bg-close" data-phase="Cierre · Conceptos Imprescindibles" data-color="#5cd65c" data-title="Concepto 4: Importancia de la medición">
+    <div class="write-banner">✏️ ¡Apunta este concepto en tu libreta!</div>
+    <div class="notebook"><div class="num">4</div><h3>Importancia de la medición en la ciencia</h3>
+      "Medir con unidades estandarizadas permite validar hipótesis de manera exacta, comparar fenómenos (como distintas temperaturas de congelación) y asegurar que cualquier experimento pueda ser repetido y comprobado en cualquier parte del mundo."</div>
+  </section>
+
+  <!-- 19 ACTIVIDAD DE EVIDENCIA -->
+  <section class="slide bg-close" data-phase="Cierre · Actividad de Evidencia" data-color="#5cd65c" data-title="Cierre: Actividad de Evidencia">
+    <div class="slide-head"><span class="tag" style="background:var(--green)">✍️ CIERRE · Actividad de Evidencia (trabajo de los alumnos)</span><span class="tag time">⏰ 85 – 105 min</span></div>
+    <h2 class="title">📝 Tu evidencia: redacta un párrafo</h2>
+    <div class="card c-yellow wrap">
+      En tu libreta, escribe un párrafo donde relaciones <b>Magnitud</b>, <b>Medición</b> y <b>Unidad de medida</b>. Usa esta estructura de apoyo:
+    </div>
+    <div class="notebook" style="margin-top:18px;font-size:clamp(1.15rem,2vw,1.8rem)">
+      <div class="num">✍️</div>
+      <i>"Al observar el fenómeno de la congelación de un líquido, si queremos estudiarlo científicamente debemos definir qué <span class="blank">temperatura</span> <small>(magnitud)</small> vamos a evaluar, realizar una <span class="blank">medición</span> <small>(medición)</small> precisa utilizando un instrumento, y expresar el resultado usando una <span class="blank">°C</span> <small>(unidad de medida)</small> estandarizada".</i>
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center">
+      <div class="timer-box" data-min="20"><span>⏳ Redacción</span><span class="t">20:00</span>
+        <button class="mini-btn t-start">▶</button><button class="mini-btn t-reset">↺</button></div>
+      <button class="big-btn" id="showBlanks">👀 Mostrar ejemplo de respuesta</button>
+    </div>
+  </section>
+
+  <!-- 20 PLENARIA -->
+  <section class="slide bg-close" data-phase="Cierre · Plenaria final" data-color="#5cd65c" data-title="Cierre: Plenaria final y revisión">
+    <div class="slide-head"><span class="tag" style="background:var(--green)">✍️ CIERRE · Plenaria final y revisión</span><span class="tag time">⏰ 105 – 120 min</span></div>
+    <h2 class="title">🎤 ¡Compartamos nuestras reflexiones!</h2>
+    <div class="grid g3">
+      <div class="card c-pink" style="text-align:center"><span class="emoji">🙋‍♀️🙋‍♂️</span><h3>3 o 4 voluntarios</h3>leen en voz alta su párrafo.</div>
+      <div class="card c-blue" style="text-align:center"><span class="emoji">💬</span><h3>Retroalimentación</h3>Comentamos qué conceptos se relacionaron correctamente.</div>
+      <div class="card c-yellow" style="text-align:center"><span class="emoji">🌍</span><h3>Idea clave</h3>Medir es el <b>lenguaje universal de la ciencia</b>.</div>
+    </div>
+    <div class="timer-box" data-min="15"><span>⏳ Plenaria</span><span class="t">15:00</span>
+      <button class="mini-btn t-start">▶</button><button class="mini-btn t-reset">↺</button></div>
+    <div class="teacher"><b>Docente</b> Pide a 3 o 4 alumnos que lean su reflexión. Retroalimenta y refuerza que medir es el lenguaje universal de la ciencia.</div>
+  </section>
+
+  <!-- 21 DESPEDIDA -->
+  <section class="slide bg-cover cover" data-phase="Cierre · Despedida" data-color="#ff5d8f" data-title="Despedida">
+    <div class="floaty"><span>🧊</span><span>🌡️</span><span>🔬</span><span>🎉</span></div>
+    <h1>¡Gracias, científicos!</h1>
+    <p class="sub">"Medir es el lenguaje universal de la ciencia" 🌎</p>
+    <div class="card" style="margin-top:22px;text-align:center;background:#fff">
+      📏 Magnitud &nbsp;+&nbsp; 🔢 Medición &nbsp;+&nbsp; 🏷️ Unidad &nbsp;=&nbsp; 🔬 Ciencia
+    </div>
+  </section>
+
+</main>
+
+<nav class="nav">
+  <button class="nav-btn prev" id="prevBtn">◀ Anterior</button>
+  <div class="progress-wrap">
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="counter" id="counter">1 / 1</div>
+    <div class="hint">⌨️ ← → o Espacio para navegar · M = índice · F = pantalla completa</div>
+  </div>
+  <button class="nav-btn next" id="nextBtn">Siguiente ▶</button>
+</nav>
+
+<div class="index" id="indexModal">
+  <div class="panel">
+    <h2 style="margin-bottom:12px">☰ Índice de diapositivas</h2>
+    <ol id="indexList"></ol>
+    <button class="big-btn" id="closeIndex">✖ Cerrar</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const bar = document.getElementById('bar');
+  const counter = document.getElementById('counter');
+  const pill = document.getElementById('phasePill');
+  let current = 0;
+
+  function show(n){
+    current = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    const s = slides[current];
+    pill.textContent = s.dataset.phase || '';
+    pill.style.background = s.dataset.color || '#ff5d8f';
+    counter.textContent = (current + 1) + ' / ' + slides.length;
+    bar.style.width = ((current + 1) / slides.length * 100) + '%';
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+    history.replaceState(null, '', '#' + (current + 1));
+  }
+  prevBtn.onclick = () => show(current - 1);
+  nextBtn.onclick = () => show(current + 1);
+
+  /* Índice */
+  const modal = document.getElementById('indexModal');
+  const list = document.getElementById('indexList');
+  slides.forEach((s, i) => {
+    const li = document.createElement('li');
+    li.textContent = s.dataset.title || ('Diapositiva ' + (i + 1));
+    li.onclick = () => { show(i); modal.classList.remove('open'); };
+    list.appendChild(li);
+  });
+  const toggleIndex = () => modal.classList.toggle('open');
+  document.getElementById('indexBtn').onclick = toggleIndex;
+  document.getElementById('closeIndex').onclick = toggleIndex;
+
+  /* Teclado */
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight','PageDown',' '].includes(e.key)) { e.preventDefault(); show(current + 1); }
+    else if (['ArrowLeft','PageUp'].includes(e.key)) { e.preventDefault(); show(current - 1); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key.toLowerCase() === 'm') toggleIndex();
+    else if (e.key === 'Escape') modal.classList.remove('open');
+    else if (e.key.toLowerCase() === 'f') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    }
+  });
+  /* Evitar que Espacio active botones enfocados */
+  document.querySelectorAll('button').forEach(b => b.addEventListener('keydown', e => { if (e.key === ' ') e.preventDefault(); }));
+
+  /* Revelar contenido */
+  document.querySelectorAll('[data-reveal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const el = document.getElementById(btn.dataset.reveal);
+      el.classList.toggle('show');
+    });
+  });
+  document.getElementById('showBlanks').onclick = () =>
+    document.querySelectorAll('.blank').forEach(b => b.classList.toggle('show'));
+
+  /* Reloj general de la clase */
+  const clockEl = document.getElementById('classClock');
+  const clockToggle = document.getElementById('clockToggle');
+  let elapsed = 0, clockInt = null;
+  const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+  const renderClock = () => {
+    clockEl.textContent = fmt(elapsed) + ' / 120:00';
+    clockEl.style.background = elapsed >= 7200 ? '#ff4d4d' : '#fff';
+  };
+  clockToggle.onclick = () => {
+    if (clockInt) { clearInterval(clockInt); clockInt = null; clockToggle.textContent = '▶ Seguir'; }
+    else { clockInt = setInterval(() => { elapsed++; renderClock(); }, 1000); clockToggle.textContent = '⏸ Pausa'; }
+  };
+  document.getElementById('clockReset').onclick = () => {
+    clearInterval(clockInt); clockInt = null; elapsed = 0; renderClock(); clockToggle.textContent = '▶ Iniciar';
+  };
+
+  /* Temporizadores de actividad */
+  document.querySelectorAll('.timer-box').forEach(box => {
+    const total = parseInt(box.dataset.min, 10) * 60;
+    const t = box.querySelector('.t');
+    const startBtn = box.querySelector('.t-start');
+    let left = total, int = null;
+    const render = () => { t.textContent = fmt(left); t.classList.toggle('done', left === 0); };
+    startBtn.onclick = () => {
+      if (int) { clearInterval(int); int = null; startBtn.textContent = '▶'; return; }
+      if (left === 0) left = total;
+      int = setInterval(() => {
+        left--; render();
+        if (left <= 0) { clearInterval(int); int = null; startBtn.textContent = '▶'; }
+      }, 1000);
+      startBtn.textContent = '⏸';
+    };
+    box.querySelector('.t-reset').onclick = () => { clearInterval(int); int = null; left = total; render(); startBtn.textContent = '▶'; };
+    render();
+  });
+
+  /* Iniciar en la diapositiva indicada en la URL (#n) */
+  const fromHash = parseInt(location.hash.replace('#', ''), 10);
+  show(isNaN(fromHash) ? 0 : fromHash - 1);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡A medir el mundo! · Medición, magnitudes y unidades</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#23213a;
+  --paper:#fffaf0;
+  --yellow:#ffd23f;
+  --orange:#ff9f1c;
+  --red:#ff595e;
+  --blue:#4d96ff;
+  --green:#06d6a0;
+  --purple:#9b5de5;
+  --pink:#f15bb5;
+  --teal:#00bbf9;
+  --phase:#f15bb5;
+  --f-title:'Lilita One','Fredoka','Arial Rounded MT Bold','Comic Sans MS',cursive;
+  --f-body:'Fredoka','Trebuchet MS','Comic Sans MS',sans-serif;
+  --sh:0 7px 0 rgba(35,33,58,.9),0 18px 30px rgba(35,33,58,.16);
+  --sh-sm:0 4px 0 rgba(35,33,58,.9),0 10px 18px rgba(35,33,58,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:var(--f-body);color:var(--ink);
+  background:
+    radial-gradient(circle,rgba(255,255,255,.6) 2px,transparent 2.6px) 0 0/30px 30px,
+    linear-gradient(160deg,#a9e1ff 0%,#d6f2ff 55%,#fff0c4 100%);
+  display:flex;flex-direction:column;user-select:none;
+}
+button{font-family:inherit;cursor:pointer;color:var(--ink)}
+
+/* ================= BARRA SUPERIOR ================= */
+.topbar{height:70px;flex:0 0 70px;display:flex;align-items:center;gap:14px;padding:0 22px;background:#fff;border-bottom:4px solid var(--ink);box-shadow:0 6px 18px rgba(0,0,0,.08);z-index:5}
+.brand{font-family:var(--f-title);font-size:26px;letter-spacing:.5px;display:flex;align-items:center;gap:12px;margin-right:auto}
+.brand .logo{width:44px;height:44px;border:3px solid var(--ink);border-radius:14px;background:var(--yellow);display:grid;place-items:center;font-size:24px;box-shadow:0 3px 0 var(--ink);transform:rotate(-6deg)}
+.pill{border:3px solid var(--ink);border-radius:999px;padding:6px 16px;font-weight:700;font-size:18px;background:#fff;box-shadow:0 3px 0 var(--ink);white-space:nowrap}
+#phasePill{background:var(--phase);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25);transition:background .4s}
+#timePill{background:var(--yellow)}
+
+/* ================= ESCENARIO ================= */
+#viewport{flex:1;position:relative;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center center}
+.slide{position:absolute;inset:0;padding:34px 64px 30px;display:flex;flex-direction:column;opacity:0;visibility:hidden;transform:translateX(70px) scale(.97);transition:opacity .45s ease,transform .5s cubic-bezier(.2,1.3,.4,1),visibility .45s}
+.slide.past{transform:translateX(-70px) scale(.97)}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.slide .notes{display:none}
+
+.k-intro{--c:var(--pink);--c2:#ffd1ec}
+.k-inicio{--c:var(--orange);--c2:#ffe3b8}
+.k-desarrollo{--c:var(--blue);--c2:#d6e7ff}
+.k-cierre{--c:var(--purple);--c2:#eadcff}
+.k-sintesis{--c:var(--green);--c2:#c9f7e9}
+
+.s-head{display:flex;align-items:center;gap:26px;margin-bottom:24px;flex:0 0 auto}
+.time-tag{background:var(--yellow);border:4px solid var(--ink);border-radius:20px;padding:8px 18px;font-weight:700;font-size:26px;box-shadow:var(--sh-sm);transform:rotate(-3deg);white-space:nowrap}
+.s-title{font-family:var(--f-title);font-size:60px;line-height:1.05;color:var(--c);-webkit-text-stroke:9px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink);letter-spacing:.5px}
+.s-emoji{font-size:58px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.2));animation:bob 2.4s ease-in-out infinite}
+.s-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:24px}
+
+.card{background:#fff;border:4px solid var(--ink);border-radius:30px;box-shadow:var(--sh);padding:26px 32px}
+.lead{font-size:34px;font-weight:600;line-height:1.3}
+.muted{color:#5d5a78}
+.hl{background:linear-gradient(transparent 55%,var(--yellow) 55%);padding:0 4px}
+.c-accent{color:var(--c)}
+.row{display:flex;gap:28px}
+.grow{flex:1}
+.center{text-align:center}
+
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+@keyframes wiggle{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Botones de la presentación */
+.btn{border:3px solid var(--ink);border-radius:18px;background:#fff;padding:10px 18px;font-size:18px;font-weight:700;box-shadow:0 4px 0 var(--ink);transition:transform .1s,box-shadow .1s,filter .2s}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.s-btn{border:4px solid var(--ink);border-radius:22px;background:var(--yellow);padding:14px 26px;font-size:26px;font-weight:700;box-shadow:var(--sh-sm);transition:transform .1s,box-shadow .1s}
+.s-btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)}
+.s-btn.alt{background:var(--c2)}
+.s-btn.used{background:#e9e7f3;color:#7b7896}
+.s-btn:disabled{opacity:.6;cursor:default}
+
+/* Elementos que se revelan */
+.hide-until{opacity:0;visibility:hidden;transform:scale(.85);transition:all .45s cubic-bezier(.2,1.5,.4,1)}
+.hide-until.show{opacity:1;visibility:visible;transform:none}
+
+/* ================= PORTADA ================= */
+.cover{flex:1;display:grid;place-items:center;position:relative}
+.cover .burst{position:absolute;width:1500px;height:1500px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,210,63,.55) 0 9deg,rgba(255,255,255,0) 9deg 18deg);animation:spin 80s linear infinite;z-index:0}
+.cover-card{position:relative;z-index:1;width:1280px;text-align:center;padding:50px 60px 40px;border-radius:44px;background:#fff}
+.kicker{display:inline-block;background:var(--pink);color:#fff;border:4px solid var(--ink);border-radius:999px;padding:8px 26px;font-size:26px;font-weight:700;box-shadow:var(--sh-sm);transform:rotate(-2deg)}
+.mega{font-family:var(--f-title);font-size:132px;line-height:1;margin:26px 0 14px;color:var(--yellow);-webkit-text-stroke:14px var(--ink);paint-order:stroke fill;text-shadow:0 10px 0 var(--ink)}
+.subtitle{font-size:36px;font-weight:600;margin-bottom:22px}
+.goal{font-size:26px;background:var(--paper);border:3px dashed var(--ink);border-radius:22px;padding:14px 22px;margin:0 auto 26px;max-width:1060px}
+.chips{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+.chip{border:4px solid var(--ink);border-radius:999px;padding:10px 22px;font-size:26px;font-weight:700;box-shadow:var(--sh-sm);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.bg-orange{background:var(--orange)}.bg-blue{background:var(--blue)}.bg-purple{background:var(--purple)}.bg-green{background:var(--green)}.bg-pink{background:var(--pink)}
+.hint{margin-top:24px;font-size:20px;color:#5d5a78}
+.floaty{position:absolute;font-size:90px;z-index:2;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 6px 0 rgba(0,0,0,.18))}
+
+/* ================= CRONOGRAMA ================= */
+.phase-cols{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.phase-col{display:flex;flex-direction:column;padding:0;overflow:hidden}
+.pc-head{padding:20px 24px;border-bottom:4px solid var(--ink);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.pc-head h3{font-family:var(--f-title);font-size:42px;letter-spacing:.5px}
+.pc-head p{font-size:22px;font-weight:600}
+.pc-list{padding:20px;display:flex;flex-direction:column;gap:14px;flex:1}
+.pc-item{display:flex;align-items:center;gap:14px;text-align:left;border:3px solid var(--ink);border-radius:18px;background:var(--paper);padding:14px 16px;font-size:22px;font-weight:600;box-shadow:0 4px 0 var(--ink);transition:transform .15s}
+.pc-item:hover{transform:translateY(-3px) rotate(-1deg)}
+.pc-item .m{flex:0 0 auto;background:var(--yellow);border:3px solid var(--ink);border-radius:12px;padding:4px 10px;font-size:18px;font-weight:700}
+
+/* ================= DIVISORES DE FASE ================= */
+.divider{flex:1;display:grid;place-items:center;border:5px solid var(--ink);border-radius:44px;box-shadow:var(--sh);position:relative;overflow:hidden;background:var(--c2)}
+.divider::before{content:"";position:absolute;width:2200px;height:2200px;left:50%;top:50%;margin:-1100px 0 0 -1100px;background:repeating-conic-gradient(from 0deg,var(--c) 0 8deg,transparent 8deg 16deg);opacity:.35;animation:spin 70s linear infinite}
+.divider-in{position:relative;text-align:center}
+.divider .big-emoji{font-size:150px;animation:bob 2.6s ease-in-out infinite;display:inline-block}
+.divider h2{font-family:var(--f-title);font-size:150px;line-height:1;color:var(--c);-webkit-text-stroke:16px var(--ink);paint-order:stroke fill;text-shadow:0 12px 0 var(--ink);margin:10px 0 18px}
+.divider .sub{display:inline-block;background:#fff;border:4px solid var(--ink);border-radius:24px;padding:14px 34px;font-size:42px;font-weight:700;box-shadow:var(--sh-sm)}
+.divider .mins{margin-top:22px;font-size:32px;font-weight:700}
+.divider .mins span{background:var(--yellow);border:4px solid var(--ink);border-radius:999px;padding:6px 22px;box-shadow:var(--sh-sm);display:inline-block}
+
+/* ================= PREGUNTAS EXPLORADORAS ================= */
+.banner{background:var(--c2);border:4px solid var(--ink);border-radius:26px;padding:18px 28px;font-size:34px;font-weight:700;box-shadow:var(--sh-sm)}
+.q-cards{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:34px}
+.q-card{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px;transition:transform .25s}
+.q-card:nth-child(1){transform:rotate(-2deg)}.q-card:nth-child(3){transform:rotate(2deg)}
+.q-card:hover{transform:scale(1.04) rotate(0)}
+.q-emoji{font-size:120px;width:200px;height:200px;border-radius:50%;display:grid;place-items:center;border:4px solid var(--ink);background:var(--c2)}
+.q-card p{font-size:34px;font-weight:600;line-height:1.25}
+.foot-note{text-align:center;font-size:28px;font-weight:600}
+.foot-note b{background:#fff;border:3px solid var(--ink);border-radius:16px;padding:4px 14px}
+
+/* ================= CONTRASTE DE PERCEPCIONES ================= */
+.kids{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:40px;align-items:end}
+.kid{display:flex;flex-direction:column;align-items:center;gap:26px}
+.bubble{background:#fff;border:4px solid var(--ink);border-radius:28px;padding:18px 22px;font-size:28px;font-weight:600;min-height:110px;width:100%;position:relative;box-shadow:var(--sh-sm);text-align:center;outline:none;user-select:text;cursor:text}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-19px;width:30px;height:30px;background:#fff;border-right:4px solid var(--ink);border-bottom:4px solid var(--ink);transform:translateX(-50%) rotate(45deg)}
+.bubble:empty::before{content:attr(data-ph);color:#a3a1b8;font-weight:500}
+.bubble:focus{background:#fffbe5}
+.fig{display:flex;flex-direction:column;align-items:center}
+.fig .face{font-size:72px;line-height:1;margin-bottom:-6px;position:relative;z-index:1}
+.fig .body{width:120px;border:4px solid var(--ink);border-radius:46px 46px 14px 14px;background:var(--c)}
+.fig .lbl{margin-top:10px;background:var(--ink);color:#fff;border-radius:999px;padding:6px 16px;font-size:20px;font-weight:600}
+.notice{display:flex;align-items:center;gap:24px;justify-content:center;flex-wrap:wrap}
+.say{background:var(--paper);border:3px solid var(--ink);border-radius:999px;padding:8px 18px;font-size:24px;font-weight:600;font-style:italic}
+
+/* ================= PUENTE A LA CIENCIA ================= */
+.doors{display:flex;align-items:flex-end;justify-content:center;gap:40px;margin:14px 0}
+.door{display:flex;flex-direction:column;align-items:center;font-weight:700;font-size:22px}
+.door span{line-height:1}
+.no-words{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:16px 0}
+.no-word{position:relative;background:var(--paper);border:4px solid var(--ink);border-radius:18px;padding:10px 22px;font-size:32px;font-weight:700;box-shadow:var(--sh-sm)}
+.no-word::after{content:"";position:absolute;left:-8px;right:-8px;top:50%;height:6px;background:var(--red);border-radius:6px;transform:rotate(-8deg)}
+.stamp{display:inline-block;border:5px solid var(--red);color:var(--red);border-radius:16px;padding:6px 18px;font-family:var(--f-title);font-size:34px;transform:rotate(-5deg);background:#fff}
+.mega-banner{background:var(--yellow);border:5px solid var(--ink);border-radius:30px;padding:22px 30px;text-align:center;font-size:44px;font-weight:700;box-shadow:var(--sh)}
+.mega-banner b{font-family:var(--f-title);font-size:54px;color:var(--c);-webkit-text-stroke:8px var(--ink);paint-order:stroke fill;letter-spacing:1px}
+
+/* ================= CONCEPTOS / LIBRETA ================= */
+.write-badge{align-self:flex-start;display:inline-flex;gap:12px;align-items:center;background:var(--red);color:#fff;border:4px solid var(--ink);border-radius:20px;padding:10px 22px;font-size:28px;font-weight:700;box-shadow:var(--sh-sm);animation:wiggle 1.4s ease-in-out infinite;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.write-badge small{background:#fff;color:var(--ink);border-radius:999px;padding:2px 12px;font-size:20px;text-shadow:none}
+.notebook{position:relative;background:repeating-linear-gradient(#fff 0 50px,#cfe2ff 50px 52px);border:4px solid var(--ink);border-radius:28px;box-shadow:var(--sh);padding:22px 40px 24px 120px}
+.notebook::before{content:"";position:absolute;left:92px;top:0;bottom:0;width:3px;background:#ff8fa3}
+.notebook::after{content:"";position:absolute;left:28px;top:22px;bottom:22px;width:30px;background:radial-gradient(circle,var(--ink) 8px,transparent 9px) 0 0/30px 52px repeat-y}
+.def-title{font-family:var(--f-title);font-size:56px;color:var(--c);-webkit-text-stroke:8px var(--ink);paint-order:stroke fill;line-height:1.15}
+.def{font-size:36px;font-weight:500;line-height:52px}
+.flow{display:flex;align-items:stretch;justify-content:center;gap:20px}
+.flow-box{flex:1;text-align:center;background:var(--c2);border:4px solid var(--ink);border-radius:26px;padding:18px;box-shadow:var(--sh-sm);font-size:28px;font-weight:700}
+.flow-box .e{font-size:64px;display:block}
+.flow .op{align-self:center;font-family:var(--f-title);font-size:70px;color:var(--ink)}
+.tip{display:flex;align-items:center;gap:18px;background:#fff;border:4px solid var(--ink);border-radius:999px;padding:14px 30px;font-size:30px;font-weight:600;box-shadow:var(--sh-sm);align-self:center}
+.yesno{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:30px}
+.yesno .card h3{font-size:34px;margin-bottom:14px}
+.yesno ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.yesno li{font-size:28px;font-weight:500;background:var(--paper);border:3px solid var(--ink);border-radius:16px;padding:10px 16px}
+.yes{background:#e3fff6!important}.no{background:#ffe8e8!important}
+.unit-demo{flex:1;display:grid;grid-template-columns:1.1fr 1fr;gap:30px}
+.big-measure{display:flex;align-items:center;justify-content:center;gap:24px}
+.bm-part{text-align:center}
+.bm-part .v{font-family:var(--f-title);font-size:150px;line-height:1;-webkit-text-stroke:12px var(--ink);paint-order:stroke fill}
+.bm-part .l{margin-top:10px;background:var(--ink);color:#fff;border-radius:16px;padding:8px 16px;font-size:24px;font-weight:600}
+.qa{display:flex;flex-direction:column;gap:20px;justify-content:center}
+.qa div{border:4px solid var(--ink);border-radius:24px;padding:18px 22px;font-size:30px;font-weight:600;box-shadow:var(--sh-sm)}
+
+/* ================= TABLA DE PIZARRÓN ================= */
+.legend{display:flex;gap:24px}
+.legend div{flex:1;background:#fff;border:4px solid var(--ink);border-radius:22px;padding:12px 20px;font-size:26px;font-weight:600;box-shadow:var(--sh-sm)}
+.board{flex:1;background:#2f6b4f;border:10px solid #8b5a2b;border-radius:26px;box-shadow:var(--sh);padding:20px;position:relative}
+.sheet-table{width:100%;border-collapse:separate;border-spacing:0 12px;font-size:32px}
+.sheet-table th{color:#fff;font-size:28px;padding:8px 18px;text-align:left;border-bottom:3px dashed rgba(255,255,255,.6);font-weight:700}
+.sheet-table td{background:#fff;padding:14px 18px;font-weight:600;border-top:4px solid var(--ink);border-bottom:4px solid var(--ink);transition:all .5s cubic-bezier(.2,1.4,.4,1)}
+.sheet-table td:first-child{border-left:4px solid var(--ink);border-radius:18px 0 0 18px}
+.sheet-table td:last-child{border-right:4px solid var(--ink);border-radius:0 18px 18px 0}
+.sheet-table td.mag{color:var(--blue)}
+.sheet-table td.uni b{background:var(--yellow);border:3px solid var(--ink);border-radius:12px;padding:2px 12px}
+.sheet-table tr.row-hidden td{opacity:0;transform:translateY(16px)}
+.btn-row{display:flex;gap:18px;justify-content:center}
+
+/* ================= TARJETAS GIRATORIAS ================= */
+.flip-grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.flip{perspective:1200px;cursor:pointer}
+.flip-inner{position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.3,1.4,.5,1);transform-style:preserve-3d}
+.flip.flipped .flip-inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:4px solid var(--ink);border-radius:30px;box-shadow:var(--sh);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:14px}
+.face .num{position:absolute;top:16px;left:16px;width:52px;height:52px;border-radius:50%;background:var(--yellow);border:4px solid var(--ink);display:grid;place-items:center;font-family:var(--f-title);font-size:28px}
+.front{background:var(--mc)}
+.front .e{font-size:120px}
+.front h3{font-family:var(--f-title);font-size:46px;color:#fff;-webkit-text-stroke:8px var(--ink);paint-order:stroke fill;line-height:1.05}
+.front .tap{background:#fff;border:3px solid var(--ink);border-radius:999px;padding:6px 16px;font-size:20px;font-weight:600}
+.back{background:#fff;transform:rotateY(180deg)}
+.back p{font-size:30px;font-weight:600;line-height:1.25}
+.back .unit{font-family:var(--f-title);font-size:52px;background:var(--mc);color:#fff;-webkit-text-stroke:7px var(--ink);paint-order:stroke fill;border:4px solid var(--ink);border-radius:22px;padding:8px 18px}
+.m-longitud{--mc:var(--blue)}.m-masa{--mc:var(--green)}.m-tiempo{--mc:var(--orange)}.m-energia{--mc:var(--pink)}
+
+/* ================= JOULE ================= */
+.joule{flex:1;display:grid;grid-template-columns:1.25fr 1fr;gap:30px}
+.ex-list{display:flex;flex-direction:column;gap:16px;margin-top:18px}
+.ex{display:flex;align-items:center;gap:18px;background:var(--paper);border:3px solid var(--ink);border-radius:20px;padding:12px 18px;font-size:28px;font-weight:600}
+.ex .e{font-size:54px}
+.fact{background:var(--yellow);display:flex;flex-direction:column;justify-content:center;text-align:center;gap:16px}
+.fact .e{font-size:110px;animation:bob 2.4s ease-in-out infinite}
+.fact h3{font-family:var(--f-title);font-size:40px}
+.fact p{font-size:30px;font-weight:600;line-height:1.3}
+
+/* ================= SITUACIONES ================= */
+.sit-list{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(5,1fr);grid-auto-flow:column;gap:16px 30px}
+.sit-item{display:flex;align-items:center;gap:18px;background:#fff;border:4px solid var(--ink);border-radius:22px;padding:8px 20px;font-size:28px;font-weight:600;box-shadow:var(--sh-sm)}
+.sit-item .n{flex:0 0 52px;height:52px;border-radius:50%;background:var(--c);color:#fff;border:3px solid var(--ink);display:grid;place-items:center;font-family:var(--f-title);font-size:26px}
+.sit-item .e{font-size:40px}
+
+/* ================= PRÁCTICA ================= */
+.practice{flex:1;display:grid;grid-template-columns:1fr 1.15fr;gap:30px}
+.steps{display:flex;flex-direction:column;gap:16px}
+.step{display:flex;align-items:center;gap:18px;font-size:28px;font-weight:600;background:#fff;border:4px solid var(--ink);border-radius:22px;padding:14px 20px;box-shadow:var(--sh-sm)}
+.step .n{flex:0 0 58px;height:58px;border-radius:18px;background:var(--yellow);border:3px solid var(--ink);display:grid;place-items:center;font-family:var(--f-title);font-size:30px;transform:rotate(-6deg)}
+.mock{padding:22px 30px 22px 110px}
+.mock h4{font-size:28px;margin-bottom:6px}
+.mock table{width:100%;border-collapse:collapse;font-size:24px}
+.mock th,.mock td{border:3px solid var(--ink);padding:8px 10px;height:52px;text-align:left;background:rgba(255,255,255,.75)}
+.mock th{background:var(--c2)}
+.mock .ex-row td{color:#1a5fd1;font-style:italic;font-weight:600}
+.solo{display:flex;gap:20px;align-items:center;justify-content:center}
+
+/* ================= MONITOREO ================= */
+.monitor{flex:1;display:grid;grid-template-columns:1fr 1.3fr;gap:30px}
+.checklist{list-style:none;display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.checklist li{font-size:28px;font-weight:600;display:flex;gap:14px;align-items:center;background:var(--paper);border:3px solid var(--ink);border-radius:18px;padding:10px 16px;cursor:pointer}
+.checklist li .bx{flex:0 0 40px;height:40px;border:4px solid var(--ink);border-radius:12px;background:#fff;display:grid;place-items:center;font-size:26px}
+.checklist li.ok .bx{background:var(--green)}
+.checklist li.ok .bx::after{content:"✔";color:#fff}
+.guides{display:flex;flex-direction:column;gap:16px}
+.guide-q{display:flex;gap:16px;align-items:center;background:#fff;border:4px solid var(--ink);border-radius:26px;padding:16px 22px;font-size:27px;font-weight:600;box-shadow:var(--sh-sm)}
+.guide-q .e{font-size:50px}
+
+/* ================= PLENARIA ================= */
+.rules{display:flex;gap:18px}
+.rules div{flex:1;text-align:center;background:var(--c2);border:4px solid var(--ink);border-radius:22px;padding:12px;font-size:25px;font-weight:700;box-shadow:var(--sh-sm)}
+.plen-grid{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:1fr 1fr;gap:18px}
+.sit{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;background:#fff;border:4px solid var(--ink);border-radius:24px;padding:12px;box-shadow:var(--sh-sm);cursor:pointer;transition:background .3s,transform .2s;position:relative}
+.sit:hover{transform:translateY(-4px)}
+.sit .n{position:absolute;top:10px;left:10px;width:38px;height:38px;border-radius:50%;background:var(--yellow);border:3px solid var(--ink);display:grid;place-items:center;font-weight:700;font-size:20px}
+.sit .e{font-size:50px}
+.sit .t{font-size:21px;font-weight:600;line-height:1.2}
+.sit .tap{font-size:17px;color:#6b6888;font-weight:600}
+.sit .ans{display:none;background:var(--mc);color:#fff;border:3px solid var(--ink);border-radius:16px;padding:6px 10px;font-size:20px;font-weight:700;text-shadow:0 2px 0 rgba(0,0,0,.25);animation:pop .4s ease}
+.sit.open{background:color-mix(in srgb,var(--mc) 18%,#fff)}
+.sit.open .ans{display:block}
+.sit.open .tap{display:none}
+
+/* ================= REFLEXIÓN ================= */
+.big-q{background:var(--c);color:#fff;text-align:center;font-size:40px;font-weight:700;line-height:1.25;text-shadow:0 3px 0 rgba(0,0,0,.25)}
+.reflect{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:30px;min-height:0}
+.benefits{display:flex;flex-direction:column;gap:14px}
+.benefit{display:flex;align-items:center;gap:18px;background:#fff;border:4px solid var(--ink);border-radius:24px;padding:12px 20px;box-shadow:var(--sh-sm);cursor:pointer;flex:1}
+.benefit .e{font-size:58px}
+.benefit h4{font-size:30px}
+.benefit p{font-size:22px;font-weight:500;max-height:0;overflow:hidden;opacity:0;transition:all .4s}
+.benefit.open p{max-height:120px;opacity:1}
+.benefit .tap{font-size:16px;color:#6b6888}
+.benefit.open .tap{display:none}
+.mars{background:#2b2350;color:#fff;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
+.mars::before{content:"";position:absolute;inset:0;background:radial-gradient(circle,#fff 1.5px,transparent 2px) 0 0/60px 60px,radial-gradient(circle,rgba(255,255,255,.6) 1px,transparent 1.5px) 30px 30px/60px 60px;opacity:.5}
+.mars > *{position:relative}
+.mars h3{font-family:var(--f-title);font-size:38px;color:var(--yellow)}
+.mars p{font-size:25px;line-height:1.35;font-weight:500}
+.teams{display:flex;gap:14px;align-items:center}
+.team{flex:1;border:3px solid #fff;border-radius:18px;padding:10px;text-align:center;font-size:22px;font-weight:600}
+.team.us{background:#c0392b}.team.si{background:#1e7f5c}
+.crash{font-size:28px;font-weight:700;background:var(--red);border:3px solid #fff;border-radius:18px;padding:10px 16px;text-align:center}
+
+/* ================= CONCLUSIÓN ================= */
+.final{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:26px;position:relative}
+.globe{font-size:170px;animation:bob 3s ease-in-out infinite}
+.orbit{position:absolute;font-family:var(--f-title);font-size:46px;width:120px;height:120px;border-radius:50%;display:grid;place-items:center;border:5px solid var(--ink);box-shadow:var(--sh-sm);color:#fff;-webkit-text-stroke:6px var(--ink);paint-order:stroke fill;animation:bob 2.8s ease-in-out infinite}
+.final h3{font-family:var(--f-title);font-size:76px;line-height:1.08;color:var(--c);-webkit-text-stroke:11px var(--ink);paint-order:stroke fill;text-shadow:0 8px 0 var(--ink);max-width:1300px}
+.final p{font-size:32px;font-weight:600;max-width:1150px;background:#fff;border:4px solid var(--ink);border-radius:26px;padding:16px 26px;box-shadow:var(--sh-sm)}
+
+/* ================= GUIÓN ================= */
+.guion{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.guion .card{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.guion ul{padding:18px 22px 18px 44px;display:flex;flex-direction:column;gap:12px;font-size:23px;font-weight:500;line-height:1.3}
+
+/* ================= CONTROLES INFERIORES ================= */
+.controls{height:84px;flex:0 0 84px;display:flex;align-items:center;gap:14px;padding:0 22px;background:#fff;border-top:4px solid var(--ink);z-index:5}
+.btn.nav{background:var(--yellow);font-size:20px;min-width:150px}
+.progress-wrap{flex:1;height:24px;border:3px solid var(--ink);border-radius:999px;background:#eef6ff;overflow:hidden}
+#progress{height:100%;width:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.3) 0 12px,transparent 12px 24px),var(--phase);transition:width .5s;border-right:3px solid var(--ink)}
+#counter{font-weight:700;font-size:20px;min-width:70px;text-align:center}
+.timer{display:flex;align-items:center;gap:8px;border:3px solid var(--ink);border-radius:18px;padding:4px 6px 4px 14px;background:var(--paper);box-shadow:0 4px 0 var(--ink)}
+.timer .tl{display:flex;flex-direction:column;line-height:1}
+#timerDisplay{font-family:var(--f-title);font-size:28px;min-width:84px;text-align:center}
+#timerLabel{font-size:12px;font-weight:600;color:#6b6888;text-align:center}
+.timer button{border:3px solid var(--ink);border-radius:12px;width:42px;height:42px;font-size:18px;background:#fff}
+.timer.running{background:#d4fff1}
+.timer.done{animation:flash .5s infinite alternate}
+@keyframes flash{to{background:var(--red);color:#fff}}
+.icon-btn{width:52px;padding:10px 0;font-size:20px}
+
+/* ================= PANEL DE NOTAS ================= */
+#notes{position:fixed;top:70px;right:0;bottom:84px;width:min(540px,94vw);background:var(--paper);border-left:4px solid var(--ink);transform:translateX(105%);transition:transform .35s cubic-bezier(.2,1.2,.4,1);z-index:20;overflow:auto;padding:22px 26px;box-shadow:-10px 0 30px rgba(0,0,0,.15);user-select:text}
+#notes.open{transform:none}
+#notes .nh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+#notes .nh h3{font-family:var(--f-title);font-size:26px}
+#notesTitle{display:inline-block;background:var(--phase);color:#fff;border:3px solid var(--ink);border-radius:999px;padding:4px 14px;font-weight:700;margin-bottom:14px}
+#notesBody{font-size:17px;line-height:1.5}
+#notesBody h4{font-size:19px;margin:14px 0 6px}
+#notesBody p{margin-bottom:8px}
+#notesBody ul{padding-left:22px;margin-bottom:8px}
+#notesBody li{margin-bottom:5px}
+#notesBody .say-it{background:#fff;border:2px dashed var(--ink);border-radius:12px;padding:8px 12px;margin:8px 0;font-style:italic}
+
+/* ================= MENÚ ================= */
+#menu{position:fixed;inset:0;background:rgba(35,33,58,.55);display:none;place-items:center;z-index:30}
+#menu.open{display:grid}
+.menu-panel{background:#fff;border:4px solid var(--ink);border-radius:30px;padding:24px 26px;width:min(1150px,94vw);max-height:86vh;overflow:auto;box-shadow:var(--sh)}
+.menu-panel .nh{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.menu-panel h3{font-family:var(--f-title);font-size:32px}
+#menuGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.menu-item{display:flex;align-items:center;gap:10px;text-align:left;border:3px solid var(--ink);border-left:14px solid var(--mc);border-radius:16px;background:#fff;padding:10px 12px;box-shadow:0 3px 0 var(--ink);font-size:16px}
+.menu-item.current{background:#fff4c2}
+.mi-n{font-family:var(--f-title);font-size:22px;min-width:28px}
+.mi-t{font-weight:700;flex:1}
+.mi-m{font-size:13px;color:#6b6888;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><span class="logo">📏</span>¡A medir el mundo!</div>
+  <span class="pill" id="phasePill">Bienvenida</span>
+  <span class="pill" id="timePill">⏱ 120 minutos</span>
+</header>
+
+<div id="viewport">
+<div id="stage">
+
+<!-- ===================== 1. PORTADA ===================== -->
+<section class="slide k-intro" id="s-portada" data-key="intro" data-phase="Bienvenida" data-time="120 minutos" data-title="Portada">
+  <div class="cover">
+    <div class="burst"></div>
+    <span class="floaty" style="left:40px;top:40px">📏</span>
+    <span class="floaty" style="right:50px;top:60px;animation-delay:.6s">⏱️</span>
+    <span class="floaty" style="left:70px;bottom:40px;animation-delay:1.1s">⚖️</span>
+    <span class="floaty" style="right:70px;bottom:50px;animation-delay:.3s">⚡</span>
+    <div class="card cover-card">
+      <span class="kicker">🔬 Clase de Ciencias · 120 minutos</span>
+      <h1 class="mega">¡A medir el mundo!</h1>
+      <p class="subtitle">Medición, magnitudes y unidades de medida del Sistema Internacional</p>
+      <p class="goal">🎯 Hoy pasaremos de lo <b>subjetivo</b> (“mucho”, “poquito”, “pesado”) a lo <b>objetivo</b>: metros, segundos, kilogramos y joules.</p>
+      <div class="chips">
+        <span class="chip bg-orange">🤔 Inicio · 30 min</span>
+        <span class="chip bg-blue">🛠️ Desarrollo · 60 min</span>
+        <span class="chip bg-purple">🏁 Cierre · 30 min</span>
+      </div>
+      <p class="hint">⬅️ ➡️ navegar · <b>N</b> notas del docente · <b>M</b> menú · <b>T</b> cronómetro · <b>R</b> reiniciar · <b>F</b> pantalla completa</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>📚 Preparación previa del docente</h4>
+    <p>Como guía pedagógico, debes dominar a profundidad la diferencia entre una <b>cualidad subjetiva</b> y una <b>magnitud física objetiva</b>.</p>
+    <h4>⚖️ Diferencia entre Peso y Masa</h4>
+    <p>Es el error más común. En la vida diaria decimos “pesa 50 kilos”, pero científicamente los kilogramos miden <i>masa</i> (cantidad de materia), mientras que el <i>peso</i> es una fuerza (gravedad atrayendo esa masa) y se mide en Newtons. No necesitas confundir a los alumnos con esto ahora, pero si alguien pregunta, responde que hoy se enfocarán en “Masa”.</p>
+    <h4>⚡ La Energía y el Trabajo (Joule)</h4>
+    <p>Puede ser la magnitud más abstracta. El Joule (J) es una unidad derivada: equivale a la fuerza de un Newton desplazando un objeto un metro. Para explicarlo de forma sencilla, asocia la energía/trabajo con “el esfuerzo necesario para que algo ocurra”: empujar un mueble pesado o la energía que aporta un alimento (cotidianamente la vemos como calorías, pero en física se mide en Joules).</p>
+    <h4>🚀 Importancia histórica de la estandarización</h4>
+    <p>Caso clásico: la sonda <i>Mars Climate Orbiter</i> de la NASA (1999) se estrelló porque un equipo de ingenieros usó el sistema inglés (libras, pies) y otro el sistema métrico internacional (newtons, metros). Te servirá para ilustrar por qué la estandarización es un “logro colectivo”.</p>
+    <h4>👂 Didáctica Hermenéutica</h4>
+    <p>Tu rol es no emitir juicios de valor. Si un alumno dice “el tiempo se mide en horas”, en lugar de decir “¡Incorrecto, es en segundos!”, retroalimenta así:</p>
+    <p class="say-it">“Las horas son muy útiles para tu día a día, ¿pero cuál es la unidad base o más pequeña que usan los científicos en todo el mundo para estandarizarlo?”</p>
+  </aside>
+</section>
+
+<!-- ===================== 2. CRONOGRAMA ===================== -->
+<section class="slide k-intro" id="s-mapa" data-key="intro" data-phase="Bienvenida" data-time="120 minutos" data-title="Mapa de la sesión">
+  <div class="s-head"><span class="time-tag">🗺️ 120 min</span><h2 class="s-title">El mapa de nuestra aventura</h2><span class="s-emoji">🧭</span></div>
+  <div class="s-body">
+    <div class="phase-cols">
+      <div class="card phase-col">
+        <div class="pc-head bg-orange"><h3>🤔 INICIO</h3><p>30 min · La problematización de lo subjetivo</p></div>
+        <div class="pc-list">
+          <button class="pc-item" data-goto="s-explora"><span class="m">0–10</span>Dinámica de exploración</button>
+          <button class="pc-item" data-goto="s-contraste"><span class="m">10–20</span>Contraste de percepciones</button>
+          <button class="pc-item" data-goto="s-puente"><span class="m">20–30</span>El puente hacia la ciencia</button>
+        </div>
+      </div>
+      <div class="card phase-col">
+        <div class="pc-head bg-blue"><h3>🛠️ DESARROLLO</h3><p>60 min · Sistematización y práctica</p></div>
+        <div class="pc-list">
+          <button class="pc-item" data-goto="s-medicion"><span class="m">30–45</span>Explicación teórica y conceptos</button>
+          <button class="pc-item" data-goto="s-situaciones"><span class="m">45–55</span>Instrucciones para la evidencia</button>
+          <button class="pc-item" data-goto="s-practica"><span class="m">55–80</span>Trabajo práctico individual</button>
+          <button class="pc-item" data-goto="s-monitoreo"><span class="m">80–90</span>Monitoreo y acompañamiento</button>
+        </div>
+      </div>
+      <div class="card phase-col">
+        <div class="pc-head bg-purple"><h3>🏁 CIERR
+Pensamiento
+E</h3><p>30 min · Plenaria y reflexión</p></div>
+        <div class="pc-list">
+          <button class="pc-item" data-goto="s-plenaria"><span class="m">90–105</span>Revisión en plenaria</button>
+          <button class="pc-item" data-goto="s-reflexion"><span class="m">105–120</span>Reflexión final sobre la estandarización</button>
+          <button class="pc-item" data-goto="s-guion"><span class="m">📋</span>Guión rápido (síntesis)</button>
+        </div>
+      </div>
+    </div>
+    <p class="foot-note">👆 Haz clic en cualquier momento para saltar a esa parte de la clase</p>
+  </div>
+  <aside class="notes">
+    <h4>🗺️ Cronograma completo</h4>
+    <ul>
+      <li><b>Inicio (30 min):</b> 0–10 Dinámica de exploración · 10–20 Contraste de percepciones · 20–30 El puente hacia la ciencia.</li>
+      <li><b>Desarrollo (60 min):</b> 30–45 Explicación teórica · 45–55 Instrucciones para la evidencia · 55–80 Trabajo práctico individual · 80–90 Monitoreo y acompañamiento.</li>
+      <li><b>Cierre (30 min):</b> 90–105 Revisión en plenaria · 105–120 Reflexión final sobre la estandarización.</li>
+    </ul>
+    <p>El cronómetro inferior se carga solo con la duración de cada momento. Presiona <b>T</b> para iniciar/pausar y <b>R</b> para reiniciar.</p>
+  </aside>
+</section>
+
+<!-- ===================== 3. DIVISOR INICIO ===================== -->
+<section class="slide k-inicio" id="s-inicio" data-key="inicio" data-phase="🤔 Inicio" data-time="Min 0 – 30" data-title="Fase de Inicio">
+  <div class="divider">
+    <div class="divider-in">
+      <span class="big-emoji">🤔</span>
+      <h2>INICIO</h2>
+      <div class="sub">La problematización de lo subjetivo</div>
+      <div class="mins"><span>⏱️ 30 minutos · Minuto 0 – 30</span></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>🤔 Inicio (30 minutos)</h4>
+    <p><b>Propósito:</b> que los alumnos descubran por sí mismos que las palabras vagas (“cerquita”, “pesado”, “un ratito”) no sirven para describir el mundo con precisión.</p>
+    <ul>
+      <li>Preguntar: ¿Cómo medimos el largo del salón, la duración de una canción o el peso de una mochila?</li>
+      <li>Escuchar respuestas y notar lo subjetivo.</li>
+      <li>Explicar por qué la ciencia no puede usar “poquito” o “mucho”; necesita precisión.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ===================== 4. EXPLORACIÓN ===================== -->
+<section class="slide k-inicio" id="s-explora" data-key="inicio" data-phase="🤔 Inicio" data-time="Min 0 – 10" data-dur="10" data-title="Dinámica de exploración">
+  <div class="s-head"><span class="time-tag">⏱️ Min 0 – 10</span><h2 class="s-title">Dinámica de exploración</h2><span class="s-emoji">🔍</span></div>
+  <div class="s-body">
+    <div class="banner">🧐 ¿Qué tendrían que observar si quisieran saber…</div>
+    <div class="q-cards">
+      <div class="card q-card"><div class="q-emoji">🏫</div><p>…qué tan <span class="hl">largo</span> es el salón de clases?</p></div>
+      <div class="card q-card"><div class="q-emoji">🎵</div><p>…cuánto <span class="hl">dura</span> su canción favorita?</p></div>
+      <div class="card q-card"><div class="q-emoji">🎒</div><p>…qué tan <span class="hl">pesada</span> es su mochila hoy?</p></div>
+    </div>
+    <p class="foot-note">🙋 ¡Levanta la mano y comparte tu idea! <b>Todas las ideas valen</b></p>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 0 – 10 · Dinámica de exploración</h4>
+    <p>Inicia la clase lanzando al aire tres preguntas directas basadas en la vida cotidiana de los estudiantes:</p>
+    <p class="say-it">“¿Qué tendrían que observar si quisieran saber qué tan largo es el salón de clases?, ¿cuánto dura su canción favorita?, o ¿qué tan pesada es su mochila hoy?”</p>
+    <p>Escucha sin emitir juicios de valor (didáctica hermenéutica). Toma nota mental de las respuestas subjetivas (“un ratito”, “pesadísima”, “muy largo”): las usarás después.</p>
+  </aside>
+</section>
+
+<!-- ===================== 5. CONTRASTE ===================== -->
+<section class="slide k-inicio" id="s-contraste" data-key="inicio" data-phase="🤔 Inicio" data-time="Min 10 – 20" data-dur="10" data-title="Contraste de percepciones">
+  <div class="s-head"><span class="time-tag">⏱️ Min 10 – 20</span><h2 class="s-title">Contraste de percepciones</h2><span class="s-emoji">👀</span></div>
+  <div class="s-body">
+    <div class="banner">🚶 ¿Qué tan “largo” es el trayecto de la <u>entrada de la escuela</u> a <u>nuestro salón</u>?</div>
+    <div class="kids">
+      <div class="kid">
+        <div class="bubble" contenteditable="true" data-ph="✏️ Escribe aquí su respuesta…"></div>
+        <div class="fig"><span class="face">🧒</span><div class="body" style="height:100px"></div><span class="lbl">Alumno/a 1</span></div>
+      </div>
+      <div class="kid">
+        <div class="bubble" contenteditable="true" data-ph="✏️ Escribe aquí su respuesta…"></div>
+        <div class="fig"><span class="face">🧑</span><div class="body" style="height:150px;width:140px"></div><span class="lbl">Alumno/a 2</span></div>
+      </div>
+      <div class="kid">
+        <div class="bubble" contenteditable="true" data-ph="✏️ Escribe aquí su respuesta…"></div>
+        <div class="fig"><span class="face">🧍</span><div class="body" style="height:200px;width:110px"></div><span class="lbl">Alumno/a 3</span></div>
+      </div>
+    </div>
+    <div class="notice">
+      <button class="s-btn" data-reveal="contrasteRes">👀 ¿Qué notamos?</button>
+      <div class="card hide-until" id="contrasteRes" style="padding:14px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <span class="say">“está cerquita”</span><span class="say">“está muy lejos”</span><span class="say">“son unos cuantos pasos”</span>
+        <b style="font-size:26px">➜ ¡Cada quien lo describe distinto! Son descripciones <span class="hl">subjetivas</span>.</b>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 10 – 20 · Contraste de percepciones</h4>
+    <p>Pide a <b>tres alumnos de diferente estatura y complexión</b> que describan qué tan “largo” es el trayecto de la entrada de la escuela a su salón.</p>
+    <p><b>Anota en el pizarrón</b> sus respuestas (también puedes hacer clic en las burbujas de la pantalla y escribirlas). Probablemente serán subjetivas: “está cerquita”, “está muy lejos”, “son unos cuantos pasos”.</p>
+    <p>Después presiona “¿Qué notamos?” para evidenciar que cada persona lo percibe de forma diferente.</p>
+  </aside>
+</section>
+
+<!-- ===================== 6. PUENTE ===================== -->
+<section class="slide k-inicio" id="s-puente" data-key="inicio" data-phase="🤔 Inicio" data-time="Min 20 – 30" data-dur="10" data-title="El puente hacia la ciencia">
+  <div class="s-head"><span class="time-tag">⏱️ Min 20 – 30</span><h2 class="s-title">El puente hacia la ciencia</h2><span class="s-emoji">🌉</span></div>
+  <div class="s-body">
+    <div class="row grow">
+      <div class="card grow center">
+        <p class="lead">👷‍♀️ Si le dicen a un arquitecto:</p>
+        <p class="lead" style="font-size:40px;margin:8px 0">“Hágame una puerta <span class="hl">MUY ALTA</span>”</p>
+        <div class="doors">
+          <div class="door"><span style="font-size:70px">🚪</span>¿Esta?</div>
+          <div class="door"><span style="font-size:115px">🚪</span>¿Esta?</div>
+          <div class="door"><span style="font-size:165px">🚪</span>¿O esta?</div>
+        </div>
+        <p class="lead c-accent" style="-webkit-text-stroke:0">¿Creen que funcione? 🤔</p>
+      </div>
+      <div class="card grow center" style="display:flex;flex-direction:column;justify-content:center">
+        <div><span class="stamp">🚫 PROHIBIDAS EN LA CIENCIA</span></div>
+        <div class="no-words">
+          <span class="no-word">mucho</span><span class="no-word">poquito</span><span class="no-word">pesado</span>
+          <span class="no-word">cerquita</span><span class="no-word">un ratito</span><span class="no-word">muy alto</span>
+        </div>
+        <p class="lead" style="font-size:30px">¿Por qué? Porque significan <b>cosas distintas para cada persona</b>.</p>
+      </div>
+    </div>
+    <div class="row" style="align-items:center">
+      <button class="s-btn" data-reveal="puenteRes">✨ ¿Qué necesitamos?</button>
+      <div class="mega-banner grow hide-until" id="puenteRes">Necesitamos un lenguaje universal: <b>LA MEDICIÓN</b> 📏</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 20 – 30 · El puente hacia la ciencia</h4>
+    <p>Demuestra el problema de las descripciones ambiguas. Pregunta:</p>
+    <p class="say-it">“Si le dicen a un arquitecto que haga una puerta ‘muy alta’, ¿creen que funcione?”</p>
+    <p>Explica que en la ciencia no podemos usar términos como “mucho”, “poquito” o “pesado”, porque significan cosas distintas para cada persona. <b>Necesitamos un lenguaje universal: la medición.</b></p>
+  </aside>
+</section>
+
+<!-- ===================== 7. DIVISOR DESARROLLO ===================== -->
+<section class="slide k-desarrollo" id="s-desarrollo" data-key="desarrollo" data-phase="🛠️ Desarrollo" data-time="Min 30 – 90" data-title="Fase de Desarrollo">
+  <div class="divider">
+    <div class="divider-in">
+      <span class="big-emoji">🛠️</span>
+      <h2>DESARROLLO</h2>
+      <div class="sub">Sistematización y práctica</div>
+      <div class="mins"><span>⏱️ 60 minutos · Minuto 30 – 90</span></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>🛠️ Desarrollo (60 minutos)</h4>
+    <ul>
+      <li>Explicar y dictar en el pizarrón: Medición, Magnitud y Unidad de medida.</li>
+      <li>Crear tabla de las 4 magnitudes clave: Longitud (m), Masa (kg), Tiempo (s), Energía/Trabajo (Joule).</li>
+      <li>Asignar ejercicio práctico: situación → magnitud → unidad.</li>
+      <li>Caminar por el aula, supervisar sin regañar; guiar con preguntas.</li>
+    </ul>
+    <p><b>Conceptos Imprescindibles:</b> durante el minuto 30 al 45 es vital asegurarte de que los cuatro conceptos queden registrados en las libretas.</p>
+  </aside>
+</section>
+
+<!-- ===================== 8. MEDICIÓN ===================== -->
+<section class="slide k-desarrollo" id="s-medicion" data-key="desarrollo" data-phase="🛠️ Desarrollo" data-time="Min 30 – 45" data-dur="15" data-title="Concepto: Medición">
+  <div class="s-head"><span class="time-tag">⏱️ Min 30 – 45</span><h2 class="s-title">Concepto imprescindible</h2><span class="s-emoji">📏</span></div>
+  <div class="s-body">
+    <div class="write-badge">📝 ¡Apunta esto en tu libreta! <small>Concepto 1 de 4</small></div>
+    <div class="notebook">
+      <div class="def-title">Medición</div>
+      <p class="def">Es el proceso de <b>comparar</b> una característica de un objeto o fenómeno con una <b>referencia o patrón estandarizado</b> para asignarle un <b>valor numérico exacto</b>. Sirve para <b>eliminar la ambigüedad</b> (como decir “mucho” o “poco”).</p>
+    </div>
+    <div class="flow">
+      <div class="flow-box"><span class="e">🔍</span>Característica del objeto</div>
+      <span class="op">+</span>
+      <div class="flow-box"><span class="e">📏</span>Patrón estandarizado</div>
+      <span class="op">=</span>
+      <div class="flow-box"><span class="e">🔢</span>Valor numérico exacto</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 30 – 45 · Explicación teórica (1/6)</h4>
+    <p><i>(Instrucción: Pedir a los alumnos que apunten el siguiente concepto en sus libretas)</i></p>
+    <p><b>Medición:</b> Es el proceso de comparar una característica de un objeto o fenómeno con una referencia o patrón estandarizado para asignarle un valor numérico exacto. Sirve para eliminar la ambigüedad (como decir “mucho” o “poco”).</p>
+    <p>Retoma el ejemplo del trayecto: “En vez de ‘cerquita’, podríamos decir ‘45 metros’”.</p>
+  </aside>
+</section>
+
+<!-- ===================== 9. MAGNITUD ===================== -->
+<section class="slide k-desarrollo" id="s-magnitud" data-key="desarrollo" data-phase="🛠️ Desarrollo" data-time="Min 30 – 45" data-dur="15" data-title="Concepto: Magnitud">
+  <div class="s-head"><span class="time-tag">⏱️ Min 30 – 45</span><h2 class="s-title">Concepto imprescindible</h2><span class="s-emoji">🧪</span></div>
+  <div class="s-body">
+    <div class="write-badge">📝 ¡Apunta esto en tu libreta! <small>Concepto 2 de 4</small></div>
+    <div class="notebook">
+      <div class="def-title">Magnitud</div>
+      <p class="def">Es <b>cualquier propiedad o característica</b> de un cuerpo o fenómeno <b>que se puede medir</b>.</p>
+    </div>
+    <div class="yesno">
+      <div class="card yes">
+        <h3>✅ ¡Se puede medir! Es magnitud</h3>
+        <ul><li>📏 El largo de la mesa</li><li>🎵 La duración de una canción</li><li>🍎 La cantidad de materia de una manzana</li></ul>
+      </div>
+      <div class="card no">
+        <h3>❌ No se puede medir con un patrón</h3>
+        <ul><li>🎨 Qué tan bonito es un dibujo</li><li>🍦 Tu sabor de helado favorito</li><li>🎮 Qué tan divertido es un juego</li></ul>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 30 – 45 · Explicación teórica (2/6)</h4>
+    <p><i>(Instrucción: Pedir a los alumnos que apunten el siguiente concepto en sus libretas)</i></p>
+    <p><b>Magnitud:</b> Es cualquier propiedad o característica de un cuerpo o fenómeno que se puede medir.</p>
+    <p>Usa los ejemplos para contrastar una <b>cualidad subjetiva</b> (lo bonito, lo divertido) con una <b>magnitud física objetiva</b> (largo, duración, cantidad de materia).</p>
+  </aside>
+</section>
+
+<!-- ===================== 10. UNIDAD ===================== -->
+<section class="slide k-desarrollo" id="s-unidad" data-key="desarrollo" data-phase="🛠️ Desarrollo" data-time="Min 30 – 45" data-dur="15" data-title="Concepto: Unidad de medida">
+  <div class="s-head"><span class="time-tag">⏱️ Min 30 – 45</span><h2 class="s-title">Concepto imprescindible</h2><span class="s-emoji">🎯</span></div>
+  <div class="s-body">
+    <div class="write-badge">📝 ¡Apunta esto en tu libreta! <small>Concepto 3 de 4</small></div>
+    <div class="notebook">
+      <div class="def-title">Unidad de medida</div>
+      <p class="def">Es la <b>cantidad estandarizada</b> que se utiliza como <b>referencia obligatoria</b> para medir una magnitud.</p>
+    </div>
+    <div class="unit-demo">
+      <div class="card big-measure">
+        <div class="bm-part"><div class="v" style="color:var(--yellow)">5</div><div class="l">¿Cuántas veces?</div></div>
+        <div class="bm-part"><div class="v" style="color:var(--blue)">m</div><div class="l">Unidad (patrón)</div></div>
+      </div>
+      <div class="qa">
+        <div style="background:var(--c2)">🧪 <b>Magnitud</b> = ¿<u>QUÉ</u> medimos? <br><span class="muted">→ la longitud</span></div>
+        <div style="background:#fff4c2">📏 <b>Unidad</b> = ¿<u>CON QUÉ</u> lo comparamos? <br><span class="muted">→ el metro</span></div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 30 – 45 · Explicación teórica (3/6)</h4>
+    <p><i>(Instrucción: Pedir a los alumnos que apunten el siguiente concepto en sus libretas)</i></p>
+    <p><b>Unidad de medida:</b> Es la cantidad estandarizada que se utiliza como referencia obligatoria para medir una magnitud.</p>
+    <p>Recalca: la “Magnitud” es la propiedad que se puede medir y la “Unidad” es el patrón de referencia. Un resultado de medición siempre lleva <b>número + unidad</b> (ej. 5 m).</p>
+  </aside>
+</section>
+
+<!-- ===================== 11. TABLA PIZARRÓN ===================== -->
+<section class="slide k-desarrollo" id="s-tabla" data-key="desarrollo" data-phase="🛠️ Desarrollo" data-time="Min 30 – 45" data-dur="15" data-title="Tabla del pizarrón">
+  <div class="s-head"><span class="time-tag">⏱️ Min 30 – 45</span><h2 class="s-title">Del mundo a la ciencia</h2><span class="s-emoji">🧑‍🏫</span></div>
+  <div class="s-body">
+    <div class="legend">
+      <div>🧪 <b>Magnitud:</b> la propiedad que se puede medir</div>
+      <div>📏 <b>Unidad:</b> el patrón de referencia</div>
+    </div>
+    <div class="board">
+      <table class="sheet-table" id="boardTable">
+        <thead><tr><th>🌎 Característica del entorno</th><th>🧪 Magnitud</th><th>📏 Unidad de Medida Fundamental</th></tr></thead>
+        <tbody>
+          <tr class="row-hidden"><td>📏 Largo / Distancia</td><td class="mag">Longitud</td><td class="uni"><b>metro (m)</b></td></tr>
+          <tr class="row-hidden"><td>⏱️ Duración</td><td class="mag">Tiempo</td><td class="uni"><b>segundo (s)</b></td></tr>
+          <tr class="row-hidden"><td>🎒 Cantidad de materia (“lo pesado”)</td><td class="mag">Masa</td><td class="uni"><b>kilogramo (kg)</b></td></tr>
+          <tr class="row-hidden"><td>💪 Esfuerzo / Movimiento</td><td class="mag">Energía o Trabajo</td><td class="uni"><b>Joule (J)</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="btn-row">
+      <button class="s-btn" data-rows="boardTable">➕ Siguiente fila</button>
+      <button class="s-btn alt" data-rowsall="boardTable">👁️ Mostrar todo</button>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 30 – 45 · Explicación teórica (4/6)</h4>
+    <p>Dibuja en el pizarrón una tabla de tres columnas: <i>Característica del entorno</i>, <i>Magnitud</i> y <i>Unidad de Medida Fundamental</i>. Ve llenándola <b>poco a poco</b> (botón “Siguiente fila”).</p>
+    <ul>
+      <li>Largo/Distancia → Longitud → metro (m).</li>
+      <li>Duración → Tiempo → segundo (s).</li>
+      <li>Cantidad de materia (“lo pesado”) → Masa → kilogramo (kg).</li>
+      <li>Esfuerzo/Movimiento → Energía o Trabajo → Joule (J).</li>
+    </ul>
+    <h4>⚖️ Si preguntan por el peso</h4>
+    <p>Los kilogramos miden <i>masa</i> (cantidad de materia); el <i>peso</i> es una fuerza (la gravedad atrayendo esa masa) y se mide en Newtons. Hoy nos enfocamos en la <b>Masa</b>.</p>
+  </aside>
+</section>
+
+<!-- ===================== 12. MAGNITUDES FUNDAMENTALES ===================== -->
+<section class="slide k-desarrollo" id="s-fundamentales" data-key="desarrollo" data-phase="🛠️ Desarrollo" data-time="Min 30 – 45" data-dur="15" data-title="Tabla a memorizar">
+  <div class="s-head"><span class="time-tag">⏱️ Min 30 – 45</span><h2 class="s-title">Tabla a memorizar</h2><span class="s-emoji">🧠</span></div>
+  <div class="s-body">
+    <div class="row" style="align-items:center;justify-content:space-between">
+      <div class="write-badge">📝 ¡Apunta esta tabla en tu libreta! <small>Concepto 4 de 4</small></div>
+      <button class="s-btn alt" data-flipall="flipGrid">🔄 Voltear todas</button>
+    </div>
+    <div class="flip-grid" id="flipGrid">
+      <div class="flip m-longitud"><div class="flip-inner">
+        <div class="face front"><span class="num">1</span><span class="e">📏</span><h3>Longitud</h3><span class="tap">👆 Toca para voltear</span></div>
+        <div class="face back"><span class="num">1</span><p>Mide <b>distancias</b>.</p><span class="unit">metro (m)</span></div>
+      </div></div>
+      <div class="flip m-masa"><div class="flip-inner">
+        <div class="face front"><span class="num">2</span><span class="e">⚖️</span><h3>Masa</h3><span class="tap">👆 Toca para voltear</span></div>
+        <div class="face back"><span class="num">2</span><p>Mide la <b>cantidad de materia</b>.</p><span class="unit">kilogramo (kg)</span></div>
+      </div></div>
+      <div class="flip m-tiempo"><div class="flip-inner">
+        <div class="face front"><span class="num">3</span><span class="e">⏱️</span><h3>Tiempo</h3><span class="tap">👆 Toca para voltear</span></div>
+        <div class="face back"><span class="num">3</span><p>Mide la <b>duración de los eventos</b>.</p><span class="unit">segundo (s)</span></div>
+      </div></div>
+      <div class="flip m-energia"><div class="flip-inner">
+        <div class="face front"><span class="num">4</span><span class="e">⚡</span><h3>Energía o Trabajo</h3><span class="tap">👆 Toca para voltear</span></div>
+        <div class="face back"><span class="num">4</span><p>Mide el <b>esfuerzo o la capacidad para producir un cambio</b>.</p><span class="unit">Joule (J)</span></div>
+      </div></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 30 – 45 · Explicación teórica (5/6)</h4>
+    <p><i>(Instrucción: Pedir a los alumnos que apunten el siguiente concepto en sus libretas)</i></p>
+    <p><b>Tabla de magnitudes fundamentales a memorizar:</b></p>
+    <ol style="padding-left:22px">
+      <li><b>Longitud:</b> Mide distancias. Su unidad es el <b>metro (m)</b>.</li>
+      <li><b>Masa:</b> Mide la cantidad de materia. Su unidad es el <b>kilogramo (kg)</b>.</li>
+      <li><b>Tiempo:</b> Mide la duración de los eventos. Su unidad es el <b>segundo (s)</b>.</li>
+      <li><b>Energía o Trabajo:</b> Mide el esfuerzo o la capacidad para producir un cambio. Su unidad es el <b>Joule (J)</b>.</li>
+    </ol>
+    <p>Sugerencia: antes de voltear cada tarjeta, pregunta al grupo “¿Qué mide? ¿Cuál es su unidad?”.</p>
+  </aside>
+</section>
+
+<!-- ===================== 13. JOULE ===================== -->
+<section class="slide k-desarrollo" id="s-joule" data-key="desarrollo" data-phase="🛠️ Desarrollo" data-time="Min 30 – 45" data-dur="15" data-title="¿Qué es un Joule?">
+  <div class="s-head"><span class="time-tag">⏱️ Min 30 – 45</span><h2 class="s-title">¿Y qué es un Joule?</h2><span class="s-emoji">⚡</span></div>
+  <div class="s-body">
+    <div class="joule">
+      <div class="card">
+        <p class="lead">La energía o trabajo es <span class="hl">el esfuerzo necesario para que algo ocurra</span>. Se mide en <b>Joules (J)</b>.</p>
+        <div class="ex-list">
+          <div class="ex"><span class="e">🛋️</span>Empujar un mueble pesado</div>
+          <div class="ex"><span class="e">🏃</span>Subir las escaleras de la escuela</div>
+          <div class="ex"><span class="e">🍌</span>La energía que nos aporta un alimento: en la vida diaria decimos <b>calorías</b>, pero en física se mide en <b>Joules</b></div>
+        </div>
+      </div>
+      <div class="card fact">
+        <span class="e">🍎</span>
+        <h3>¿Dato curioso?</h3>
+        <p>Levantar una manzana pequeña (unos 100 g) <b>un metro</b> hacia arriba requiere aproximadamente <b>1 Joule</b> de trabajo.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 30 – 45 · Explicación teórica (6/6)</h4>
+    <p>El Joule (J) es una <b>unidad derivada</b>: equivale a la fuerza de <b>un Newton desplazando un objeto un metro</b> (1 J = 1 N · 1 m).</p>
+    <p>Para los alumnos, asocia la energía/trabajo con “el esfuerzo necesario para que algo ocurra”: empujar un mueble pesado o la energía que aporta un alimento (calorías en lo cotidiano, Joules en física).</p>
+  </aside>
+</section>
+
+<!-- ===================== 14. SITUACIONES ===================== -->
+<section class="slide k-desarrollo" id="s-situaciones" data-key="desarrollo" data-phase="🛠️ Desarrollo" data-time="Min 45 – 55" data-dur="10" data-title="Instrucciones para la evidencia">
+  <div class="s-head"><span class="time-tag">⏱️ Min 45 – 55</span><h2 class="s-title">Instrucciones para la evidencia</h2><span class="s-emoji">🕵️</span></div>
+  <div class="s-body">
+    <div class="banner">✍️ Copia estas situaciones en tu cuaderno. ¡Son <u>ambiguas</u>! Tú descubrirás qué magnitud se esconde en cada una.</div>
+    <div class="sit-list">
+      <div class="sit-item"><span class="n">1</span><span class="e">🚦</span>Lo que tarda un semáforo en cambiar</div>
+      <div class="sit-item"><span class="n">2</span><span class="e">📱</span>El tamaño de mi celular</div>
+      <div class="sit-item"><span class="n">3</span><span class="e">🪜</span>El esfuerzo de subir tres pisos por las escaleras</div>
+      <div class="sit-item"><span class="n">4</span><span class="e">🎂</span>La harina para hacer un pastel</div>
+      <div class="sit-item"><span class="n">5</span><span class="e">🏠</span>La distancia de mi casa a la escuela</div>
+      <div class="sit-item"><span class="n">6</span><span class="e">🔔</span>Lo que dura el recreo</div>
+      <div class="sit-item"><span class="n">7</span><span class="e">🎒</span>Lo pesada que está mi mochila</div>
+      <div class="sit-item"><span class="n">8</span><span class="e">🍌</span>La energía que me da un plátano en el desayuno</div>
+      <div class="sit-item"><span class="n">9</span><span class="e">⚽</span>El largo de una cancha de fútbol</div>
+      <div class="sit-item"><span class="n">10</span><span class="e">🛋️</span>El esfuerzo de empujar un mueble pesado</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 45 – 55 · Instrucciones para la evidencia</h4>
+    <p>Dicta o anota en el pizarrón una lista de <b>8 a 10 situaciones ambiguas</b>. La pantalla incluye 10 (las cuatro del plan: semáforo, celular, subir tres pisos, harina para un pastel, más seis adicionales).</p>
+    <p>Asegúrate de que todos terminen de copiarlas antes de pasar al trabajo práctico.</p>
+  </aside>
+</section>
+
+<!-- ===================== 15. PRÁCTICA ===================== -->
+<section class="slide k-desarrollo" id="s-practica" data-key="desarrollo" data-phase="🛠️ Desarrollo" data-time="Min 55 – 80" data-dur="25" data-title="Trabajo práctico individual">
+  <div class="s-head"><span class="time-tag">⏱️ Min 55 – 80</span><h2 class="s-title">Trabajo práctico individual</h2><span class="s-emoji">✏️</span></div>
+  <div class="s-body">
+    <div class="practice">
+      <div class="steps">
+        <div class="step"><span class="n">1</span>Dibuja en tu cuaderno una tabla de <b>3 columnas</b>.</div>
+        <div class="step"><span class="n">2</span>Escribe cada <b>situación</b> en la primera columna.</div>
+        <div class="step"><span class="n">3</span>Asocia cada situación con su <b>magnitud</b>.</div>
+        <div class="step"><span class="n">4</span>Escribe su <b>unidad de medida</b> en el Sistema Internacional (SI).</div>
+        <div class="banner solo" style="font-size:28px">🤫 Trabajo individual · ⏱️ 25 minutos</div>
+      </div>
+      <div class="notebook mock">
+        <h4>📓 Así se ve tu tabla:</h4>
+        <table>
+          <thead><tr><th>Situación</th><th>Magnitud</th><th>Unidad (SI)</th></tr></thead>
+          <tbody>
+            <tr class="ex-row"><td>Ejemplo: lo que mide mi lápiz</td><td>Longitud</td><td>metro (m)</td></tr>
+            <tr><td>1. Lo que tarda un semáforo…</td><td></td><td></td></tr>
+            <tr><td>2. El tamaño de mi celular</td><td></td><td></td></tr>
+            <tr><td>3. …</td><td></td><td></td></tr>
+            <tr><td>…</td><td></td><td></td></tr>
+            <tr><td>10. …</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 55 – 80 · Trabajo práctico individual</h4>
+    <p>Los estudiantes deberán crear en su cuaderno una tabla donde asocien cada situación a su <b>magnitud</b> correspondiente y a su <b>unidad de medida en el Sistema Internacional</b>.</p>
+    <p>Inicia el cronómetro de 25 minutos (tecla <b>T</b>).</p>
+  </aside>
+</section>
+
+<!-- ===================== 16. MONITOREO ===================== -->
+<section class="slide k-desarrollo" id="s-monitoreo" data-key="desarrollo" data-phase="🛠️ Desarrollo" data-time="Min 80 – 90" data-dur="10" data-title="Monitoreo y acompañamiento">
+  <div class="s-head"><span class="time-tag">⏱️ Min 80 – 90</span><h2 class="s-title">Monitoreo y acompañamiento</h2><span class="s-emoji">🚶</span></div>
+  <div class="s-body">
+    <div class="monitor">
+      <div class="card">
+        <h3 style="font-size:32px">🧑‍🎓 Revisa tu trabajo:</h3>
+        <ul class="checklist">
+          <li><span class="bx"></span>¿Mi tabla tiene 3 columnas?</li>
+          <li><span class="bx"></span>¿Cada situación tiene su magnitud?</li>
+          <li><span class="bx"></span>¿Cada magnitud tiene su unidad?</li>
+          <li><span class="bx"></span>¿Usé unidades del Sistema Internacional?</li>
+          <li><span class="bx"></span>¿Puedo explicar <b>por qué</b> lo clasifiqué así?</li>
+        </ul>
+      </div>
+      <div class="guides">
+        <div class="banner" style="font-size:28px">💡 Preguntas guía para pensar (¡no para regañar!)</div>
+        <div class="guide-q"><span class="e">🪜</span>¿Para subir las escaleras necesitas medir una distancia o hacer un esfuerzo que gasta tu cuerpo?</div>
+        <div class="guide-q"><span class="e">🤔</span>Lo que quieres saber, ¿es cuánto mide, cuánto dura, cuánta materia tiene o cuánto esfuerzo requiere?</div>
+        <div class="guide-q"><span class="e">⏰</span>Las horas son muy útiles para tu día a día, ¿pero cuál es la unidad base que usan los científicos en todo el mundo?</div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 80 – 90 · Monitoreo y acompañamiento</h4>
+    <p>Recorre el aula. Observa cómo asocian los conceptos. Si detectas áreas de oportunidad (ej. confunden el Joule), haz preguntas guía:</p>
+    <p class="say-it">“¿Para subir las escaleras necesitas medir una distancia o hacer un esfuerzo que gasta tu cuerpo?”</p>
+    <h4>👂 Didáctica hermenéutica</h4>
+    <p>Supervisa sin regañar. Si un alumno dice “el tiempo se mide en horas”, no digas “¡Incorrecto!”; pregunta: “Las horas son muy útiles para tu día a día, ¿pero cuál es la unidad base o más pequeña que usan los científicos en todo el mundo para estandarizarlo?”.</p>
+    <p>La lista de verificación de la izquierda es interactiva: haz clic en cada punto para marcarlo.</p>
+  </aside>
+</section>
+
+<!-- ===================== 17. DIVISOR CIERRE ===================== -->
+<section class="slide k-cierre" id="s-cierre" data-key="cierre" data-phase="🏁 Cierre" data-time="Min 90 – 120" data-title="Fase de Cierre">
+  <div class="divider">
+    <div class="divider-in">
+      <span class="big-emoji">🏁</span>
+      <h2>CIERRE</h2>
+      <div class="sub">Plenaria y reflexión</div>
+      <div class="mins"><span>⏱️ 30 minutos · Minuto 90 – 120</span></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>🏁 Cierre (30 minutos)</h4>
+    <ul>
+      <li>Revisar el ejercicio en conjunto (plenaria).</li>
+      <li>Pregunta final de debate: ¿Por qué la humanidad tuvo que ponerse de acuerdo para usar los mismos metros y kilos en todo el mundo?</li>
+      <li>Concluir que la estandarización es un logro de todos que permite la ciencia y la vida diaria.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ===================== 18. PLENARIA ===================== -->
+<section class="slide k-cierre" id="s-plenaria" data-key="cierre" data-phase="🏁 Cierre" data-time="Min 90 – 105" data-dur="15" data-title="Revisión en plenaria">
+  <div class="s-head"><span class="time-tag">⏱️ Min 90 – 105</span><h2 class="s-title">Revisión en plenaria</h2><span class="s-emoji">🗣️</span></div>
+  <div class="s-body">
+    <div class="rules">
+      <div>🗣️ Comparte cómo lo clasificaste</div>
+      <div>👂 Escuchamos tus razones</div>
+      <div>🤝 Si pensamos distinto, llegamos a un acuerdo</div>
+      <button class="s-btn" style="flex:0 0 auto;font-size:22px" data-openall="plenGrid">👁️ Mostrar todas</button>
+    </div>
+    <div class="plen-grid" id="plenGrid">
+      <div class="sit m-tiempo"><span class="n">1</span><span class="e">🚦</span><span class="t">Lo que tarda un semáforo en cambiar</span><span class="tap">👆 Revisar</span><span class="ans">Tiempo · segundo (s)</span></div>
+      <div class="sit m-longitud"><span class="n">2</span><span class="e">📱</span><span class="t">El tamaño de mi celular</span><span class="tap">👆 Revisar</span><span class="ans">Longitud · metro (m)</span></div>
+      <div class="sit m-energia"><span class="n">3</span><span class="e">🪜</span><span class="t">El esfuerzo de subir tres pisos</span><span class="tap">👆 Revisar</span><span class="ans">Energía/Trabajo · Joule (J)</span></div>
+      <div class="sit m-masa"><span class="n">4</span><span class="e">🎂</span><span class="t">La harina para hacer un pastel</span><span class="tap">👆 Revisar</span><span class="ans">Masa · kilogramo (kg)</span></div>
+      <div class="sit m-longitud"><span class="n">5</span><span class="e">🏠</span><span class="t">La distancia de mi casa a la escuela</span><span class="tap">👆 Revisar</span><span class="ans">Longitud · metro (m)</span></div>
+      <div class="sit m-tiempo"><span class="n">6</span><span class="e">🔔</span><span class="t">Lo que dura el recreo</span><span class="tap">👆 Revisar</span><span class="ans">Tiempo · segundo (s)</span></div>
+      <div class="sit m-masa"><span class="n">7</span><span class="e">🎒</span><span class="t">Lo pesada que está mi mochila</span><span class="tap">👆 Revisar</span><span class="ans">Masa · kilogramo (kg)</span></div>
+      <div class="sit m-energia"><span class="n">8</span><span class="e">🍌</span><span class="t">La energía que me da un plátano</span><span class="tap">👆 Revisar</span><span class="ans">Energía · Joule (J)</span></div>
+      <div class="sit m-longitud"><span class="n">9</span><span class="e">⚽</span><span class="t">El largo de una cancha de fútbol</span><span class="tap">👆 Revisar</span><span class="ans">Longitud · metro (m)</span></div>
+      <div class="sit m-energia"><span class="n">10</span><span class="e">🛋️</span><span class="t">El esfuerzo de empujar un mueble</span><span class="tap">👆 Revisar</span><span class="ans">Energía/Trabajo · Joule (J)</span></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 90 – 105 · Revisión en plenaria</h4>
+    <p>Pide a diferentes estudiantes que compartan cómo clasificaron las situaciones en su cuaderno. Utiliza el <b>método hermenéutico</b> para escuchar sus justificaciones.</p>
+    <p>Fomenta que <b>entre ellos mismos lleguen a acuerdos</b> si hay discrepancias, guiándolos hacia las unidades correctas. Revela cada tarjeta <b>solo después</b> de escuchar al grupo.</p>
+    <h4>✅ Clave de respuestas</h4>
+    <ul>
+      <li>Tiempo (s): 1, 6</li>
+      <li>Longitud (m): 2, 5, 9</li>
+      <li>Masa (kg): 4, 7</li>
+      <li>Energía/Trabajo (J): 3, 8, 10</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ===================== 19. REFLEXIÓN ===================== -->
+<section class="slide k-cierre" id="s-reflexion" data-key="cierre" data-phase="🏁 Cierre" data-time="Min 105 – 120" data-dur="15" data-title="Reflexión sobre la estandarización">
+  <div class="s-head"><span class="time-tag">⏱️ Min 105 – 120</span><h2 class="s-title">Reflexión final</h2><span class="s-emoji">💭</span></div>
+  <div class="s-body">
+    <div class="card big-q">¿Por qué creen que fue importante para la humanidad ponerse de acuerdo y usar todos los mismos metros y los mismos segundos? 🌍</div>
+    <div class="reflect">
+      <div class="benefits">
+        <div class="benefit"><span class="e">🗺️</span><div><h4>Comunicación mundial</h4><span class="tap">👆 Toca para descubrir</span><p>Un científico en Japón y una estudiante en México entienden exactamente lo mismo cuando dicen “1 metro”.</p></div></div>
+        <div class="benefit"><span class="e">🛒</span><div><h4>Comercio</h4><span class="tap">👆 Toca para descubrir</span><p>Un kilogramo de frijol es el mismo kilogramo en cualquier mercado del mundo.</p></div></div>
+        <div class="benefit"><span class="e">🔬</span><div><h4>Ciencia</h4><span class="tap">👆 Toca para descubrir</span><p>Los experimentos se pueden repetir, comparar y comprobar en cualquier país.</p></div></div>
+      </div>
+      <div class="card mars">
+        <h3>🚀 Historia real: Mars Climate Orbiter (NASA, 1999)</h3>
+        <button class="s-btn" style="align-self:flex-start" data-reveal="marsStory">🛰️ ¿Qué pasó?</button>
+        <div class="hide-until" id="marsStory" style="display:flex;flex-direction:column;gap:12px">
+          <div class="teams">
+            <div class="team us">👷 Equipo A<br>Sistema inglés<br>(libras, pies)</div>
+            <b style="font-size:34px">≠</b>
+            <div class="team si">👩‍🔬 Equipo B<br>Sistema Internacional<br>(newtons, metros)</div>
+          </div>
+          <div class="crash">💥 ¡La sonda se estrelló en Marte!</div>
+          <p>Por no usar las mismas unidades, una misión de millones de dólares se perdió.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>⏱️ Minuto 105 – 120 · Reflexión final sobre la estandarización</h4>
+    <p>Plantea la pregunta de cierre:</p>
+    <p class="say-it">“¿Por qué creen que fue importante para la humanidad ponerse de acuerdo y usar todos los mismos metros y los mismos segundos?”</p>
+    <p>Motívalos a reflexionar sobre cómo esto facilita la <b>comunicación mundial</b>, el <b>comercio</b> y la <b>ciencia</b>. Deja que respondan antes de revelar cada tarjeta.</p>
+    <h4>🚀 Mars Climate Orbiter (1999)</h4>
+    <p>La sonda de la NASA se estrelló porque un equipo de ingenieros usó el sistema inglés (libras, pies) y otro el sistema métrico internacional (newtons, metros). Úsalo para mostrar por qué la estandarización es un “logro colectivo”.</p>
+  </aside>
+</section>
+
+<!-- ===================== 20. CONCLUSIÓN ===================== -->
+<section class="slide k-cierre" id="s-conclusion" data-key="cierre" data-phase="🏁 Cierre" data-time="Min 105 – 120" data-dur="15" data-title="Conclusión">
+  <div class="final">
+    <span class="orbit bg-blue" style="left:120px;top:60px">m</span>
+    <span class="orbit bg-green" style="right:120px;top:60px;animation-delay:.5s">kg</span>
+    <span class="orbit bg-orange" style="left:160px;bottom:80px;animation-delay:1s">s</span>
+    <span class="orbit bg-pink" style="right:160px;bottom:80px;animation-delay:.25s">J</span>
+    <span class="globe">🌎</span>
+    <h3>La estandarización es un logro colectivo de la humanidad</h3>
+    <p>🤝 El conocimiento científico es un <b>acuerdo de todos</b>: gracias a que usamos los mismos metros, kilogramos, segundos y joules, podemos hacer ciencia, comerciar y comunicarnos en nuestra vida diaria.</p>
+    <span class="kicker" style="background:var(--green)">🎉 ¡Gracias por medir el mundo con nosotros!</span>
+  </div>
+  <aside class="notes">
+    <h4>🎯 Conclusión</h4>
+    <p>Concluye que la estandarización es un logro de todos que permite la ciencia y la vida diaria, <b>validando que el conocimiento científico es un logro y acuerdo colectivo de la humanidad</b>.</p>
+  </aside>
+</section>
+
+<!-- ===================== 21. GUIÓN RÁPIDO ===================== -->
+<section class="slide k-sintesis" id="s-guion" data-key="sintesis" data-phase="📋 Síntesis" data-time="120 minutos" data-title="Guión rápido de clase">
+  <div class="s-head"><span class="time-tag">📋 Síntesis</span><h2 class="s-title">Guión rápido de clase</h2><span class="s-emoji">⭐</span></div>
+  <div class="s-body">
+    <div class="guion">
+      <div class="card">
+        <div class="pc-head bg-orange"><h3>🤔 INICIO (30m)</h3><p>El problema de las palabras vagas</p></div>
+        <ul>
+          <li>Preguntar: ¿Cómo medimos el largo del salón, la duración de una canción o el peso de una mochila?</li>
+          <li>Escuchar respuestas y notar lo subjetivo (“cerquita”, “pesado”, “un ratito”).</li>
+          <li>Explicar por qué la ciencia no puede usar “poquito” o “mucho”; necesita precisión.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="pc-head bg-blue"><h3>🛠️ DESARROLLO (60m)</h3><p>Conceptos y ejercicio</p></div>
+        <ul>
+          <li>Explicar y dictar: Medición, Magnitud y Unidad de medida.</li>
+          <li>Tabla de las 4 magnitudes clave: Longitud (m), Masa (kg), Tiempo (s), Energía/Trabajo (Joule).</li>
+          <li>Ejercicio: situación → magnitud → unidad, en la libreta.</li>
+          <li>Caminar por el aula, supervisar sin regañar; guiar con preguntas.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="pc-head bg-purple"><h3>🏁 CIERRE (30m)</h3><p>Plenaria y estandarización</p></div>
+        <ul>
+          <li>Revisar el ejercicio en conjunto (plenaria).</li>
+          <li>Debate: ¿Por qué la humanidad tuvo que ponerse de acuerdo para usar los mismos metros y kilos en todo el mundo?</li>
+          <li>Concluir: la estandarización es un logro de todos que permite la ciencia y la vida diaria.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h4>📋 Guión rápido (síntesis)</h4>
+    <p>Esta diapositiva resume toda la sesión. Puedes usarla como repaso final con el grupo o como guía de consulta rápida.</p>
+  </aside>
+</section>
+
+</div>
+</div>
+
+<footer class="controls">
+  <button class="btn nav" id="prevBtn">⬅️ Anterior</button>
+  <div class="progress-wrap"><div id="progress"></div></div>
+  <span id="counter">1 / 21</span>
+  <div class="timer" id="timer" title="Cronómetro de la actividad (T = iniciar/pausar, R = reiniciar)">
+    <div class="tl"><span id="timerDisplay">00:00</span><span id="timerLabel">Sin actividad</span></div>
+    <button id="timerPlay">▶</button>
+    <button id="timerReset">↺</button>
+  </div>
+  <button class="btn icon-btn" id="menuBtn" title="Menú (M)">☰</button>
+  <button class="btn icon-btn" id="notesBtn" title="Notas del docente (N)">🍎</button>
+  <button class="btn icon-btn" id="fsBtn" title="Pantalla completa (F)">⛶</button>
+  <button class="btn nav" id="nextBtn">Siguiente ➡️</button>
+</footer>
+
+<div id="notes">
+  <div class="nh"><h3>🍎 Notas del docente</h3><button class="btn" id="notesClose">✖</button></div>
+  <span id="notesTitle"></span>
+  <div id="notesBody"></div>
+</div>
+
+<div id="menu">
+  <div class="menu-panel">
+    <div class="nh"><h3>☰ Ir a la diapositiva…</h3><button class="btn" id="menuClose">✖</button></div>
+    <div id="menuGrid"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const slides = [...document.querySelectorAll('.slide')];
+  const N = slides.length;
+  const colors = {intro:'#f15bb5', inicio:'#ff9f1c', desarrollo:'#4d96ff', cierre:'#9b5de5', sintesis:'#06d6a0'};
+  const stage = $('#stage'), viewport = $('#viewport');
+  let cur = 0;
+
+  /* ---------- Escalado del escenario ---------- */
+  function fit(){
+    const s = Math.min(viewport.clientWidth/1600, viewport.clientHeight/900);
+    stage.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+
+  /* ---------- Cronómetro ---------- */
+  let remaining = 0, running = false, iv = null, loadedSeg = null, segDur = 0;
+  const tEl = $('#timer'), tD = $('#timerDisplay'), tPlay = $('#timerPlay'), tLabel = $('#timerLabel');
+  const fmt = t => String(Math.floor(t/60)).padStart(2,'0') + ':' + String(t%60).padStart(2,'0');
+  function renderTimer(){ tD.textContent = fmt(Math.max(0, remaining)); }
+  function loadTimer(min, seg){
+    stopTimer(); remaining = min*60; segDur = min; loadedSeg = seg;
+    tEl.classList.remove('done'); tLabel.textContent = seg; renderTimer();
+  }
+  function startTimer(){
+    if (remaining <= 0) return;
+    running = true; tEl.classList.add('running'); tEl.classList.remove('done'); tPlay.textContent = '⏸';
+    iv = setInterval(() => {
+      remaining--; renderTimer();
+      if (remaining <= 0){ stopTimer(); tEl.classList.add('done'); tLabel.textContent = '¡Tiempo!'; beep(); }
+    }, 1000);
+  }
+  function stopTimer(){ running = false; clearInterval(iv); tEl.classList.remove('running'); tPlay.textContent = '▶'; }
+  function toggleTimer(){ running ? stopTimer() : startTimer(); }
+  function resetTimer(){
+    const s = slides[cur];
+    if (s.dataset.dur) loadTimer(+s.dataset.dur, s.dataset.time);
+    else if (segDur) loadTimer(segDur, loadedSeg);
+  }
+  function beep(){
+    try{
+      const a = new (window.AudioContext || window.webkitAudioContext)();
+      [0, .35, .7].forEach(t => {
+        const o = a.createOscillator(), g = a.createGain();
+        o.type = 'triangle'; o.frequency.value = 880;
+        o.connect(g); g.connect(a.destination);
+        g.gain.setValueAtTime(.0001, a.currentTime + t);
+        g.gain.exponentialRampToValueAtTime(.4, a.currentTime + t + .02);
+        g.gain.exponentialRampToValueAtTime(.0001, a.currentTime + t + .3);
+        o.start(a.currentTime + t); o.stop(a.currentTime + t + .32);
+      });
+    }catch(e){}
+  }
+  tPlay.addEventListener('click', toggleTimer);
+  $('#timerReset').addEventListener('click', resetTimer);
+
+  /* ---------- Menú ---------- */
+  const menuGrid = $('#menuGrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'menu-item';
+    b.style.setProperty('--mc', colors[s.dataset.key] || '#f15bb5');
+    b.innerHTML = '<span class="mi-n">' + (i+1) + '</span><span class="mi-t">' + s.dataset.title + '</span><span class="mi-m">' + s.dataset.time + '</span>';
+    b.addEventListener('click', () => { go(i); toggleMenu(false); });
+    menuGrid.appendChild(b);
+  });
+  function toggleMenu(force){ $('#menu').classList.toggle('open', force); }
+  function toggleNotes(force){ $('#notes').classList.toggle('open', force); }
+  function toggleFS(){
+    if (!document.fullscreenElement){ document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }
+    else { document.exitFullscreen && document.exitFullscreen(); }
+  }
+  $('#menuBtn').addEventListener('click', () => toggleMenu());
+  $('#menuClose').addEventListener('click', () => toggleMenu(false));
+  $('#menu').addEventListener('click', e => { if (e.target.id === 'menu') toggleMenu(false); });
+  $('#notesBtn').addEventListener('click', () => toggleNotes());
+  $('#notesClose').addEventListener('click', () => toggleNotes(false));
+  $('#fsBtn').addEventListener('click', toggleFS);
+  document.addEventListener('fullscreenchange', () => setTimeout(fit, 100));
+
+  /* ---------- Navegación ---------- */
+  function go(i){
+    i = Math.max(0, Math.min(N-1, i));
+    slides.forEach((s, j) => { s.classList.toggle('active', j === i); s.classList.toggle('past', j < i); });
+    cur = i; update();
+  }
+  function update(){
+    const s = slides[cur];
+    document.documentElement.style.setProperty('--phase', colors[s.dataset.key] || '#f15bb5');
+    $('#phasePill').textContent = s.dataset.phase;
+    $('#timePill').textContent = '⏱ ' + s.dataset.time;
+    $('#counter').textContent = (cur+1) + ' / ' + N;
+    $('#progress').style.width = ((cur+1)/N*100) + '%';
+    $('#prevBtn').disabled = cur === 0;
+    $('#nextBtn').disabled = cur === N-1;
+    const notes = s.querySelector('.notes');
+    $('#notesTitle').textContent = (cur+1) + '. ' + s.dataset.title;
+    $('#notesBody').innerHTML = notes ? notes.innerHTML : '<p>Sin notas para esta diapositiva.</p>';
+    [...menuGrid.children].forEach((b, j) => b.classList.toggle('current', j === cur));
+    try{ history.replaceState(null, '', '#' + (cur+1)); }catch(e){}
+    if (s.dataset.dur && !running && loadedSeg !== s.dataset.time) loadTimer(+s.dataset.dur, s.dataset.time);
+  }
+  $('#prevBtn').addEventListener('click', () => go(cur-1));
+  $('#nextBtn').addEventListener('click', () => go(cur+1));
+
+  /* ---------- Interacciones dentro de las diapositivas ---------- */
+  document.querySelectorAll('[data-reveal]').forEach(b => b.addEventListener('click', () => {
+    b.dataset.reveal.split(',').forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('show'); });
+    b.classList.add('used');
+  }));
+  document.querySelectorAll('[data-rows]').forEach(b => b.addEventListener('click', () => {
+    const t = document.getElementById(b.dataset.rows);
+    const r = t.querySelector('tr.row-hidden');
+    if (r) r.classList.remove('row-hidden');
+    if (!t.querySelector('tr.row-hidden')){ b.textContent = '✅ ¡Tabla completa!'; b.disabled = true; }
+  }));
+  document.querySelectorAll('[data-rowsall]').forEach(b => b.addEventListener('click', () => {
+    const t = document.getElementById(b.dataset.rowsall);
+    t.querySelectorAll('tr.row-hidden').forEach((r, k) => setTimeout(() => r.classList.remove('row-hidden'), k*180));
+    const nb = document.querySelector('[data-rows="' + b.dataset.rowsall + '"]');
+    if (nb){ nb.textContent = '✅ ¡Tabla completa!'; nb.disabled = true; }
+  }));
+  document.querySelectorAll('.flip').forEach(c => c.addEventListener('click', () => c.classList.toggle('flipped')));
+  document.querySelectorAll('[data-flipall]').forEach(b => b.addEventListener('click', () => {
+    const cards = [...document.querySelectorAll('#' + b.dataset.flipall + ' .flip')];
+    const any = cards.some(c => !c.classList.contains('flipped'));
+    cards.forEach((c, k) => setTimeout(() => c.classList.toggle('flipped', any), k*150));
+  }));
+  document.querySelectorAll('.sit').forEach(c => c.addEventListener('click', () => c.classList.toggle('open')));
+  document.querySelectorAll('[data-openall]').forEach(b => b.addEventListener('click', () => {
+    const cards = [...document.querySelectorAll('#' + b.dataset.openall + ' .sit')];
+    const any = cards.some(c => !c.classList.contains('open'));
+    cards.forEach((c, k) => setTimeout(() => c.classList.toggle('open', any), k*90));
+  }));
+  document.querySelectorAll('.benefit').forEach(c => c.addEventListener('click', () => c.classList.toggle('open')));
+  document.querySelectorAll('.checklist li').forEach(li => li.addEventListener('click', () => li.classList.toggle('ok')));
+  document.querySelectorAll('[data-goto]').forEach(b => b.addEventListener('click', () => {
+    const i = slides.findIndex(s => s.id === b.dataset.goto);
+    if (i >= 0) go(i);
+  }));
+  document.addEventListener('click', e => { const b = e.target.closest('button'); if (b) setTimeout(() => b.blur(), 0); });
+
+  /* ---------- Teclado ---------- */
+  document.addEventListener('keydown', e => {
+    const t = e.target;
+    if (t.isContentEditable || /INPUT|TEXTAREA/.test(t.tagName)){ if (e.key === 'Escape') t.blur(); return; }
+    const k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' '){ e.preventDefault(); go(cur+1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace'){ e.preventDefault(); go(cur-1); }
+    else if (k === 'Home'){ go(0); }
+    else if (k === 'End'){ go(N-1); }
+    else if (k === 'n' || k === 'N'){ toggleNotes(); }
+    else if (k === 'm' || k === 'M'){ toggleMenu(); }
+    else if (k === 'f' || k === 'F'){ toggleFS(); }
+    else if (k === 't' || k === 'T'){ toggleTimer(); }
+    else if (k === 'r' || k === 'R'){ resetTimer(); }
+    else if (k === 'Escape'){ toggleMenu(false); toggleNotes(false); }
+  });
+
+  /* ---------- Gestos táctiles ---------- */
+  let x0 = null;
+  viewport.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, {passive:true});
+  viewport.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 60) go(cur + (dx < 0 ? 1 : -1));
+    x0 = null;
+  });
+
+  /* ---------- Inicio ---------- */
+  const h = parseInt(location.hash.slice(1), 10);
+  go(isNaN(h) ? 0 : h - 1);
+})();
+</script>
+</body>
+</html>
