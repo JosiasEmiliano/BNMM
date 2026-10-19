@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 3a · ¡Medir para entender el planeta!</title>
+<!--
+  PRESENTACIÓN INTERACTIVA · SESIÓN 3a (Física: medición, cambio climático y unidades derivadas)
+  Controles:
+    → / Espacio / PageDown ...... Avanzar (revela elementos paso a paso y luego cambia de diapositiva)
+    ← / PageUp .................. Retroceder
+    Inicio / Fin ................ Primera / última diapositiva
+    N ........................... Notas del docente (por diapositiva)
+    G ........................... Guía docente completa (Preparación previa)
+    F ........................... Pantalla completa
+    T ........................... Iniciar / pausar reloj de clase
+  Nota: los tiempos se respetan tal cual el plan detallado (Inicio 10 + Desarrollo 30 + Cierre 20 min).
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1d1b2f; --cream:#fff6e0; --paper:#ffffff;
+  --yellow:#ffd23f; --orange:#ff8c42; --pink:#ff5d8f; --blue:#29c5f6; --teal:#2ec4b6;
+  --green:#7be35a; --purple:#8e7dff; --red:#ff4f4f; --sky:#bfe9ff;
+  --phase:#8e7dff;
+  --r:26px;
+  --shadow:6px 6px 0 var(--ink), 0 16px 34px rgba(29,27,47,.18);
+  --shadow-sm:4px 4px 0 var(--ink), 0 8px 18px rgba(29,27,47,.14);
+  --head:'Luckiest Guy','Comic Sans MS','Trebuchet MS',cursive;
+  --body:'Fredoka','Trebuchet MS','Comic Sans MS',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:var(--body);color:var(--ink);background-color:var(--cream);
+  background-image:radial-gradient(rgba(29,27,47,.09) 2px,transparent 2px);
+  background-size:26px 26px;transition:background-color .6s ease;
+  display:grid;grid-template-rows:auto 1fr auto;
+}
+body[data-phase="inicio"]{--phase:var(--orange);background-color:#ffeedd}
+body[data-phase="desarrollo"]{--phase:var(--blue);background-color:#e3f6ff}
+body[data-phase="cierre"]{--phase:var(--green);background-color:#eafbe0}
+
+/* ---------- BARRA SUPERIOR ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 22px;z-index:5}
+.brand{display:flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--ink);border-radius:18px;padding:6px 14px;box-shadow:var(--shadow-sm)}
+.brand-ico{font-size:1.6rem}
+.brand b{font-family:var(--head);font-size:1.15rem;letter-spacing:1px;display:block;line-height:1}
+.brand small{font-size:.8rem;font-weight:500;opacity:.8}
+.phase-badge{display:flex;align-items:center;gap:10px;background:var(--phase);border:3px solid var(--ink);border-radius:999px;padding:8px 20px;box-shadow:var(--shadow-sm);font-family:var(--head);font-size:1.15rem;letter-spacing:1px;transition:background .5s}
+.phase-time{background:#fff;border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font-family:var(--body);font-weight:700;font-size:.9rem}
+.phase-time:empty{display:none}
+.clock{display:flex;align-items:center;gap:8px;background:#fff;border:3px solid var(--ink);border-radius:18px;padding:6px 12px;box-shadow:var(--shadow-sm);font-weight:600;font-size:.9rem}
+.clock b{font-family:var(--head);font-size:1.3rem;letter-spacing:1px;min-width:62px;text-align:center}
+.mini-btn{font-family:var(--body);font-weight:700;border:2.5px solid var(--ink);background:var(--yellow);border-radius:10px;width:32px;height:32px;cursor:pointer;box-shadow:2px 2px 0 var(--ink);transition:transform .1s}
+.mini-btn:active{transform:translate(2px,2px);box-shadow:none}
+
+/* ---------- ESCENARIO Y DIAPOSITIVAS ---------- */
+.stage{position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:8px 18px 14px;
+  opacity:0;visibility:hidden;transform:translateX(70px) scale(.97);transition:opacity .45s ease,transform .45s ease,visibility .45s}
+.slide.past{transform:translateX(-70px) scale(.97)}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.notes{display:none}
+
+.card{width:min(1220px,96vw);max-height:100%;overflow:auto;background:var(--paper);border:4px solid var(--ink);border-radius:var(--r);
+  box-shadow:var(--shadow);padding:clamp(18px,2.6vw,38px);position:relative}
+.card::-webkit-scrollbar{width:10px}.card::-webkit-scrollbar-thumb{background:var(--ink);border-radius:10px}
+
+h1,h2,h3{font-family:var(--head);letter-spacing:1.5px;line-height:1.05;font-weight:400}
+h1{font-size:clamp(2.4rem,5.4vw,5rem)}
+h2{font-size:clamp(1.8rem,3.3vw,3rem)}
+h3{font-size:clamp(1.25rem,2vw,1.8rem)}
+p,li{font-size:clamp(1.05rem,1.55vw,1.42rem);line-height:1.4}
+.lead{font-size:clamp(1.2rem,1.9vw,1.7rem);font-weight:500}
+.hl{background:linear-gradient(transparent 55%,var(--yellow) 55%);padding:0 6px;border-radius:6px}
+.muted{opacity:.75}
+
+/* animaciones de entrada */
+.slide.active .pop{animation:pop .6s cubic-bezier(.2,1.4,.4,1) both;animation-delay:var(--d,0s)}
+@keyframes pop{from{opacity:0;transform:translateY(24px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-12px) rotate(2deg)}}
+@keyframes wiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* fragmentos (aparecen con → ) */
+.frag{opacity:0;transform:translateY(18px) scale(.94);transition:opacity .4s ease,transform .45s cubic-bezier(.2,1.4,.4,1)}
+.frag.show{opacity:1;transform:none}
+
+/* elementos comunes */
+.sticker{display:inline-block;font-family:var(--head);letter-spacing:1px;background:var(--pink);color:#fff;border:3px solid var(--ink);border-radius:14px;
+  padding:6px 14px;box-shadow:3px 3px 0 var(--ink);transform:rotate(-3deg);font-size:clamp(1rem,1.4vw,1.25rem);-webkit-text-stroke:.5px var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+.chip{border:3px solid var(--ink);border-radius:999px;padding:8px 16px;font-weight:700;box-shadow:3px 3px 0 var(--ink);font-size:clamp(.95rem,1.3vw,1.2rem)}
+.c-orange{background:var(--orange)}.c-blue{background:var(--blue)}.c-green{background:var(--green)}.c-yellow{background:var(--yellow)}.c-pink{background:var(--pink)}.c-purple{background:var(--purple);color:#fff}
+
+.seg-head{display:flex;align-items:center;flex-wrap:wrap;gap:12px 18px;margin-bottom:clamp(12px,2vh,22px)}
+.seg-head h2{flex:1;min-width:260px}
+.time-pill{font-family:var(--head);letter-spacing:1px;background:var(--phase);border:3px solid var(--ink);border-radius:14px;padding:6px 14px;box-shadow:3px 3px 0 var(--ink);font-size:clamp(1rem,1.4vw,1.3rem)}
+
+/* temporizador */
+.timer{display:flex;align-items:center;gap:8px;background:var(--cream);border:3px solid var(--ink);border-radius:16px;padding:6px 10px;box-shadow:3px 3px 0 var(--ink)}
+.t-ico{font-size:1.3rem}
+.t-read{font-family:var(--head);font-size:clamp(1.3rem,2vw,1.8rem);letter-spacing:1px;min-width:78px;text-align:center}
+.t-btn{border:2.5px solid var(--ink);background:var(--yellow);border-radius:10px;width:36px;height:36px;font-size:1rem;cursor:pointer;box-shadow:2px 2px 0 var(--ink);font-weight:700}
+.t-btn:active{transform:translate(2px,2px);box-shadow:none}
+.timer.warn{background:#ffe7b0}
+.timer.done{background:var(--red);color:#fff;animation:shake .4s 3}
+
+/* ---------- PORTADA ---------- */
+.hero{display:grid;grid-template-columns:1.25fr 1fr;align-items:center;gap:24px;background:linear-gradient(135deg,#fff 0%,#fff 55%,#fff3c4 100%)}
+.hero h1{margin:16px 0 14px}
+.hero-art{display:flex;justify-content:center;align-items:flex-end;gap:6px}
+.earth{width:clamp(200px,24vw,340px);animation:floaty 4s ease-in-out infinite}
+.thermo{width:clamp(60px,6vw,95px);animation:wiggle 2.4s ease-in-out infinite}
+.mercury{transform-box:fill-box;transform-origin:bottom}
+.slide.active .mercury{animation:rise 2.2s ease-out both}
+@keyframes rise{from{transform:scaleY(.25)}to{transform:scaleY(1)}}
+
+/* ---------- RUTA ---------- */
+.route{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.stop{border:4px solid var(--ink);border-radius:22px;padding:16px 18px;box-shadow:var(--shadow-sm);position:relative}
+.stop h3{margin-bottom:6px}
+.stop .mins{display:inline-block;background:#fff;border:2.5px solid var(--ink);border-radius:999px;padding:2px 12px;font-weight:700;margin-bottom:10px}
+.stop ul{list-style:none}
+.stop li{padding-left:28px;position:relative;margin:6px 0;font-size:clamp(.95rem,1.3vw,1.2rem)}
+.stop li::before{content:"★";position:absolute;left:0;top:0}
+.goal{margin-top:18px;background:var(--yellow);border:4px solid var(--ink);border-radius:20px;padding:12px 18px;box-shadow:var(--shadow-sm);display:flex;gap:12px;align-items:center}
+.goal .big-emoji{font-size:2.2rem}
+
+/* ---------- DIVISORES DE FASE ---------- */
+.divider{text-align:center;padding:clamp(28px,5vh,60px) 24px;background:var(--phase);overflow:hidden}
+.divider .phase-word{font-family:var(--head);font-size:clamp(4rem,12vw,10rem);color:#fff;-webkit-text-stroke:3px var(--ink);
+  text-shadow:6px 6px 0 var(--ink);letter-spacing:4px;line-height:1}
+.divider .phase-emoji{font-size:clamp(3rem,7vw,6rem);display:inline-block;animation:floaty 3s ease-in-out infinite}
+.divider .phase-sub{display:inline-block;margin-top:18px;background:#fff;border:4px solid var(--ink);border-radius:20px;padding:10px 24px;box-shadow:var(--shadow-sm);font-family:var(--head);letter-spacing:1px;font-size:clamp(1.4rem,2.6vw,2.3rem)}
+.divider .chips{justify-content:center}
+.burst{position:absolute;width:900px;height:900px;left:50%;top:50%;transform:translate(-50%,-50%);
+  background:repeating-conic-gradient(rgba(255,255,255,.18) 0 10deg,transparent 10deg 20deg);border-radius:50%;z-index:0;animation:spin 40s linear infinite}
+.divider > *:not(.burst){position:relative;z-index:1}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+/* ---------- BURBUJA PREGUNTA ---------- */
+.ask-wrap{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+.mini-earth{width:clamp(130px,15vw,210px);animation:floaty 3.5s ease-in-out infinite}
+.bubble{position:relative;background:#fff;border:4px solid var(--ink);border-radius:30px;padding:clamp(18px,2.4vw,32px);box-shadow:var(--shadow)}
+.bubble::before{content:"";position:absolute;left:-30px;top:50%;border:16px solid transparent;border-right:26px solid var(--ink);transform:translateY(-50%)}
+.bubble::after{content:"";position:absolute;left:-19px;top:50%;border:12px solid transparent;border-right:20px solid #fff;transform:translateY(-50%)}
+.bubble .q{font-family:var(--head);font-size:clamp(1.7rem,3.2vw,2.9rem);letter-spacing:1px;line-height:1.15}
+.hint-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+
+/* ---------- LLUVIA DE IDEAS ---------- */
+.brain{display:grid;grid-template-columns:1.15fr 1fr;gap:20px}
+.board{background:#2f5d50;border:6px solid #8b5a2b;border-radius:20px;box-shadow:var(--shadow-sm);padding:14px;min-height:280px;display:flex;flex-direction:column}
+.board-title{color:#fff;font-family:var(--head);letter-spacing:1px;font-size:1.3rem;margin-bottom:8px}
+.board-input{display:flex;gap:8px}
+.board-input input{flex:1;font-family:var(--body);font-size:1.1rem;padding:10px 14px;border:3px solid var(--ink);border-radius:14px;outline:none}
+.board-input button,.big-btn{font-family:var(--head);letter-spacing:1px;font-size:1.1rem;background:var(--yellow);border:3px solid var(--ink);border-radius:14px;padding:8px 16px;cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+.board-input button:active,.big-btn:active{transform:translate(3px,3px);box-shadow:none}
+.notes-area{flex:1;display:flex;flex-wrap:wrap;align-content:flex-start;gap:10px;margin-top:12px}
+.notes-area .empty{color:rgba(255,255,255,.65);font-style:italic}
+.sticky{padding:10px 14px;border:3px solid var(--ink);border-radius:8px 8px 18px 8px;box-shadow:3px 3px 0 var(--ink);font-weight:600;font-size:clamp(1rem,1.4vw,1.25rem);cursor:pointer;animation:pop .4s both;max-width:100%}
+.map-list{display:flex;flex-direction:column;gap:12px}
+.map-list h3{margin-bottom:2px}
+.map-item{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.say{background:#fff;border:3px dashed var(--ink);border-radius:16px;padding:10px 12px;font-weight:500;text-align:center}
+.arrow{font-size:1.8rem;font-weight:700}
+.measure{border:3px solid var(--ink);border-radius:16px;padding:10px 12px;font-weight:700;text-align:center;box-shadow:3px 3px 0 var(--ink)}
+
+/* ---------- OPINIÓN VS HECHO + GRÁFICA ---------- */
+.versus{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;margin-bottom:16px}
+.vs-card{border:4px solid var(--ink);border-radius:22px;padding:14px 18px;box-shadow:var(--shadow-sm)}
+.vs-card .tag{font-family:var(--head);letter-spacing:1px;font-size:1.2rem}
+.vs-card .quote{font-size:clamp(1.15rem,1.8vw,1.6rem);font-weight:600;margin-top:4px}
+.vs{font-family:var(--head);font-size:2.2rem;background:var(--yellow);border:4px solid var(--ink);border-radius:50%;width:70px;height:70px;display:grid;place-items:center;box-shadow:3px 3px 0 var(--ink)}
+.pattern{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;align-items:center}
+.chart-box{background:#fff;border:4px solid var(--ink);border-radius:20px;padding:10px;box-shadow:var(--shadow-sm)}
+.chart-box svg{width:100%;height:auto;display:block}
+.chart-line{stroke-dasharray:1000;stroke-dashoffset:1000}
+.slide.active .chart-line{animation:draw 2.8s ease forwards .4s}
+@keyframes draw{to{stroke-dashoffset:0}}
+.caption{font-size:.9rem;text-align:center;opacity:.75;margin-top:4px}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{display:flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--ink);border-radius:16px;padding:8px 12px;box-shadow:3px 3px 0 var(--ink);font-weight:600;font-size:clamp(1rem,1.4vw,1.25rem)}
+.step .n{flex:none;width:34px;height:34px;border-radius:50%;border:3px solid var(--ink);display:grid;place-items:center;font-family:var(--head);background:var(--yellow)}
+
+/* ---------- CUADERNO ---------- */
+.notebook{background:repeating-linear-gradient(#fffefb 0 42px,#bfe0ff 42px 44px);padding-left:clamp(70px,8vw,110px)}
+.notebook::before{content:"";position:absolute;left:clamp(52px,6vw,86px);top:0;bottom:0;width:3px;background:#ff8fa8}
+.notebook::after{content:"";position:absolute;left:14px;top:20px;bottom:20px;width:26px;
+  background:radial-gradient(circle,var(--cream) 7px,var(--ink) 8px,var(--ink) 10px,transparent 11px) 0 0/26px 46px repeat-y}
+.nb-tag{position:absolute;top:16px;right:20px;transform:rotate(4deg);background:var(--yellow);color:var(--ink);font-size:clamp(1.1rem,1.6vw,1.5rem)}
+.instruction{display:flex;gap:10px;align-items:center;background:#fff3c4;border:3px dashed var(--ink);border-radius:16px;padding:10px 14px;margin:10px 0 18px;max-width:calc(100% - 200px);font-weight:600}
+.instruction .ico{font-size:1.8rem}
+.nb-title{color:#1f4fbf;margin-bottom:12px}
+.var-list{list-style:none;display:flex;flex-direction:column;gap:12px}
+.var-item{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;background:#fff;border:3px solid var(--ink);border-radius:20px;padding:10px 16px;box-shadow:var(--shadow-sm)}
+.var-item .num{font-family:var(--head);font-size:2rem;width:54px;height:54px;border-radius:16px;border:3px solid var(--ink);display:grid;place-items:center}
+.var-item b{font-size:clamp(1.25rem,2vw,1.8rem)}
+.var-item small{display:block;font-size:clamp(.9rem,1.2vw,1.1rem);opacity:.8}
+.unit-tag{font-family:var(--head);letter-spacing:1px;border:3px solid var(--ink);border-radius:12px;padding:6px 12px;background:var(--cream);font-size:clamp(1rem,1.5vw,1.35rem);white-space:nowrap}
+.definition{font-size:clamp(1.3rem,2.2vw,2rem);line-height:1.5;font-weight:500;background:#fff;border:4px solid var(--ink);border-radius:22px;padding:16px 22px;box-shadow:var(--shadow-sm)}
+.recipe{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin-top:20px}
+.recipe .op{font-family:var(--head);font-size:2.4rem}
+
+/* ---------- FICHAS DE UNIDADES ---------- */
+.transition-quote{background:var(--cream);border:4px solid var(--ink);border-radius:22px;padding:14px 20px;box-shadow:var(--shadow-sm);font-size:clamp(1.15rem,1.8vw,1.6rem);font-weight:500;position:relative;margin-bottom:16px}
+.transition-quote::before{content:"🗣️";position:absolute;top:-22px;left:-14px;font-size:2.4rem}
+.tiles{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:6px 0 16px}
+.tile{min-width:clamp(90px,10vw,130px);border:4px solid var(--ink);border-radius:20px;padding:8px 12px;text-align:center;box-shadow:var(--shadow-sm)}
+.tile .sym{font-family:var(--head);font-size:clamp(1.8rem,3.2vw,2.8rem);letter-spacing:1px;line-height:1.1}
+.tile .name{font-weight:700;font-size:clamp(.85rem,1.2vw,1.05rem)}
+.combos{display:flex;flex-direction:column;gap:12px}
+.combo{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;background:#fff;border:3px dashed var(--ink);border-radius:22px;padding:10px}
+.combo .op{font-family:var(--head);font-size:2.2rem}
+.combo .result{font-family:var(--head);letter-spacing:1px;font-size:clamp(1.3rem,2.2vw,2rem);background:var(--yellow);border:3px solid var(--ink);border-radius:16px;padding:6px 14px;box-shadow:3px 3px 0 var(--ink)}
+.t-m{background:var(--blue)}.t-kg{background:var(--orange)}.t-s{background:var(--green)}.t-d{background:var(--purple);color:#fff}.t-n{background:var(--pink);color:#fff}
+
+/* ---------- NEWTON ---------- */
+.newton-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:center}
+.track{position:relative;height:200px;background:linear-gradient(#e3f6ff 0 78%,#c98b4f 78% 100%);border:4px solid var(--ink);border-radius:22px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.track::after{content:"";position:absolute;left:0;right:0;top:78%;height:4px;background:var(--ink)}
+.mover{position:absolute;left:16px;bottom:22%;display:flex;align-items:center;transition:transform 1.8s cubic-bezier(.55,0,1,.45)}
+.box{width:110px;height:110px;background:var(--orange);border:4px solid var(--ink);border-radius:16px;display:grid;place-items:center;font-family:var(--head);font-size:2.2rem;
+  box-shadow:inset -10px -10px 0 rgba(0,0,0,.12);position:relative}
+.box::before,.box::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:var(--ink);top:28px}
+.box::before{left:28px}.box::after{right:28px}
+.push-arrow{font-family:var(--head);letter-spacing:1px;background:var(--pink);color:#fff;border:4px solid var(--ink);padding:8px 26px 8px 12px;
+  clip-path:polygon(0 0,82% 0,100% 50%,82% 100%,0 100%);margin-right:4px;font-size:1.2rem;-webkit-text-stroke:.5px var(--ink)}
+.speed-lines{position:absolute;left:-60px;top:20px;display:flex;flex-direction:column;gap:14px;opacity:0;transition:opacity .3s}
+.speed-lines i{display:block;width:50px;height:6px;background:var(--ink);border-radius:6px}
+.mover.moving .speed-lines{opacity:1}
+.newton-ctrl{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.newton-msg{font-weight:600;min-height:1.6em}
+.formula{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-family:var(--head);font-size:clamp(1.6rem,3vw,2.8rem);letter-spacing:1px}
+.f-part{display:flex;flex-direction:column;align-items:center;gap:4px}
+.f-part .u{border:4px solid var(--ink);border-radius:16px;padding:6px 14px;box-shadow:3px 3px 0 var(--ink)}
+.f-part small{font-family:var(--body);font-weight:700;font-size:clamp(.85rem,1.2vw,1.05rem);letter-spacing:0}
+.explain{background:var(--cream);border:3px solid var(--ink);border-radius:18px;padding:12px 16px;margin-top:14px}
+
+/* ---------- CIERRE ---------- */
+.chalk{background:#25433b;color:#fff;border:8px solid #8b5a2b;border-radius:20px;padding:clamp(18px,3vw,34px);box-shadow:var(--shadow-sm);position:relative}
+.chalk .label{font-family:var(--head);letter-spacing:1px;color:var(--yellow);font-size:clamp(1.1rem,1.6vw,1.5rem)}
+.chalk .thread{font-size:clamp(1.4rem,2.6vw,2.4rem);line-height:1.35;font-style:italic;margin-top:8px}
+.todo-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:18px}
+.todo{flex:1;min-width:220px;display:flex;align-items:center;gap:12px;border:3px solid var(--ink);border-radius:18px;padding:10px 14px;box-shadow:3px 3px 0 var(--ink);font-weight:600}
+.todo .e{font-size:2rem}
+.seats{display:flex;gap:18px;justify-content:center;margin:16px 0}
+.seat{width:clamp(100px,11vw,140px);height:clamp(100px,11vw,140px);border-radius:50%;border:4px solid var(--ink);background:#fff;box-shadow:var(--shadow-sm);
+  display:grid;place-items:center;text-align:center;font-weight:700;cursor:pointer;transition:transform .2s,background .2s;font-size:clamp(.9rem,1.2vw,1.1rem)}
+.seat .e{font-size:clamp(2rem,3.4vw,3rem);display:block}
+.seat:hover{transform:scale(1.05) rotate(-3deg)}
+.seat.on{background:var(--yellow);transform:scale(1.08)}
+.feedback{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.fb{border:3px solid var(--ink);border-radius:18px;padding:12px 14px;box-shadow:3px 3px 0 var(--ink)}
+.fb .e{font-size:2rem}
+.fb b{display:block;font-size:clamp(1.05rem,1.5vw,1.35rem)}
+.big-quote{font-family:var(--head);letter-spacing:1.5px;font-size:clamp(2rem,4.6vw,4.2rem);text-align:center;line-height:1.1;margin:10px 0 18px}
+.big-quote .hl{background:linear-gradient(transparent 55%,var(--green) 55%)}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.family{display:flex;align-items:center;gap:16px;background:var(--yellow);border:4px solid var(--ink);border-radius:22px;padding:14px 20px;box-shadow:var(--shadow-sm)}
+.family .e{font-size:3rem;animation:wiggle 2s ease-in-out infinite}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.sum-col{border:4px solid var(--ink);border-radius:22px;padding:14px 16px;box-shadow:var(--shadow-sm)}
+.sum-col h3{margin-bottom:8px}
+.sum-col ul{padding-left:22px}
+.sum-col li{font-size:clamp(.95rem,1.3vw,1.2rem);margin:6px 0}
+
+/* ---------- BARRA INFERIOR ---------- */
+.bottombar{display:flex;align-items:center;gap:14px;padding:8px 22px 12px;z-index:5}
+.nav-btn{font-family:var(--head);letter-spacing:1px;font-size:clamp(1rem,1.5vw,1.3rem);border:4px solid var(--ink);background:#fff;border-radius:18px;padding:10px 20px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .1s}
+.nav-btn.next{background:var(--yellow)}
+.nav-btn:hover{transform:translateY(-2px)}
+.nav-btn:active{transform:translate(4px,4px);box-shadow:none}
+.mid{flex:1;display:flex;flex-direction:column;gap:6px}
+.progress{height:16px;background:#fff;border:3px solid var(--ink);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:repeating-linear-gradient(45deg,var(--phase) 0 14px,rgba(255,255,255,.45) 14px 22px);transition:width .45s ease,background .5s}
+.mid-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+#counter{font-family:var(--head);letter-spacing:1px;font-size:1.1rem;min-width:70px;text-align:center}
+#jump{font-family:var(--body);font-weight:600;border:3px solid var(--ink);border-radius:12px;padding:4px 8px;background:#fff;max-width:280px;cursor:pointer}
+.tool{font-family:var(--body);font-weight:700;border:3px solid var(--ink);border-radius:12px;padding:4px 10px;background:#fff;cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
+.tool.on{background:var(--yellow)}
+
+/* ---------- PANEL DE NOTAS ---------- */
+.notes-panel{position:fixed;right:16px;top:80px;bottom:96px;width:min(420px,90vw);background:#fffdf3;border:4px solid var(--ink);border-radius:22px;box-shadow:var(--shadow);
+  z-index:20;transform:translateX(120%);transition:transform .35s ease;display:flex;flex-direction:column}
+.notes-panel.open{transform:none}
+.np-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:3px solid var(--ink);font-family:var(--head);letter-spacing:1px;font-size:1.2rem;background:var(--yellow);border-radius:18px 18px 0 0}
+.np-head button,.modal-close{border:3px solid var(--ink);background:#fff;border-radius:10px;width:34px;height:34px;cursor:pointer;font-weight:700}
+#notesBody{padding:14px 18px;overflow:auto}
+#notesBody p,#notesBody li{font-size:1rem;margin-bottom:8px}
+#notesBody ul{padding-left:20px}
+
+/* ---------- MODAL GUÍA ---------- */
+.modal{position:fixed;inset:0;background:rgba(29,27,47,.55);display:none;align-items:center;justify-content:center;z-index:30;padding:20px}
+.modal.open{display:flex}
+.modal-card{background:#fff;border:4px solid var(--ink);border-radius:26px;box-shadow:var(--shadow);width:min(900px,96vw);max-height:90vh;overflow:auto;padding:26px 30px;position:relative;animation:pop .4s both}
+.modal-close{position:absolute;top:14px;right:14px}
+.modal-card h2{margin-bottom:10px}
+.modal-card h3{margin:16px 0 6px;color:#1f4fbf}
+.modal-card p,.modal-card li{font-size:1.05rem;margin-bottom:6px}
+.modal-card ul,.modal-card ol{padding-left:24px}
+
+@media (max-width:900px){
+  .hero,.brain,.pattern,.newton-grid,.route,.feedback,.summary,.compare,.ask-wrap{grid-template-columns:1fr}
+  .instruction{max-width:100%;margin-top:50px}
+  .clock span,.brand small{display:none}
+}
+</style>
+</head>
+<body data-phase="intro">
+
+<header class="topbar">
+  <div class="brand"><span class="brand-ico">📏</span><div><b>SESIÓN 3a</b><small>Física · Medición y medio ambiente</small></div></div>
+  <div class="phase-badge"><span id="phaseName">¡Bienvenidos!</span><span class="phase-time" id="phaseTime"></span></div>
+  <div class="clock"><span>🕒 Reloj de clase</span><b id="clockRead">00:00</b>
+    <button class="mini-btn" id="clockBtn" title="Iniciar / pausar (T)">▶</button>
+    <button class="mini-btn" id="clockReset" title="Reiniciar">↺</button>
+  </div>
+</header>
+
+<main class="stage" id="stage">
+
+  <!-- 1 · PORTADA -->
+  <section class="slide" data-phase="intro" data-title="Portada">
+    <div class="card hero">
+      <div>
+        <span class="sticker pop" style="--d:.05s">Sesión 3a · Física</span>
+        <h1 class="pop" style="--d:.15s">¡Medir para<br><span class="hl">entender el planeta!</span></h1>
+        <p class="lead pop" style="--d:.3s">Del <b>cambio climático</b> a las <b>Unidades Derivadas</b> y el famoso <b>Newton</b>. 🌎⚖️</p>
+        <div class="chips pop" style="--d:.45s">
+          <span class="chip c-orange">🚀 Inicio · 10 min</span>
+          <span class="chip c-blue">🔬 Desarrollo · 30 min</span>
+          <span class="chip c-green">📝 Cierre · 20 min</span>
+        </div>
+      </div>
+      <div class="hero-art pop" style="--d:.3s">
+        <svg class="earth" viewBox="0 0 220 220" aria-hidden="true">
+          <circle cx="110" cy="115" r="88" fill="#29c5f6" stroke="#1d1b2f" stroke-width="7"/>
+          <path d="M52 85c18-24 50-22 58-4 6 14-8 22-20 26-14 5-12 22-26 22-16 0-24-26-12-44z" fill="#7be35a" stroke="#1d1b2f" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M130 50c22 2 44 18 50 40-10 6-26 0-34 10-8 10-24 4-26-10-2-14-6-30 10-40z" fill="#7be35a" stroke="#1d1b2f" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M120 168c14-8 34-6 40 6-10 14-30 18-44 10z" fill="#7be35a" stroke="#1d1b2f" stroke-width="6" stroke-linejoin="round"/>
+          <ellipse cx="88" cy="118" rx="13" ry="16" fill="#fff" stroke="#1d1b2f" stroke-width="5"/><circle cx="91" cy="121" r="6" fill="#1d1b2f"/>
+          <ellipse cx="134" cy="118" rx="13" ry="16" fill="#fff" stroke="#1d1b2f" stroke-width="5"/><circle cx="137" cy="121" r="6" fill="#1d1b2f"/>
+          <circle cx="70" cy="144" r="8" fill="#ff5d8f" opacity=".6"/><circle cx="152" cy="144" r="8" fill="#ff5d8f" opacity=".6"/>
+          <path d="M94 150q17 15 34 0" fill="none" stroke="#1d1b2f" stroke-width="6" stroke-linecap="round"/>
+          <path d="M184 62c6 10 10 16 10 22a10 10 0 0 1-20 0c0-6 4-12 10-22z" fill="#bfe9ff" stroke="#1d1b2f" stroke-width="5"/>
+        </svg>
+        <svg class="thermo" viewBox="0 0 80 220" aria-hidden="true">
+          <rect x="25" y="10" width="30" height="165" rx="15" fill="#fff" stroke="#1d1b2f" stroke-width="6"/>
+          <rect class="mercury" x="33" y="50" width="14" height="125" rx="7" fill="#ff4f4f"/>
+          <circle cx="40" cy="182" r="28" fill="#ff4f4f" stroke="#1d1b2f" stroke-width="6"/>
+          <g stroke="#1d1b2f" stroke-width="4" stroke-linecap="round"><line x1="55" y1="40" x2="66" y2="40"/><line x1="55" y1="70" x2="66" y2="70"/><line x1="55" y1="100" x2="66" y2="100"/><line x1="55" y1="130" x2="66" y2="130"/></g>
+        </svg>
+      </div>
+    </div>
+    <aside class="notes">
+      <p><b>Preparación previa:</b> para impartir con éxito la Sesión 3a debes dominar la conexión entre la física (medición) y los fenómenos sociomedioambientales, así como la estructura técnica de las unidades de medida.</p>
+      <p>Pulsa <b>G</b> para abrir la Guía docente completa.</p>
+    </aside>
+  </section>
+
+  <!-- 2 · RUTA DE LA CLASE -->
+  <section class="slide" data-phase="intro" data-title="Ruta de la clase">
+    <div class="card">
+      <h2 class="pop">🗺️ La ruta de hoy</h2>
+      <div class="route">
+        <div class="stop c-orange pop" style="--d:.1s">
+          <h3>🚀 Inicio</h3><span class="mins">10 min · Min 0–10</span>
+          <ul><li>La problematización global</li><li>¿Cómo sabemos que el cambio climático es real?</li><li>Lluvia de ideas: ¿qué se debe medir?</li></ul>
+        </div>
+        <div class="stop c-blue pop" style="--d:.25s">
+          <h3>🔬 Desarrollo</h3><span class="mins">30 min · Min 10–40</span>
+          <ul><li>De la opinión al patrón científico</li><li>Unidades Derivadas</li><li>El ejemplo del Newton</li></ul>
+        </div>
+        <div class="stop c-green pop" style="--d:.4s">
+          <h3>📝 Cierre</h3><span class="mins">20 min · Min 40–60</span>
+          <ul><li>Párrafo reflexivo individual</li><li>Socialización con 2 o 3 voluntarios</li><li>Compartir con nuestras familias</li></ul>
+        </div>
+      </div>
+      <div class="goal pop" style="--d:.55s">
+        <span class="big-emoji">🎯</span>
+        <p><b>Idea clave:</b> sin datos exactos, no hay acciones reales. ¡La medición separa una simple opinión de un hecho científico!</p>
+      </div>
+    </div>
+    <aside class="notes"><p>Presenta brevemente las tres fases y sus tiempos. Inicia el <b>reloj de clase</b> (tecla T) al comenzar el Inicio.</p></aside>
+  </section>
+
+  <!-- 3 · DIVISOR INICIO -->
+  <section class="slide" data-phase="inicio" data-title="INICIO · Divisor" data-time="Min 0–10">
+    <div class="card divider">
+      <div class="burst"></div>
+      <div class="phase-emoji">🚀</div>
+      <div class="phase-word">INICIO</div>
+      <div class="phase-sub">La problematización global</div>
+      <div class="chips"><span class="chip" style="background:#fff">⏱️ 10 minutos</span><span class="chip" style="background:#fff">Minuto 0 – 10</span></div>
+    </div>
+    <aside class="notes"><p><b>Inicio (10 min):</b> cambio climático y medición. Preguntar cómo sabemos que es real y hacer la lluvia de ideas sobre variables.</p></aside>
+  </section>
+
+  <!-- 4 · MIN 0-5 PLANTEAMIENTO -->
+  <section class="slide" data-phase="inicio" data-title="Min 0–5 · Planteamiento del problema" data-time="Min 0–5">
+    <div class="card">
+      <div class="seg-head">
+        <span class="time-pill">Minuto 0 – 5</span>
+        <h2>Planteamiento del problema</h2>
+        <div class="timer" data-min="5"></div>
+      </div>
+      <div class="ask-wrap">
+        <svg class="mini-earth" viewBox="0 0 220 220" aria-hidden="true">
+          <circle cx="110" cy="115" r="88" fill="#29c5f6" stroke="#1d1b2f" stroke-width="7"/>
+          <path d="M52 85c18-24 50-22 58-4 6 14-8 22-20 26-14 5-12 22-26 22-16 0-24-26-12-44z" fill="#7be35a" stroke="#1d1b2f" stroke-width="6"/>
+          <path d="M130 50c22 2 44 18 50 40-10 6-26 0-34 10-8 10-24 4-26-10-2-14-6-30 10-40z" fill="#7be35a" stroke="#1d1b2f" stroke-width="6"/>
+          <ellipse cx="88" cy="118" rx="13" ry="16" fill="#fff" stroke="#1d1b2f" stroke-width="5"/><circle cx="92" cy="114" r="6" fill="#1d1b2f"/>
+          <ellipse cx="134" cy="118" rx="13" ry="16" fill="#fff" stroke="#1d1b2f" stroke-width="5"/><circle cx="138" cy="114" r="6" fill="#1d1b2f"/>
+          <circle cx="111" cy="156" r="10" fill="#1d1b2f"/>
+          <text x="165" y="60" font-family="Luckiest Guy, Comic Sans MS" font-size="48" fill="#ffd23f" stroke="#1d1b2f" stroke-width="3">?</text>
+        </svg>
+        <div class="bubble pop" style="--d:.2s">
+          <p class="muted" style="font-weight:600">Todo el mundo habla del cambio climático, pero…</p>
+          <p class="q">¿Cómo saben los científicos que es <span class="hl">real</span> y no solo una <span class="hl">suposición</span>? 🤔</p>
+        </div>
+      </div>
+      <div class="hint-row">
+        <span class="chip c-yellow frag">🙋 Levanta la mano y comparte tu idea</span>
+        <span class="chip c-pink frag">💡 No hay respuestas incorrectas</span>
+      </div>
+    </div>
+    <aside class="notes">
+      <p><b>Minuto 0–5:</b> comienza preguntando a la clase: <i>"Todo el mundo habla del cambio climático, pero ¿cómo saben los científicos que es real y no solo una suposición?"</i></p>
+      <p><b>Postura didáctica (método hermenéutico):</b> no des respuestas catastrofistas; ayúdales a interpretar que <b>sin datos exactos, no hay acciones reales</b>.</p>
+    </aside>
+  </section>
+
+  <!-- 5 · MIN 5-10 LLUVIA DE IDEAS -->
+  <section class="slide" data-phase="inicio" data-title="Min 5–10 · Lluvia de ideas" data-time="Min 5–10">
+    <div class="card">
+      <div class="seg-head">
+        <span class="time-pill">Minuto 5 – 10</span>
+        <h2>🌧️ Lluvia de ideas</h2>
+        <div class="timer" data-min="5"></div>
+      </div>
+      <p class="lead pop" style="margin-bottom:14px">❓ <b>Pregunta detonadora:</b> ¿Qué cosas específicas (<span class="hl">variables</span>) creen que se tienen que medir en el planeta para entender y comprobar el cambio climático?</p>
+      <div class="brain">
+        <div class="board">
+          <div class="board-title">🧑‍🏫 Pizarrón del grupo</div>
+          <div class="board-input">
+            <input id="ideaInput" type="text" placeholder="Escribe aquí una idea del grupo…" maxlength="60">
+            <button id="addIdea">+ Anotar</button>
+          </div>
+          <div class="notes-area" id="ideaBoard"><span class="empty">Las ideas aparecerán aquí (clic en una nota para borrarla).</span></div>
+        </div>
+        <div class="map-list">
+          <h3>De la intuición… a lo medible 📏</h3>
+          <div class="map-item frag"><div class="say">"El calor" 🥵</div><div class="arrow">➜</div><div class="measure c-orange">🌡️ Temperatura</div></div>
+          <div class="map-item frag"><div class="say">"El humo" 🏭</div><div class="arrow">➜</div><div class="measure c-purple">💨 Gases en la atmósfera</div></div>
+          <div class="map-item frag"><div class="say">"Los polos derritiéndose" 🧊</div><div class="arrow">➜</div><div class="measure c-blue">🌊 Nivel del mar</div></div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p><b>Minuto 5–10:</b> lanza la pregunta detonadora y anota sus ideas en el pizarrón (puedes usar el pizarrón digital de esta diapositiva).</p>
+      <p>Guía sus respuestas intuitivas hacia conceptos medibles:</p>
+      <ul><li>Si dicen "el calor" → anota <b>Temperatura</b>.</li><li>Si dicen "el humo" → anota <b>Gases en la atmósfera</b>.</li><li>Si dicen "los polos derritiéndose" → anota <b>Nivel del mar</b>.</li></ul>
+      <p>Pulsa → para revelar cada conversión.</p>
+    </aside>
+  </section>
+
+  <!-- 6 · DIVISOR DESARROLLO -->
+  <section class="slide" data-phase="desarrollo" data-title="DESARROLLO · Divisor" data-time="Min 10–40">
+    <div class="card divider">
+      <div class="burst"></div>
+      <div class="phase-emoji">🔬</div>
+      <div class="phase-word">DESARROLLO</div>
+      <div class="phase-sub">El poder de los datos y las Unidades Derivadas</div>
+      <div class="chips"><span class="chip" style="background:#fff">⏱️ 30 minutos</span><span class="chip" style="background:#fff">Minuto 10 – 40</span></div>
+    </div>
+    <aside class="notes">
+      <p><b>Desarrollo (30 min):</b> patrones y unidades derivadas.</p>
+      <p><b>Conceptos imprescindibles:</b> durante esta fase debes detenerte y asegurarte de que 3 puntos queden registrados en sus cuadernos (aparecen como diapositivas "¡A tu cuaderno!").</p>
+    </aside>
+  </section>
+
+  <!-- 7 · MIN 10-20 OPINIÓN → PATRÓN -->
+  <section class="slide" data-phase="desarrollo" data-title="Min 10–20 · De la opinión al patrón científico" data-time="Min 10–20">
+    <div class="card">
+      <div class="seg-head">
+        <span class="time-pill">Minuto 10 – 20</span>
+        <h2>De la opinión al patrón científico</h2>
+        <div class="timer" data-min="10"></div>
+      </div>
+      <div class="versus">
+        <div class="vs-card c-pink frag"><div class="tag">💬 OPINIÓN</div><div class="quote">"Hace mucho calor hoy."</div></div>
+        <div class="vs frag">VS</div>
+        <div class="vs-card c-green frag"><div class="tag">📊 HECHO CIENTÍFICO</div><div class="quote">"La temperatura global subió 1.2 °C."</div></div>
+      </div>
+      <div class="pattern">
+        <div class="chart-box frag">
+          <svg viewBox="0 0 560 270" role="img" aria-label="Gráfica ilustrativa del aumento de la temperatura global">
+            <text x="280" y="22" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="17" fill="#1d1b2f">Anomalía de temperatura global vs. época preindustrial</text>
+            <line x1="60" y1="40" x2="60" y2="225" stroke="#1d1b2f" stroke-width="4" stroke-linecap="round"/>
+            <line x1="60" y1="225" x2="535" y2="225" stroke="#1d1b2f" stroke-width="4" stroke-linecap="round"/>
+            <g stroke="#1d1b2f" stroke-opacity=".15" stroke-width="2" stroke-dasharray="6 6"><line x1="60" y1="130" x2="535" y2="130"/><line x1="60" y1="40" x2="535" y2="40"/></g>
+            <g font-family="Fredoka, sans-serif" font-size="14" font-weight="600" fill="#1d1b2f">
+              <text x="52" y="224" text-anchor="end">0 °C</text><text x="52" y="134" text-anchor="end">+0.6</text><text x="52" y="45" text-anchor="end">+1.2</text>
+              <text x="60" y="248" text-anchor="middle">1880</text><text x="290" y="248" text-anchor="middle">1950</text><text x="520" y="248" text-anchor="middle">2020</text>
+            </g>
+            <polyline class="chart-line" points="60,220 126,220 191,212 257,175 323,182 389,152 454,107 487,85 520,40" fill="none" stroke="#ff4f4f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="520" cy="40" r="9" fill="#ffd23f" stroke="#1d1b2f" stroke-width="4"/>
+          </svg>
+          <div class="caption">Gráfica ilustrativa de la tendencia (≈ +1.2 °C)</div>
+        </div>
+        <div class="steps">
+          <div class="step frag"><span class="n">1</span>📏 Medimos con precisión</div>
+          <div class="step frag"><span class="n">2</span>📅 Registramos a lo largo de los años</div>
+          <div class="step frag"><span class="n">3</span>📈 Trazamos gráficas</div>
+          <div class="step frag"><span class="n">4</span>🔍 Identificamos patrones</div>
+          <div class="step frag"><span class="n">5</span>🔮 Predecimos el futuro…</div>
+          <div class="step frag"><span class="n">6</span>🦸 …¡para actuar a tiempo!</div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p><b>Minuto 10–20:</b> toma los ejemplos del pizarrón y explica cómo la medición precisa permite <b>identificar patrones</b>. Medir la temperatura o el nivel del mar a lo largo de los años nos permite trazar gráficas y predecir el futuro para actuar a tiempo.</p>
+      <p><b>Variables del cambio climático (para ti):</b></p>
+      <ul>
+        <li><b>Temperatura global:</b> redes de estaciones meteorológicas y satélites. Dato crítico: la "anomalía de la temperatura" (cuántos °C ha subido respecto al promedio preindustrial).</li>
+        <li><b>Gases de efecto invernadero:</b> se miden en partes por millón (ppm). El CO₂ superó las 420 ppm recientemente.</li>
+        <li><b>Nivel del mar:</b> altimetría satelital (mm por año); sube por deshielo y expansión térmica del agua.</li>
+      </ul>
+      <p>La medición es lo que separa una opinión ("hace mucho calor hoy") de un hecho científico ("la temperatura global subió 1.2 °C"). Evita el catastrofismo.</p>
+    </aside>
+  </section>
+
+  <!-- 8 · CUADERNO 1: VARIABLES -->
+  <section class="slide" data-phase="desarrollo" data-title="📒 Cuaderno 1 · Variables clave" data-time="Min 10–20">
+    <div class="card notebook">
+      <span class="sticker nb-tag">✏️ ¡A TU CUADERNO!</span>
+      <div class="instruction pop"><span class="ico">📒</span><span>Apunta la siguiente lista en tu libreta como <b>variables esenciales del cambio climático</b>.</span></div>
+      <h2 class="nb-title pop" style="--d:.1s">Variables clave para entender problemas globales:</h2>
+      <ol class="var-list">
+        <li class="var-item frag"><span class="num c-orange">1</span><div><b>Temperatura global</b><small>Estaciones meteorológicas y satélites · "anomalía de temperatura"</small></div><span class="unit-tag">🌡️ °C</span></li>
+        <li class="var-item frag"><span class="num c-purple">2</span><div><b>Concentración de gases en la atmósfera</b><small>CO₂ superó las 420 ppm</small></div><span class="unit-tag">💨 ppm</span></li>
+        <li class="var-item frag"><span class="num c-blue">3</span><div><b>Nivel del mar</b><small>Altimetría satelital · deshielo y expansión térmica</small></div><span class="unit-tag">🌊 mm/año</span></li>
+      </ol>
+    </div>
+    <aside class="notes">
+      <p><b>Concepto imprescindible #1.</b> <i>Instrucción:</i> pedir a los alumnos que apunten la siguiente lista en sus libretas como variables esenciales del cambio climático:</p>
+      <ol><li>Temperatura global.</li><li>Concentración de gases en la atmósfera.</li><li>Nivel del mar.</li></ol>
+      <p>Las unidades (°C, ppm, mm/año) son apoyo visual tomado de tu preparación previa.</p>
+    </aside>
+  </section>
+
+  <!-- 9 · MIN 20-30 UNIDADES DERIVADAS -->
+  <section class="slide" data-phase="desarrollo" data-title="Min 20–30 · Introducción a las Unidades Derivadas" data-time="Min 20–30">
+    <div class="card">
+      <div class="seg-head">
+        <span class="time-pill">Minuto 20 – 30</span>
+        <h2>🧪 Introducción a las Unidades Derivadas</h2>
+        <div class="timer" data-min="10"></div>
+      </div>
+      <div class="transition-quote pop" style="--d:.1s">"Para medir cosas tan complejas como el clima o el movimiento del planeta, las 4 unidades fundamentales que vimos ayer a veces no son suficientes. <b>Necesitamos combinarlas</b>."</div>
+      <p style="text-align:center;font-weight:700" class="pop" style="--d:.2s">Unidades fundamentales (sesión anterior):</p>
+      <div class="tiles pop" style="--d:.3s">
+        <div class="tile t-m"><div class="sym">m</div><div class="name">metro · distancia</div></div>
+        <div class="tile t-kg"><div class="sym">kg</div><div class="name">kilogramo · masa</div></div>
+        <div class="tile t-s"><div class="sym">s</div><div class="name">segundo · tiempo</div></div>
+      </div>
+      <div class="combos">
+        <div class="combo frag">
+          <div class="tile t-m"><div class="sym">m</div><div class="name">distancia</div></div><span class="op">÷</span>
+          <div class="tile t-s"><div class="sym">s</div><div class="name">tiempo</div></div><span class="op">=</span>
+          <div class="tile t-d"><div class="sym">m/s</div><div class="name">metros por segundo</div></div>
+          <span class="result">🚗 VELOCIDAD</span>
+        </div>
+        <div class="combo frag">
+          <div class="tile t-m"><div class="sym">m</div><div class="name">distancia</div></div><span class="op">×</span>
+          <div class="tile t-m"><div class="sym">m</div><div class="name">distancia</div></div><span class="op">=</span>
+          <div class="tile t-d"><div class="sym">m²</div><div class="name">metro cuadrado</div></div>
+          <span class="result">🟩 ÁREA</span>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p><b>Minuto 20–30:</b> borra el pizarrón y haz la transición con la frase en pantalla. Define qué es una unidad derivada.</p>
+      <p><b>Unidades derivadas vs. fundamentales:</b> en la sesión anterior se vieron las fundamentales (metro, kilogramo, segundo). Una unidad derivada nace de la combinación (multiplicación o división) de las fundamentales.</p>
+      <ul><li><b>Velocidad:</b> distancia ÷ tiempo (m/s). Ejemplo cotidiano: "Si combinamos los metros de distancia con los segundos de tiempo, creamos la unidad de Velocidad".</li><li><b>Área:</b> distancia × distancia (m²).</li></ul>
+    </aside>
+  </section>
+
+  <!-- 10 · CUADERNO 2: DEFINICIÓN -->
+  <section class="slide" data-phase="desarrollo" data-title="📒 Cuaderno 2 · Unidades Derivadas" data-time="Min 20–30">
+    <div class="card notebook">
+      <span class="sticker nb-tag">✏️ ¡A TU CUADERNO!</span>
+      <div class="instruction pop"><span class="ico">📒</span><span>Apunta el siguiente <b>concepto</b> en tu libreta.</span></div>
+      <h2 class="nb-title pop" style="--d:.1s">Unidades Derivadas:</h2>
+      <p class="definition frag">Son aquellas unidades de medida que nacen de <span class="hl">combinar matemáticamente (multiplicar o dividir)</span> dos o más unidades fundamentales. Sirven para <b>medir fenómenos más complejos</b>.</p>
+      <div class="recipe frag">
+        <div class="tile t-m"><div class="sym">🧱</div><div class="name">Unidad fundamental</div></div>
+        <span class="op">× ÷</span>
+        <div class="tile t-s"><div class="sym">🧱</div><div class="name">Unidad fundamental</div></div>
+        <span class="op">=</span>
+        <div class="tile t-d"><div class="sym">✨</div><div class="name">Unidad derivada</div></div>
+      </div>
+    </div>
+    <aside class="notes"><p><b>Concepto imprescindible #2.</b> <i>Instrucción:</i> pedir a los alumnos que apunten el concepto en sus libretas. Dicta despacio y verifica que todos terminen antes de avanzar.</p></aside>
+  </section>
+
+  <!-- 11 · MIN 30-40 NEWTON -->
+  <section class="slide" data-phase="desarrollo" data-title="Min 30–40 · El ejemplo del Newton" data-time="Min 30–40">
+    <div class="card">
+      <div class="seg-head">
+        <span class="time-pill">Minuto 30 – 40</span>
+        <h2>💪 El ejemplo del Newton</h2>
+        <div class="timer" data-min="10"></div>
+      </div>
+      <div class="newton-grid">
+        <div>
+          <div class="track" id="track">
+            <div class="mover" id="mover">
+              <div class="speed-lines"><i></i><i></i><i></i></div>
+              <div class="push-arrow">FUERZA</div>
+              <div class="box">1 kg</div>
+            </div>
+          </div>
+          <div class="newton-ctrl">
+            <button class="big-btn" id="pushBtn">💪 ¡Empujar!</button>
+            <button class="big-btn" id="resetBox" style="background:#fff">↺ Reiniciar</button>
+            <span class="newton-msg" id="newtonMsg">Una caja de <b>1 kg</b> en reposo…</span>
+          </div>
+        </div>
+        <div>
+          <div class="formula frag">
+            <div class="f-part"><span class="u t-n">N</span><small>Fuerza</small></div><span>=</span>
+            <div class="f-part"><span class="u t-kg">kg</span><small>Masa</small></div><span>·</span>
+            <div class="f-part"><span class="u t-d">m/s²</span><small>Aceleración</small></div>
+          </div>
+          <div class="explain frag">
+            <p>Para mover la caja (<b>masa</b> en kg) y hacer que gane velocidad rápidamente (<b>aceleración</b> en m/s²), necesitamos aplicar una <b>Fuerza</b>.</p>
+          </div>
+          <div class="explain frag" style="background:var(--yellow)">
+            <p>📦 A esa combinación de <b>Masa</b> y <b>Aceleración</b>, los científicos la empaquetaron y le llamaron <b>"Newton"</b>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p><b>Minuto 30–40:</b> explica la unidad de Fuerza (Newton). Dibuja una caja de 1 kg en el pizarrón y una flecha empujándola (o usa la animación con el botón "¡Empujar!").</p>
+      <p><b>Para ti:</b> un Newton (N) es la fuerza necesaria para mover una masa de 1 kilogramo a una aceleración de 1 metro por segundo al cuadrado: <b>N = kg · m/s²</b>.</p>
+    </aside>
+  </section>
+
+  <!-- 12 · CUADERNO 3: NEWTON -->
+  <section class="slide" data-phase="desarrollo" data-title="📒 Cuaderno 3 · Ejemplo clave: el Newton" data-time="Min 30–40">
+    <div class="card notebook">
+      <span class="sticker nb-tag">✏️ ¡A TU CUADERNO!</span>
+      <div class="instruction pop"><span class="ico">📒</span><span>Apunta el siguiente <b>ejemplo</b> en tu libreta.</span></div>
+      <h2 class="nb-title pop" style="--d:.1s">Ejemplo Clave – La Fuerza (El Newton):</h2>
+      <p class="definition frag">El <b>Newton</b> es una unidad derivada que combina la <span class="hl">masa</span> y la <span class="hl">aceleración</span>. Nos permite medir con cuánta fuerza se <b>empuja</b> o <b>jala</b> un objeto. 💪📦</p>
+      <div class="recipe frag">
+        <div class="tile t-kg"><div class="sym">kg</div><div class="name">masa</div></div><span class="op">·</span>
+        <div class="tile t-d"><div class="sym">m/s²</div><div class="name">aceleración</div></div><span class="op">=</span>
+        <div class="tile t-n"><div class="sym">N</div><div class="name">Newton · fuerza</div></div>
+      </div>
+    </div>
+    <aside class="notes"><p><b>Concepto imprescindible #3.</b> <i>Instrucción:</i> pedir a los alumnos que apunten el ejemplo en sus libretas.</p></aside>
+  </section>
+
+  <!-- 13 · DIVISOR CIERRE -->
+  <section class="slide" data-phase="cierre" data-title="CIERRE · Divisor" data-time="Min 40–60">
+    <div class="card divider">
+      <div class="burst"></div>
+      <div class="phase-emoji">📝</div>
+      <div class="phase-word">CIERRE</div>
+      <div class="phase-sub">Reflexión y Apropiación</div>
+      <div class="chips"><span class="chip" style="background:#fff">⏱️ 20 minutos</span><span class="chip" style="background:#fff">Minuto 40 – 60</span></div>
+    </div>
+    <aside class="notes"><p><b>Cierre (20 min):</b> reflexión en el cuaderno, lectura voluntaria de 2 o 3 estudiantes y despedida.</p></aside>
+  </section>
+
+  <!-- 14 · MIN 40-50 REFLEXIÓN -->
+  <section class="slide" data-phase="cierre" data-title="Min 40–50 · Trabajo reflexivo individual" data-time="Min 40–50">
+    <div class="card">
+      <div class="seg-head">
+        <span class="time-pill">Minuto 40 – 50</span>
+        <h2>✍️ Trabajo reflexivo individual</h2>
+        <div class="timer" data-min="10"></div>
+      </div>
+      <div class="todo-row" style="margin:0 0 18px">
+        <div class="todo c-yellow pop" style="--d:.1s"><span class="e">📓</span>Saca tu cuaderno</div>
+        <div class="todo c-pink pop" style="--d:.2s"><span class="e">✏️</span>Redacta un párrafo reflexivo</div>
+        <div class="todo c-blue pop" style="--d:.3s"><span class="e">🤫</span>Trabajo individual</div>
+      </div>
+      <div class="chalk pop" style="--d:.35s">
+        <div class="label">🧵 HILO CONDUCTOR</div>
+        <p class="thread">"Escribe por qué crees que es importante tener <u>mediciones precisas</u> para describir la naturaleza y encontrar soluciones a problemas que nos afectan a todos (como el cambio climático)."</p>
+      </div>
+    </div>
+    <aside class="notes"><p><b>Minuto 40–50:</b> pídeles que saquen su cuaderno y redacten un párrafo reflexivo. Escribe el hilo conductor en el pizarrón para ayudarles a arrancar (también está en pantalla). Inicia el temporizador de 10 min.</p></aside>
+  </section>
+
+  <!-- 15 · MIN 50-60 SOCIALIZACIÓN -->
+  <section class="slide" data-phase="cierre" data-title="Min 50–60 · Socialización y cierre" data-time="Min 50–60">
+    <div class="card">
+      <div class="seg-head">
+        <span class="time-pill">Minuto 50 – 60</span>
+        <h2>🎤 Socialización y cierre</h2>
+        <div class="timer" data-min="10"></div>
+      </div>
+      <p class="lead pop" style="text-align:center">¡Buscamos <b>2 o 3 voluntarios</b> que lean su reflexión en voz alta! 🙌</p>
+      <div class="seats pop" style="--d:.15s">
+        <div class="seat" role="button" tabindex="0"><div><span class="e">🙋</span>Voluntario 1</div></div>
+        <div class="seat" role="button" tabindex="0"><div><span class="e">🙋‍♀️</span>Voluntario 2</div></div>
+        <div class="seat" role="button" tabindex="0"><div><span class="e">🙋‍♂️</span>Voluntario 3</div></div>
+      </div>
+      <div class="feedback">
+        <div class="fb c-yellow frag"><span class="e">🙏</span><b>Gracias por compartir</b>Cada aportación cuenta.</div>
+        <div class="fb c-blue frag"><span class="e">🔗</span><b>Números ↔ bienestar social</b>¿Cómo conectaste los datos con nuestra vida?</div>
+        <div class="fb c-green frag"><span class="e">🏡</span><b>Compártelo en casa</b>Cuidemos juntos nuestro entorno.</div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p><b>Minuto 50–60:</b> pide 2 o 3 voluntarios que lean sus reflexiones (haz clic en cada círculo para marcarlo).</p>
+      <p><b>Retroalimentación hermenéutica:</b> agradece sus aportaciones, resalta cómo conectaron los números con el bienestar social y anímalos a compartir estas ideas con sus familias para fomentar el cuidado del entorno.</p>
+    </aside>
+  </section>
+
+  <!-- 16 · DESPEDIDA -->
+  <section class="slide" data-phase="cierre" data-title="Despedida" data-time="Min 60">
+    <div class="card">
+      <p class="big-quote pop">Sin datos exactos,<br><span class="hl">no hay acciones reales</span> 🌎</p>
+      <div class="compare">
+        <div class="vs-card c-pink pop" style="--d:.2s"><div class="tag">💬 Una opinión</div><div class="quote">"Hace mucho calor hoy."</div></div>
+        <div class="vs-card c-green pop" style="--d:.3s"><div class="tag">📊 Un hecho científico</div><div class="quote">"La temperatura global subió 1.2 °C."</div></div>
+      </div>
+      <div class="family pop" style="--d:.45s">
+        <span class="e">👨‍👩‍👧‍👦</span>
+        <p><b>Misión para casa:</b> comparte con tu familia por qué medir con precisión nos ayuda a cuidar nuestro entorno. ¡Tú también puedes pensar como científico! 🦸</p>
+      </div>
+    </div>
+    <aside class="notes"><p><b>Despedida:</b> anima a los alumnos a compartir este pensamiento crítico con sus familias para fomentar el cuidado del entorno.</p></aside>
+  </section>
+
+  <!-- 17 · GUIÓN RÁPIDO -->
+  <section class="slide" data-phase="intro" data-title="Guión rápido (síntesis)">
+    <div class="card">
+      <h2 class="pop" style="margin-bottom:16px">⚡ Guión rápido de la clase</h2>
+      <div class="summary">
+        <div class="sum-col c-orange pop" style="--d:.1s">
+          <h3>🚀 INICIO (10m)</h3><p><b>Cambio climático y medición</b></p>
+          <ul><li>Preguntar: ¿Cómo sabemos que el cambio climático es real?</li><li>Lluvia de ideas: ¿qué variables se deben medir en el mundo? (Temperatura, Gases, Nivel del mar).</li></ul>
+        </div>
+        <div class="sum-col c-blue pop" style="--d:.25s">
+          <h3>🔬 DESARROLLO (30m)</h3><p><b>Patrones y Unidades Derivadas</b></p>
+          <ul><li>Medir con precisión permite ver patrones y actuar ante problemas reales.</li><li>Concepto de <i>Unidades Derivadas</i>.</li><li>Ejemplo: Velocidad (metros y segundos).</li><li>La unidad de fuerza: el <i>Newton</i> (masa y aceleración).</li></ul>
+        </div>
+        <div class="sum-col c-green pop" style="--d:.4s">
+          <h3>📝 CIERRE (20m)</h3><p><b>Reflexión en el cuaderno</b></p>
+          <ul><li>Párrafo reflexivo sobre la importancia de medir de forma precisa.</li><li>Lectura voluntaria de 2 o 3 estudiantes.</li><li>Despedida: compartir este pensamiento crítico con sus familias.</li></ul>
+        </div>
+      </div>
+      <p class="pop" style="--d:.55s;text-align:center;margin-top:18px;font-family:var(--head);letter-spacing:1px;font-size:clamp(1.4rem,2.4vw,2rem)">¡Gracias, científicos! 🎉</p>
+    </div>
+    <aside class="notes"><p>Síntesis de toda la sesión para repaso final o consulta rápida.</p></aside>
+  </section>
+
+</main>
+
+<footer class="bottombar">
+  <button class="nav-btn" id="prevBtn">◀ Atrás</button>
+  <div class="mid">
+    <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="mid-row">
+      <span id="counter">1 / 1</span>
+      <select id="jump" aria-label="Ir a diapositiva"></select>
+      <button class="tool" id="notesBtn">🍎 Notas (N)</button>
+      <button class="tool" id="guideBtn">📘 Guía docente (G)</button>
+      <button class="tool" id="fsBtn">⛶ Pantalla completa (F)</button>
+    </div>
+  </div>
+  <button class="nav-btn next" id="nextBtn">Siguiente ▶</button>
+</footer>
+
+<aside class="notes-panel" id="notesPanel">
+  <div class="np-head">🍎 Notas del docente <button id="closeNotes" aria-label="Cerrar">✕</button></div>
+  <div id="notesBody"></div>
+</aside>
+
+<div class="modal" id="guide">
+  <div class="modal-card">
+    <button class="modal-close" id="closeGuide" aria-label="Cerrar">✕</button>
+    <h2>📘 Preparación previa del docente</h2>
+    <p>Para impartir con éxito la <b>Sesión 3a</b>, debes dominar la conexión entre la física (medición) y los fenómenos sociomedioambientales, así como la estructura técnica de las unidades de medida.</p>
+    <h3>🌡️ Variables del cambio climático</h3>
+    <p>Cuando hables de "medir el cambio climático", debes saber a qué te refieres con exactitud. Las tres variables clave que miden los científicos son:</p>
+    <ol>
+      <li><b>Temperatura global:</b> se mide mediante redes de estaciones meteorológicas y satélites. El dato crítico es la "anomalía de la temperatura" (cuántos grados Celsius ha subido respecto al promedio preindustrial).</li>
+      <li><b>Concentración de gases de efecto invernadero:</b> se mide en partes por millón (ppm). El dióxido de carbono (CO₂) superó las 420 ppm recientemente.</li>
+      <li><b>Nivel del mar:</b> se mide con altimetría satelital (en milímetros por año) para calcular cuánto sube debido al deshielo y la expansión térmica del agua.</li>
+    </ol>
+    <h3>🧪 Unidades derivadas vs. fundamentales</h3>
+    <p>En la sesión anterior viste las fundamentales (metro, kilogramo, segundo). Una unidad derivada nace de la combinación (multiplicación o división) de las fundamentales.</p>
+    <ul>
+      <li><b>Velocidad:</b> distancia dividida entre tiempo (m/s).</li>
+      <li><b>Área:</b> distancia por distancia (m²).</li>
+      <li><b>Fuerza (el Newton):</b> la planeación exige explicar el Newton. Un Newton (N) es la fuerza necesaria para mover una masa de 1 kilogramo a una aceleración de 1 metro por segundo al cuadrado. Es decir, <b>N = kg · m/s²</b>.</li>
+    </ul>
+    <h3>🧭 Postura didáctica (método hermenéutico)</h3>
+    <p>Durante la reflexión sobre el
+Pensamiento
+medio ambiente, tu labor no es darles respuestas catastrofistas, sino ayudarles a interpretar que <b>sin datos exactos, no hay acciones reales</b>. La medición es lo que separa una simple opinión ("hace mucho calor hoy") de un hecho científico ("la temperatura global subió 1.2 °C").</p>
+    <h3>📒 Conceptos imprescindibles (para los alumnos)</h3>
+    <p>Durante el Desarrollo, detente y asegúrate de que estos puntos queden registrados en sus cuadernos:</p>
+    <ol>
+      <li><b>Variables clave para entender problemas globales:</b> 1. Temperatura global. 2. Concentración de gases en la atmósfera. 3. Nivel del mar.</li>
+      <li><b>Unidades Derivadas:</b> son aquellas unidades de medida que nacen de combinar matemáticamente (multiplicar o dividir) dos o más unidades fundamentales. Sirven para medir fenómenos más complejos.</li>
+      <li><b>Ejemplo clave – La Fuerza (el Newton):</b> el Newton es una unidad derivada que combina la masa y la aceleración. Nos permite medir con cuánta fuerza se empuja o jala un objeto.</li>
+    </ol>
+  </div>
+</div>
+
+<script>
+(() => {
+  const slides = [...document.querySelectorAll('.slide')];
+  const total = slides.length;
+  let current = 0;
+
+  const $ = id => document.getElementById(id);
+  const phaseName = $('phaseName'), phaseTime = $('phaseTime');
+  const progressFill = $('progressFill'), counter = $('counter'), jump = $('jump');
+  const notesPanel = $('notesPanel'), notesBody = $('notesBody'), notesBtn = $('notesBtn');
+  const guide = $('guide');
+
+  const PHASES = {
+    intro: '¡Bienvenidos!',
+    inicio: '🚀 INICIO · 10 min',
+    desarrollo: '🔬 DESARROLLO · 30 min',
+    cierre: '📝 CIERRE · 20 min'
+  };
+
+  // Selector para saltar entre diapositivas
+  slides.forEach((s, i) => {
+    const o = document.createElement('option');
+    o.value = i;
+    o.textContent = `${i + 1}. ${s.dataset.title || 'Diapositiva'}`;
+    jump.appendChild(o);
+  });
+
+  const frags = s => [...s.querySelectorAll('.frag')];
+
+  function go(i, showAll = false) {
+    if (i < 0 || i >= total) return;
+    slides.forEach((s, k) => {
+      s.classList.toggle('active', k === i);
+      s.classList.toggle('past', k < i);
+    });
+    frags(slides[i]).forEach(f => f.classList.toggle('show', showAll));
+    current = i;
+    updateUI();
+  }
+
+  function next() {
+    const hidden = frags(slides[current]).filter(f => !f.classList.contains('show'));
+    if (hidden.length) { hidden[0].classList.add('show'); return; }
+    go(current + 1, false);
+  }
+
+  function prev() {
+    const shown = frags(slides[current]).filter(f => f.classList.contains('show'));
+    if (shown.length) { shown[shown.length - 1].classList.remove('show'); return; }
+    go(current - 1, true);
+  }
+
+  function updateUI() {
+    const s = slides[current];
+    const phase = s.dataset.phase || 'intro';
+    document.body.dataset.phase = phase;
+    phaseName.textContent = PHASES[phase];
+    phaseTime.textContent = s.dataset.time || '';
+    progressFill.style.width = (total > 1 ? (current / (total - 1)) * 100 : 100) + '%';
+    counter.textContent = `${current + 1} / ${total}`;
+    jump.value = current;
+    const n = s.querySelector('.notes');
+    notesBody.innerHTML = n ? n.innerHTML : '<p>Sin notas para esta diapositiva.</p>';
+    $('prevBtn').disabled = current === 0 && !frags(s).some(f => f.classList.contains('show'));
+    history.replaceState(null, '', '#' + (current + 1));
+  }
+
+  // Botones de navegación
+  $('nextBtn').addEventListener('click', next);
+  $('prevBtn').addEventListener('click', prev);
+  jump.addEventListener('change', () => { go(+jump.value, false); jump.blur(); });
+
+  // Notas, guía y pantalla completa
+  const toggleNotes = () => { notesPanel.classList.toggle('open'); notesBtn.classList.toggle('on', notesPanel.classList.contains('open')); };
+  const toggleGuide = () => guide.classList.toggle('open');
+  const toggleFS = () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  };
+  notesBtn.addEventListener('click', toggleNotes);
+  $('closeNotes').addEventListener('click', toggleNotes);
+  $('guideBtn').addEventListener('click', toggleGuide);
+  $('closeGuide').addEventListener('click', toggleGuide);
+  guide.addEventListener('click', e => { if (e.target === guide) toggleGuide(); });
+  $('fsBtn').addEventListener('click', toggleFS);
+
+  // Evita que la barra espaciadora vuelva a pulsar el último botón enfocado
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (b) setTimeout(() => b.blur(), 0);
+  });
+
+  // Teclado
+  document.addEventListener('keydown', e => {
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (['input', 'textarea', 'select'].includes(tag)) return;
+    if (guide.classList.contains('open') && e.key === 'Escape') { toggleGuide(); return; }
+    switch (e.key) {
+      case 'ArrowRight': case 'PageDown': case ' ':
+        e.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'PageUp':
+        e.preventDefault(); prev(); break;
+      case 'Home': e.preventDefault(); go(0); break;
+      case 'End': e.preventDefault(); go(total - 1, true); break;
+      case 'n': case 'N': toggleNotes(); break;
+      case 'g': case 'G': toggleGuide(); break;
+      case 'f': case 'F': toggleFS(); break;
+      case 't': case 'T': toggleClock(); break;
+    }
+  });
+
+  // Deslizar en pantallas táctiles
+  let touchX = null;
+  document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 60) dx < 0 ? next() : prev();
+    touchX = null;
+  });
+
+  // Temporizadores por actividad
+  const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+  document.querySelectorAll('.timer').forEach(el => {
+    const totalSec = (+el.dataset.min || 5) * 60;
+    let left = totalSec, iv = null;
+    el.innerHTML = '<span class="t-ico">⏱️</span><span class="t-read"></span>' +
+      '<button class="t-btn" data-a="play" title="Iniciar / pausar">▶</button>' +
+      '<button class="t-btn" data-a="reset" title="Reiniciar">↺</button>';
+    const read = el.querySelector('.t-read'), play = el.querySelector('[data-a=play]');
+    const render = () => {
+      read.textContent = fmt(left);
+      el.classList.toggle('warn', left <= 60 && left > 0);
+      el.classList.toggle('done', left === 0);
+    };
+    const stop = () => { clearInterval(iv); iv = null; play.textContent = '▶'; };
+    play.addEventListener('click', () => {
+      if (iv) { stop(); return; }
+      if (left === 0) left = totalSec;
+      play.textContent = '⏸';
+      iv = setInterval(() => { left--; render(); if (left <= 0) stop(); }, 1000);
+      render();
+    });
+    el.querySelector('[data-a=reset]').addEventListener('click', () => { stop(); left = totalSec; render(); });
+    render();
+  });
+
+  // Reloj general de la clase
+  let clockSec = 0, clockIv = null;
+  const clockRead = $('clockRead'), clockBtn = $('clockBtn');
+  function toggleClock() {
+    if (clockIv) { clearInterval(clockIv); clockIv = null; clockBtn.textContent = '▶'; return; }
+    clockBtn.textContent = '⏸';
+    clockIv = setInterval(() => { clockSec++; clockRead.textContent = fmt(clockSec); }, 1000);
+  }
+  clockBtn.addEventListener('click', toggleClock);
+  $('clockReset').addEventListener('click', () => {
+    clearInterval(clockIv); clockIv = null; clockSec = 0;
+    clockRead.textContent = '00:00'; clockBtn.textContent = '▶';
+  });
+
+  // Pizarrón digital de lluvia de ideas
+  const ideaInput = $('ideaInput'), ideaBoard = $('ideaBoard');
+  const colors = ['#ffd23f', '#ff8c42', '#7be35a', '#29c5f6', '#ff9ec0', '#c3b8ff'];
+  function addIdea() {
+    const text = ideaInput.value.trim();
+    if (!text) return;
+    ideaBoard.querySelector('.empty')?.remove();
+    const n = document.createElement('div');
+    n.className = 'sticky';
+    n.textContent = text;
+    n.title = 'Clic para borrar';
+    n.style.background = colors[Math.floor(Math.random() * colors.length)];
+    n.style.rotate = (Math.random() * 8 - 4).toFixed(1) + 'deg';
+    n.addEventListener('click', () => {
+      n.remove();
+      if (!ideaBoard.querySelector('.sticky')) {
+        ideaBoard.innerHTML = '<span class="empty">Las ideas aparecerán aquí (clic en una nota para borrarla).</span>';
+      }
+    });
+    ideaBoard.appendChild(n);
+    ideaInput.value = '';
+    ideaInput.focus();
+  }
+  $('addIdea').addEventListener('click', addIdea);
+  ideaInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') addIdea();
+    if (e.key === 'Escape') ideaInput.blur();
+  });
+
+  // Animación del Newton
+  const mover = $('mover'), track = $('track'), msg = $('newtonMsg');
+  $('pushBtn').addEventListener('click', () => {
+    const dist = track.clientWidth - mover.offsetWidth - 40;
+    mover.classList.add('moving');
+    mover.style.transform = `translateX(${dist}px)`;
+    msg.innerHTML = '¡Se aplica una <b>fuerza</b>! La caja gana velocidad… 🚀';
+    setTimeout(() => {
+      mover.classList.remove('moving');
+      msg.innerHTML = '✅ Masa (kg) + aceleración (m/s²) = <b>Fuerza (N)</b>';
+    }, 1800);
+  });
+  $('resetBox').addEventListener('click', () => {
+    mover.style.transition = 'none';
+    mover.style.transform = 'translateX(0)';
+    mover.classList.remove('moving');
+    void mover.offsetWidth;
+    mover.style.transition = '';
+    msg.innerHTML = 'Una caja de <b>1 kg</b> en reposo…';
+  });
+
+  // Voluntarios
+  document.querySelectorAll('.seat').forEach(seat => {
+    const toggle = () => {
+      seat.classList.toggle('on');
+      const e = seat.querySelector('.e');
+      if (!e.dataset.orig) e.dataset.orig = e.textContent;
+      e.textContent = seat.classList.contains('on') ? '⭐' : e.dataset.orig;
+    };
+    seat.addEventListener('click', toggle);
+    seat.addEventListener('keydown', ev => { if (ev.key === 'Enter') toggle(); });
+  });
+
+  // Arranque (recuerda la diapositiva al recargar)
+  const start = parseInt(location.hash.replace('#', ''), 10);
+  go(!isNaN(start) && start >= 1 && start <= total ? start - 1 : 0, false);
+})();
+</script>
+</body>
+</html>

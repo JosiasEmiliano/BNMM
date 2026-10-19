@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿A quién le toca actuar? | Cambio climático, ética y ciudadanía</title>
+<!--
+  Presentación de clase: Cambio climático, ética y responsabilidad ciudadana
+  Navegación: ← / → (o PageUp / PageDown / Espacio), Inicio / Fin, F = pantalla completa
+  También puedes deslizar en pantallas táctiles o hacer clic en la barra de progreso.
+  Nota: el plan de clase suma 60 min (Inicio 10 + Desarrollo 30 + Cierre 20).
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#23214A;
+  --paper:#FFF8E7;
+  --sun:#FFD23F;
+  --orange:#FF9F1C;
+  --coral:#FF5E5B;
+  --sky:#4CC9F0;
+  --blue:#3A86FF;
+  --teal:#2EC4B6;
+  --leaf:#5BD46B;
+  --purple:#8C5CF6;
+  --pink:#FF7EB6;
+  --phase:#3A86FF;
+  --r:28px;
+  --shadow:0 8px 0 rgba(35,33,74,.18), 0 18px 34px rgba(35,33,74,.14);
+  --fh:'Fredoka', ui-rounded, 'Arial Rounded MT Bold', 'Trebuchet MS', sans-serif;
+  --fb:'Nunito', ui-rounded, 'Trebuchet MS', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:var(--fb);font-weight:700;color:var(--ink);
+  background:var(--paper);
+  font-size:clamp(16px,1.45vw,25px);line-height:1.4;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ================= FONDO CARTOON ================= */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;
+  background:linear-gradient(180deg,#BFEAFF 0%,#E4F6FF 60%,#FFF8E7 100%);}
+.sun{position:absolute;right:6vw;top:11vh;width:14vw;height:14vw;max-width:220px;max-height:220px;border-radius:50%;
+  background:var(--sun);border:5px solid var(--ink);box-shadow:0 0 0 18px rgba(255,210,63,.35),0 0 0 40px rgba(255,210,63,.18);
+  animation:pulse 4s ease-in-out infinite;opacity:.85}
+.cloud{position:absolute;background:#fff;border:4px solid var(--ink);border-radius:999px;height:54px;width:150px;opacity:.9;animation:drift linear infinite}
+.cloud::before,.cloud::after{content:'';position:absolute;background:#fff;border:4px solid var(--ink);border-bottom:none;border-radius:50%}
+.cloud::before{width:70px;height:70px;left:22px;top:-38px;clip-path:inset(0 0 45% 0)}
+.cloud::after{width:52px;height:52px;left:78px;top:-26px;clip-path:inset(0 0 45% 0)}
+.c1{top:16vh;left:-200px;animation-duration:70s}
+.c2{top:34vh;left:-200px;animation-duration:95s;animation-delay:-40s;transform:scale(.75)}
+.c3{top:8vh;left:-200px;animation-duration:120s;animation-delay:-80s;transform:scale(.6)}
+.hills{position:absolute;left:0;right:0;bottom:0;width:100%;height:20vh}
+@keyframes drift{from{left:-220px}to{left:110vw}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+/* ================= BARRA SUPERIOR ================= */
+.topbar{position:fixed;top:14px;left:18px;right:18px;display:flex;gap:10px;align-items:center;z-index:30;flex-wrap:wrap}
+.tag{font-family:var(--fh);font-weight:600;border:4px solid var(--ink);border-radius:999px;padding:5px 16px;background:#fff;
+  box-shadow:0 5px 0 rgba(35,33,74,.22);font-size:clamp(14px,1.05vw,19px);white-space:nowrap}
+.tag.phase{background:var(--phase);color:#fff;transition:background .4s}
+.tag.time{background:var(--sun)}
+.tag.time.late{background:var(--coral);color:#fff;animation:wiggle .6s ease-in-out infinite}
+.tag.hidden{display:none}
+.spacer{flex:1}
+.clock{cursor:pointer;font-family:var(--fh)}
+.clock.run{background:var(--leaf)}
+.counter{background:#fff}
+
+/* ================= NAVEGACIÓN ================= */
+.navbar{position:fixed;bottom:16px;left:18px;right:18px;display:flex;align-items:center;gap:14px;z-index:30}
+.btn{font-family:var(--fh);font-weight:600;font-size:clamp(15px,1.25vw,22px);border:4px solid var(--ink);border-radius:999px;
+  padding:9px 22px;background:var(--sun);color:var(--ink);cursor:pointer;box-shadow:0 6px 0 rgba(35,33,74,.35);
+  transition:transform .12s, box-shadow .12s, background .2s;white-space:nowrap}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 0 rgba(35,33,74,.35)}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 rgba(35,33,74,.35)}
+.btn:disabled{opacity:.4;cursor:default;transform:none}
+.btn.ghost{background:#fff}
+.btn.go{background:var(--leaf)}
+.btn.sm{padding:6px 16px;font-size:clamp(14px,1.05vw,19px)}
+.progress{flex:1;display:flex;gap:5px;background:#fff;border:4px solid var(--ink);border-radius:999px;padding:6px 8px;box-shadow:0 5px 0 rgba(35,33,74,.22)}
+.progress i{flex:1;height:14px;border-radius:999px;background:var(--c);opacity:.25;cursor:pointer;transition:opacity .3s, transform .3s}
+.progress i.on{opacity:1}
+.progress i.now{transform:scaleY(1.6);box-shadow:0 0 0 2px var(--ink)}
+.hint{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);z-index:29;font-size:14px;background:rgba(255,255,255,.85);
+  border:3px solid var(--ink);border-radius:999px;padding:3px 14px;transition:opacity .6s}
+.hint.gone{opacity:0;pointer-events:none}
+
+/* ================= DIAPOSITIVAS ================= */
+.deck{position:fixed;inset:0;z-index:10}
+.slide{position:absolute;inset:0;padding:92px 5.5vw 112px;display:flex;flex-direction:column;justify-content:center;
+  overflow-y:auto;opacity:0;visibility:hidden;transform:translateX(70px) rotate(.6deg);
+  transition:opacity .45s ease, transform .55s cubic-bezier(.2,1.3,.4,1), visibility .45s}
+.slide.past{transform:translateX(-70px) rotate(-.6deg)}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.wrap{max-width:1360px;width:100%;margin:auto}
+.slide .pop{opacity:0}
+.slide.active .pop{animation:pop .6s cubic-bezier(.2,1.5,.4,1) both;animation-delay:calc(var(--i,0) * 110ms + 120ms)}
+@keyframes pop{from{opacity:0;transform:translateY(26px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes wiggle{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-14px) rotate(2deg)}}
+@keyframes wobble{0%,100%{transform:rotate(-3deg) scale(1)}50%{transform:rotate(2deg) scale(1.05)}}
+
+/* ================= TIPOGRAFÍA ================= */
+.kicker{display:inline-block;font-family:var(--fh);font-weight:600;background:var(--pc);color:#fff;border:4px solid var(--ink);
+  border-radius:999px;padding:4px 18px;font-size:.85em;margin-bottom:.55em;box-shadow:0 5px 0 rgba(35,33,74,.2)}
+.kicker.teach{background:var(--teal)}
+h1{font-family:var(--fh);font-weight:700;font-size:clamp(40px,5.6vw,98px);line-height:1;letter-spacing:-.01em;text-shadow:5px 5px 0 var(--sun)}
+h2{font-family:var(--fh);font-weight:700;font-size:clamp(30px,3.5vw,62px);line-height:1.05;margin-bottom:.45em;text-shadow:4px 4px 0 var(--sun)}
+h3{font-family:var(--fh);font-weight:600;font-size:1.28em;line-height:1.1;margin-bottom:.3em}
+p+p{margin-top:.5em}
+.lead{font-size:1.18em;max-width:42em}
+.muted{opacity:.75}
+mark{background:var(--sun);color:inherit;padding:0 .25em;border-radius:8px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.u-coral{color:var(--coral)}
+ul.clean{list-style:none}
+ul.clean li{padding-left:1.4em;position:relative;margin:.3em 0}
+ul.clean li::before{content:'★';position:absolute;left:0;color:var(--orange);-webkit-text-stroke:1px var(--ink)}
+
+/* ================= COMPONENTES ================= */
+.grid{display:grid;gap:clamp(14px,1.6vw,28px)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.split{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(18px,2.4vw,44px);align-items:center}
+.card{background:#fff;border:4px solid var(--ink);border-radius:var(--r);padding:1em 1.25em;box-shadow:var(--shadow)}
+.t-sun{background:#FFF1B8}.t-sky{background:#D7F3FF}.t-leaf{background:#DDF8E0}.t-coral{background:#FFE0DF}
+.t-purple{background:#ECE3FF}.t-teal{background:#D5F7F3}.t-orange{background:#FFE6C4}
+.ico{font-size:1.7em;width:1.9em;height:1.9em;display:grid;place-items:center;background:#fff;border:4px solid var(--ink);
+  border-radius:50%;box-shadow:0 5px 0 rgba(35,33,74,.2);margin-bottom:.35em}
+.num{display:inline-grid;place-items:center;width:1.8em;height:1.8em;border-radius:50%;background:var(--pc);color:#fff;
+  border:4px solid var(--ink);font-family:var(--fh);font-weight:700;margin-right:.45em;flex:none}
+.row{display:flex;align-items:center;gap:.6em}
+.chips{display:flex;flex-wrap:wrap;gap:.55em;margin-top:1em}
+.chip{font-family:var(--fh);font-weight:600;border:4px solid var(--ink);border-radius:999px;padding:.25em .9em;background:#fff;box-shadow:0 5px 0 rgba(35,33,74,.18)}
+
+/* Burbuja de diálogo */
+.bubble{position:relative;background:#fff;border:5px solid var(--ink);border-radius:38px;padding:1.1em 1.5em;
+  font-size:1.32em;line-height:1.35;font-weight:800;box-shadow:var(--shadow);margin-bottom:34px}
+.bubble::after{content:'';position:absolute;left:80px;bottom:-25px;width:42px;height:42px;background:#fff;
+  border-right:5px solid var(--ink);border-bottom:5px solid var(--ink);transform:rotate(45deg);border-bottom-right-radius:10px}
+.bubble .big{display:block;margin-top:.5em;font-family:var(--fh);font-weight:700;font-size:1.12em;color:var(--pc)}
+
+/* Nota para el docente */
+.teacher{display:flex;gap:.8em;align-items:flex-start;background:#E3FBF7;border:4px dashed var(--teal);border-radius:22px;
+  padding:.7em 1em;font-size:.92em;margin-top:1.1em}
+.teacher .who{font-family:var(--fh);font-weight:600;background:var(--teal);color:#fff;border:3px solid var(--ink);border-radius:999px;padding:1px 12px;white-space:nowrap}
+
+/* Libreta (Conceptos imprescindibles) */
+.notebook{position:relative;background-color:#fff;
+  background-image:repeating-linear-gradient(transparent 0, transparent calc(1.7em - 2px), #BFE3FF calc(1.7em - 2px), #BFE3FF 1.7em);
+  line-height:1.7em;border:4px solid var(--ink);border-radius:26px;padding:1.2em 1.6em 1.2em 4.4em;box-shadow:var(--shadow)}
+.notebook::before{content:'';position:absolute;left:3.2em;top:0;bottom:0;width:3px;background:#FF8FA3}
+.notebook::after{content:'';position:absolute;left:.9em;top:1em;bottom:1em;width:1.3em;
+  background:radial-gradient(circle at center,#FFF8E7 0 .32em,var(--ink) .34em .46em,transparent .48em) 0 0/1.3em 1.7em repeat-y}
+.notebook h3{line-height:1.7em;margin:0}
+.notebook p{margin:0}
+.pen{display:inline-flex;align-items:center;gap:.4em;font-family:var(--fh);font-weight:600;background:var(--sun);border:4px solid var(--ink);
+  border-radius:16px;padding:.2em .8em;box-shadow:0 5px 0 rgba(35,33,74,.2);margin-bottom:.8em}
+.blank{display:inline-block;min-width:7.5em;border-bottom:4px dashed var(--coral);margin:0 .15em;height:1.1em;vertical-align:baseline}
+.stamp{display:inline-block;font-family:var(--fh);font-weight:700;background:var(--coral);color:#fff;border:4px solid var(--ink);
+  border-radius:16px;padding:.2em .8em;box-shadow:0 6px 0 rgba(35,33,74,.25);animation:wobble 2.4s ease-in-out infinite}
+
+/* Temporizador */
+.timer{background:#fff;border:4px solid var(--ink);border-radius:var(--r);padding:.8em 1em;box-shadow:var(--shadow);text-align:center}
+.timer .t-label{font-family:var(--fh);font-weight:600;font-size:.9em}
+.timer .t-display{font-family:var(--fh);font-weight:700;font-size:clamp(46px,5.4vw,96px);line-height:1;margin:.1em 0;font-variant-numeric:tabular-nums}
+.timer.big .t-display{font-size:clamp(70px,9vw,170px)}
+.timer .t-bar{height:18px;border:4px solid var(--ink);border-radius:999px;overflow:hidden;background:#EEE;margin:.4em 0 .7em}
+.timer .t-bar span{display:block;height:100%;width:100%;background:var(--leaf);transition:width 1s linear, background .3s}
+.timer.warn .t-bar span{background:var(--orange)}
+.timer.done{background:#FFE0DF;animation:wiggle .5s ease-in-out 4}
+.timer.done .t-bar span{background:var(--coral)}
+.timer .t-btns{display:flex;gap:.6em;justify-content:center;flex-wrap:wrap}
+
+/* Contadores de participación */
+.dots{display:flex;gap:.5em;flex-wrap:wrap;align-items:center}
+.dots button{width:2.1em;height:2.1em;border-radius:50%;border:4px solid var(--ink);background:#fff;font-family:var(--fh);font-weight:700;
+  font-size:1em;cursor:pointer;box-shadow:0 4px 0 rgba(35,33,74,.2);transition:transform .15s, background .2s}
+.dots button.on{background:var(--leaf);transform:scale(1.1)}
+.team{display:flex;align-items:center;justify-content:center;gap:.7em;margin-top:.9em;font-family:var(--fh);font-weight:700;font-size:1.25em}
+
+/* Divisores de fase */
+.slide.divider{background:var(--pc);background-image:radial-gradient(rgba(255,255,255,.22) 2.5px,transparent 3.5px);background-size:30px 30px;color:#fff;text-align:center}
+.divider h1{font-size:clamp(70px,11vw,200px);color:#fff;text-shadow:7px 7px 0 var(--ink);-webkit-text-stroke:3px var(--ink)}
+.divider .sub{font-family:var(--fh);font-weight:600;font-size:clamp(24px,2.6vw,46px);color:#fff;text-shadow:3px 3px 0 var(--ink);margin-top:.3em}
+.divider .range{display:inline-block;margin-top:1em;background:#fff;color:var(--ink);border:4px solid var(--ink);border-radius:999px;padding:.3em 1.2em;font-family:var(--fh);font-weight:600;box-shadow:0 6px 0 rgba(35,33,74,.3)}
+.minbadge{width:clamp(130px,13vw,220px);height:clamp(130px,13vw,220px);margin:0 auto .5em;border-radius:50%;background:var(--sun);color:var(--ink);
+  border:6px solid var(--ink);display:grid;place-content:center;font-family:var(--fh);font-weight:700;box-shadow:0 10px 0 rgba(35,33,74,.3);animation:wobble 3s ease-in-out infinite}
+.minbadge b{font-size:clamp(54px,6vw,104px);line-height:.9}
+.minbadge span{font-size:clamp(18px,1.6vw,28px)}
+
+/* Línea de tiempo */
+.timeline{display:flex;gap:10px;margin-top:.6em}
+.tl{border:4px solid var(--ink);border-radius:24px;padding:.8em 1em;color:#fff;box-shadow:var(--shadow);min-width:0}
+.tl h3{color:#fff;text-shadow:2px 2px 0 var(--ink)}
+.tl ul{list-style:none;font-size:.86em}
+.tl li{margin:.25em 0;background:rgba(255,255,255,.92);color:var(--ink);border-radius:12px;padding:.2em .55em}
+.scale{display:flex;justify-content:space-between;font-family:var(--fh);font-weight:600;margin-top:.4em;padding:0 2px}
+
+/* Balanza del dilema */
+.scaleup{display:grid;grid-template-columns:1fr auto 1fr;gap:1em;align-items:center}
+.balance{font-size:clamp(60px,7vw,120px);animation:wiggle 2.6s ease-in-out infinite}
+
+/* Escalera de argumento */
+.stairs{display:grid;gap:.7em}
+.stairs .card{display:flex;align-items:center;padding:.6em 1em}
+.stairs .card:nth-child(2){margin-left:4%}
+.stairs .card:nth-child(3){margin-left:8%}
+.stairs .card:nth-child(4){margin-left:12%}
+
+/* Tierra */
+.earth{width:100%;max-width:420px;display:block;margin:auto;animation:bob 4s ease-in-out infinite;filter:drop-shadow(0 18px 18px rgba(35,33,74,.2))}
+.values{display:flex;flex-wrap:wrap;gap:.7em;justify-content:center;margin:.7em 0}
+.values span{font-family:var(--fh);font-weight:700;font-size:1.35em;border:5px solid var(--ink);border-radius:20px;padding:.25em .8em;box-shadow:var(--shadow)}
+.strike{text-decoration:line-through;text-decoration-thickness:4px;text-decoration-color:var(--coral)}
+
+@media (max-width:900px){
+  .g2,.g3,.g4,.split,.scaleup{grid-template-columns:1fr}
+  .timeline{flex-direction:column}
+  .tl{flex:none !important}
+  .stairs .card{margin-left:0 !important}
+  .hint{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== FONDO ===== -->
+<div class="bg" aria-hidden="true">
+  <div class="sun"></div>
+  <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+  <svg class="hills" viewBox="0 0 1440 200" preserveAspectRatio="none">
+    <path d="M0 120 C 200 40, 380 40, 560 110 S 920 170, 1100 90 S 1360 60, 1440 100 L1440 200 L0 200Z" fill="#8EE39A" stroke="#23214A" stroke-width="5"/>
+    <path d="M0 160 C 240 110, 480 120, 720 160 S 1180 190, 1440 140 L1440 200 L0 200Z" fill="#5BD46B" stroke="#23214A" stroke-width="5"/>
+  </svg>
+</div>
+
+<!-- ===== BARRA SUPERIOR ===== -->
+<header class="topbar">
+  <span class="tag">🌎 Clima & Ciudadanía</span>
+  <span class="tag phase" id="phaseTag">Fase</span>
+  <span class="tag time" id="timeTag">⏰ Min</span>
+  <span class="spacer"></span>
+  <button class="tag clock" id="clock" title="Reloj de clase: clic para iniciar o pausar · doble clic para reiniciar">⏱ Iniciar reloj de clase</button>
+  <span class="tag counter" id="counter">1 / 1</span>
+</header>
+
+<!-- ===== DIAPOSITIVAS ===== -->
+<main class="deck" id="deck">
+
+  <!-- 1. PORTADA -->
+  <section class="slide" data-phase="general">
+    <div class="wrap split">
+      <div>
+        <span class="kicker pop" style="--i:0">Sesión de clase · 60 minutos</span>
+        <h1 class="pop" style="--i:1">¿A quién le toca actuar?</h1>
+        <p class="lead pop" style="--i:2;margin-top:.6em">Cambio climático: la dimensión <mark>ética</mark>, <mark>social</mark> y <mark>ciudadana</mark>.</p>
+        <div class="chips pop" style="--i:3">
+          <span class="chip" style="background:#FFE6C4">🟠 Inicio · 10 min</span>
+          <span class="chip" style="background:#D7F3FF">🔵 Desarrollo · 30 min</span>
+          <span class="chip" style="background:#ECE3FF">🟣 Cierre · 20 min</span>
+        </div>
+        <p class="pop muted" style="--i:4;margin-top:1.2em">Presiona → para comenzar</p>
+      </div>
+      <div class="pop" style="--i:2">
+        <svg class="earth" viewBox="0 0 220 220" aria-label="Planeta Tierra preocupado">
+          <circle cx="110" cy="112" r="92" fill="#3A86FF" stroke="#23214A" stroke-width="7"/>
+          <path d="M58 70c16-18 44-20 55-6 8 11-4 22 6 33 10 10 26 2 30 15 4 14-13 24-28 22-17-2-22 13-37 11-15-2-32-18-32-37 0-15-2-27 6-38z" fill="#5BD46B" stroke="#23214A" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M140 42c13 2 28 13 32 26-11 4-24 0-32-9-5-5-6-13 0-17z" fill="#5BD46B" stroke="#23214A" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M128 166c11-9 28-7 35 2-7 13-24 19-37 13-4-4-2-11 2-15z" fill="#5BD46B" stroke="#23214A" stroke-width="6" stroke-linejoin="round"/>
+          <ellipse cx="86" cy="110" rx="10" ry="13" fill="#23214A"/><ellipse cx="134" cy="110" rx="10" ry="13" fill="#23214A"/>
+          <circle cx="89" cy="105" r="3.5" fill="#fff"/><circle cx="137" cy="105" r="3.5" fill="#fff"/>
+          <path d="M74 92l20 6M146 92l-20 6" stroke="#23214A" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="70" cy="130" r="8" fill="#FF7EB6" opacity=".8"/><circle cx="150" cy="130" r="8" fill="#FF7EB6" opacity=".8"/>
+          <path d="M92 150q18-12 36 0" stroke="#23214A" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M176 70q10 16 0 23q-10-7 0-23z" fill="#4CC9F0" stroke="#23214A" stroke-width="4"/>
+          <path d="M28 40l10 10M18 70h14M40 18l6 12" stroke="#FF9F1C" stroke-width="6" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. PREPARACIÓN DOCENTE 1/2 -->
+  <section class="slide" data-phase="prep">
+    <div class="wrap">
+      <span class="kicker teach pop" style="--i:0">👩‍🏫 Solo docente · Preparación previa 1/2</span>
+      <h2 class="pop" style="--i:1">Antes de entrar al aula</h2>
+      <p class="pop" style="--i:2;margin-bottom:1em">Esta sesión deja un poco la física pura para entrar en la dimensión <b>ética, social y ciudadana</b>. Domina estos temas para encauzar el debate sin quedarte sin argumentos.</p>
+      <div class="grid g3">
+        <div class="card t-sky pop" style="--i:3">
+          <div class="ico">🚲</div>
+          <h3>Mitigación</h3>
+          <p>Ataca las <b>causas</b>: usar bicicletas, paneles solares, reducir emisiones para que el planeta <b>no se caliente más</b>.</p>
+        </div>
+        <div class="card t-orange pop" style="--i:4">
+          <div class="ico">🧱</div>
+          <h3>Adaptación</h3>
+          <p>Ataca las <b>consecuencias</b>: muros de contención para inundaciones, cultivos resistentes a sequías, <b>porque el daño ya está hecho</b>.</p>
+        </div>
+        <div class="card t-leaf pop" style="--i:5">
+          <div class="ico">🇲🇽</div>
+          <h3>Compromisos de México</h3>
+          <p>Contribuciones Determinadas a Nivel Nacional (<b>NDC</b>) del <b>Acuerdo de París</b>: reducir emisiones de GEI <mark>≈35% para 2030</mark> y proteger a sus comunidades más vulnerables.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. PREPARACIÓN DOCENTE 2/2 -->
+  <section class="slide" data-phase="prep">
+    <div class="wrap">
+      <span class="kicker teach pop" style="--i:0">👩‍🏫 Solo docente · Preparación previa 2/2</span>
+      <h2 class="pop" style="--i:1">Fuentes y neutralidad</h2>
+      <div class="grid g2">
+        <div class="card t-sun pop" style="--i:2">
+          <div class="ico">📚</div>
+          <h3>Fuentes pre-verificadas</h3>
+          <p>La planeación exige consultar fuentes confiables:</p>
+          <div class="chips">
+            <span class="chip">IPCC</span><span class="chip">ONU</span><span class="chip">SEMARNAT</span><span class="chip">INECC</span>
+          </div>
+          <p style="margin-top:.9em">📵 <b>¿Sin internet?</b> Lleva impresos breves recortes o resúmenes de lo que dicen estos organismos.</p>
+          <p class="muted" style="font-size:.85em">IPCC = Panel Intergubernamental del Cambio Climático</p>
+        </div>
+        <div class="card t-teal pop" style="--i:3">
+          <div class="ico">🤐</div>
+          <h3>Neutralidad docente</h3>
+          <p>En la lluvia de ideas inicial tu rol es <b>puramente diagnóstico</b>. No valides ni invalides respuestas.</p>
+          <p style="margin-top:.7em">❌ <span class="strike">"¡Estás mal, el gobierno tiene toda la culpa!"</span></p>
+          <p style="margin-top:.7em">✅ <b>Registra</b> las concepciones previas para <b>desarmarlas más adelante con la evidencia</b>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. RUTA DE LA SESIÓN -->
+  <section class="slide" data-phase="general">
+    <div class="wrap">
+      <span class="kicker pop" style="--i:0">🗺️ El mapa de hoy</span>
+      <h2 class="pop" style="--i:1">Nuestra ruta en 60 minutos</h2>
+      <div class="timeline pop" style="--i:2">
+        <div class="tl" style="flex:10;background:var(--orange)">
+          <h3>Inicio · 10'</h3>
+          <ul><li>El problema</li><li>Lluvia de ideas</li></ul>
+        </div>
+        <div class="tl" style="flex:30;background:var(--blue)">
+          <h3>Desarrollo · 30'</h3>
+          <ul><li>Equipos e investigación</li><li>Dilema central</li><li>Preparar postura (4 dimensiones)</li><li>Mini-debate: 1 min por equipo</li></ul>
+        </div>
+        <div class="tl" style="flex:20;background:var(--purple)">
+          <h3>Cierre · 20'</h3>
+          <ul><li>Posicionamiento ciudadano (individual)</li><li>Plenaria y reflexión</li></ul>
+        </div>
+      </div>
+      <div class="scale pop" style="--i:3"><span>0'</span><span style="margin-left:-2%">10'</span><span style="margin-left:20%">40'</span><span>60'</span></div>
+    </div>
+  </section>
+
+  <!-- 5. DIVISOR INICIO -->
+  <section class="slide divider" data-phase="inicio" data-time="Min 0-10" data-end="10">
+    <div class="wrap">
+      <div class="minbadge pop" style="--i:0"><b>10</b><span>minutos</span></div>
+      <h1 class="pop" style="--i:1">INICIO</h1>
+      <p class="sub pop" style="--i:2">Planteamiento del problema y diagnóstico</p>
+      <span class="range pop" style="--i:3">Minuto 0 → 10</span>
+    </div>
+  </section>
+
+  <!-- 6. SITUACIÓN PROBLEMÁTICA -->
+  <section class="slide" data-phase="inicio" data-time="Min 0-5" data-end="5">
+    <div class="wrap">
+      <span class="kicker pop" style="--i:0">La situación problemática</span>
+      <h2 class="pop" style="--i:1">📢 Escuchen con atención</h2>
+      <div class="bubble pop" style="--i:2">
+        "México ha firmado compromisos mundiales para <mark>reducir sus emisiones</mark> y <mark>adaptarse</mark> al cambio climático. Pero cumplir esto exige que todos cambiemos cómo <u>producimos</u>, cómo nos <u>transportamos</u> y cómo <u>consumimos</u>.
+        <span class="big">¿Hasta dónde debe llegar la responsabilidad del gobierno y hasta dónde la nuestra?"</span>
+      </div>
+      <div class="teacher pop" style="--i:3"><span class="who">Docente</span><span>Entra directo al tema: lee la premisa <b>en voz alta</b>.</span></div>
+    </div>
+  </section>
+
+  <!-- 7. LLUVIA DE IDEAS -->
+  <section class="slide" data-phase="inicio" data-time="Min 5-10" data-end="10">
+    <div class="wrap">
+      <span class="kicker pop" style="--i:0">Lluvia de ideas individual</span>
+      <h2 class="pop" style="--i:1">🧠 Piensa y responde</h2>
+      <p class="pop" style="--i:2;margin-bottom:.9em">Responde <b>mentalmente</b> o con <b>ideas sueltas</b>:</p>
+      <div class="split">
+        <div class="grid g2">
+          <div class="card t-sky pop row" style="--i:3"><span class="num">1</span><span>¿Qué entiendo por cambio climático?</span></div>
+          <div class="card t-leaf pop row" style="--i:4"><span class="num">2</span><span>¿Qué acciones debería hacer México?</span></div>
+          <div class="card t-sun pop row" style="--i:5"><span class="num">3</span><span>¿Quién tiene mayor responsabilidad: gobierno, empresas o ciudadanos?</span></div>
+          <div class="card t-coral pop row" style="--i:6"><span class="num">4</span><span>¿Qué pasa si no cumplimos?</span></div>
+        </div>
+        <div class="pop" style="--i:7">
+          <div class="timer" data-seconds="300">
+            <div class="t-label">⏳ Lluvia de ideas</div>
+            <div class="t-display">05:00</div>
+            <div class="t-bar"><span></span></div>
+            <div class="t-btns"><button class="btn sm go" data-act="toggle">▶ Iniciar</button><button class="btn sm ghost" data-act="reset">↺</button></div>
+          </div>
+          <div class="card" style="margin-top:1em">
+            <p style="margin-bottom:.4em"><b>🎙️ Sondeo:</b> 3 o 4 voces</p>
+            <div class="dots"><button>1</button><button>2</button><button>3</button><button>4</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="teacher pop" style="--i:8"><span class="who">Docente</span><span>Escribe las 4 preguntas en el pizarrón. Escucha 3 o 4 participaciones para medir el "pulso" del salón, <b>sin validar ni juzgar</b>.</span></div>
+    </div>
+  </section>
+
+  <!-- 8. DIVISOR DESARROLLO -->
+  <section class="slide divider" data-phase="desarrollo" data-time="Min 10-40" data-end="40">
+    <div class="wrap">
+      <div class="minbadge pop" style="--i:0"><b>30</b><span>minutos</span></div>
+      <h1 class="pop" style="--i:1">DESARROLLO</h1>
+      <p class="sub pop" style="--i:2">Investigación y dilema ético</p>
+      <span class="range pop" style="--i:3">Minuto 10 → 40</span>
+    </div>
+  </section>
+
+  <!-- 9. EQUIPOS E INVESTIGACIÓN -->
+  <section class="slide" data-phase="desarrollo" data-time="Min 10-15" data-end="15">
+    <div class="wrap">
+      <span class="kicker pop" style="--i:0">Conformación de equipos e investigación</span>
+      <h2 class="pop" style="--i:1">👥 ¡Formen equipos de 4 o 5!</h2>
+      <div class="split">
+        <div>
+          <div class="card t-sun pop" style="--i:2">
+            <h3>🔎 Consulten fuentes confiables</h3>
+            <p>Usen las fuentes que reparte el docente o busquen rápido en sus celulares en sitios de la <b>ONU</b> o la <b>SEMARNAT</b>.</p>
+            <div class="chips"><span class="chip">IPCC</span><span class="chip">ONU</span><span class="chip">SEMARNAT</span><span class="chip">INECC</span></div>
+          </div>
+          <div class="grid" style="margin-top:1em">
+            <div class="card t-sky pop row" style="--i:3"><span class="num">1</span><span>¿Cómo se <b>define</b> el fenómeno?</span></div>
+            <div class="card t-leaf pop row" style="--i:4"><span class="num">2</span><span>¿Qué <b>evidencias</b> hay?</span></div>
+            <div class="card t-coral pop row" style="--i:5"><span class="num">3</span><span>¿Qué <b>problemas</b> busca resolver México?</span></div>
+          </div>
+        </div>
+        <div class="pop" style="--i:6">
+          <div class="timer" data-seconds="300">
+            <div class="t-label">⏳ Investigación en equipo</div>
+            <div class="t-display">05:00</div>
+            <div class="t-bar"><span></span></div>
+            <div class="t-btns"><button class="btn sm go" data-act="toggle">▶ Iniciar</button><button class="btn sm ghost" data-act="reset">↺</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. CONCEPTO IMPRESCINDIBLE: MITIGACIÓN VS ADAPTACIÓN -->
+  <section class="slide" data-phase="desarrollo" data-time="Min 10-15" data-end="15">
+    <div class="wrap">
+      <span class="kicker pop" style="--i:0">⭐ Concepto imprescindible</span>
+      <h2 class="pop" style="--i:1">Mitigación vs. Adaptación</h2>
+      <div class="pen pop" style="--i:2">✏️ Apunten este concepto en sus libretas</div>
+      <div class="notebook pop" style="--i:3">
+        <h3>🚲 Mitigación</h3>
+        <p>Son las acciones para <b>reducir las emisiones de gases</b> y <b>detener el calentamiento</b>. <span class="muted">(Ataca las causas)</span></p>
+        <p>&nbsp;</p>
+        <h3>☂️ Adaptación</h3>
+        <p>Son las acciones para <b>sobrevivir y acoplarnos</b> a los <b>daños climáticos que ya existen</b>. <span class="muted">(Ataca las consecuencias)</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. DILEMA CENTRAL -->
+  <section class="slide" data-phase="desarrollo" data-time="Min 15-20" data-end="20">
+    <div class="wrap">
+      <span class="kicker pop" style="--i:0">Presentación del dilema central</span>
+      <h2 class="pop" style="--i:1">🚨 Atención total: el dilema</h2>
+      <div class="scaleup pop" style="--i:2">
+        <div class="card t-coral">
+          <h3>💸 Costos HOY</h3>
+          <ul class="clean"><li>Gasolina más cara</li><li>Energía más costosa</li><li>Empleos e industrias actuales afectadas</li></ul>
+        </div>
+        <div class="balance" aria-hidden="true">⚖️</div>
+        <div class="card t-leaf">
+          <h3>🌱 Beneficios MAÑANA</h3>
+          <ul class="clean"><li>Acciones climáticas fortalecidas</li><li>Beneficios principales visibles a <b>largo plazo</b></li></ul>
+        </div>
+      </div>
+      <div class="bubble pop" style="--i:3;margin-top:1em;font-size:1.15em">
+        "México necesita fortalecer acciones climáticas, pero esto puede generar costos económicos (ej. gasolina más cara o energía más costosa) o afectar empleos e industrias actuales.
+        <span class="big">¿Es ético aceptar estas restricciones hoy, si los beneficios principales solo se verán a largo plazo?"</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. PREPARACIÓN DE LA POSTURA -->
+  <section class="slide" data-phase="desarrollo" data-time="Min 20-30" data-end="30">
+    <div class="wrap">
+      <span class="kicker pop" style="--i:0">Preparación de la postura</span>
+      <h2 class="pop" style="--i:1">🧩 Analicen 4 dimensiones</h2>
+      <div class="split">
+        <div class="grid g2">
+          <div class="card t-leaf pop" style="--i:2"><div class="ico">🌳</div><h3>Ambiental</h3><p>Consecuencias de <b>actuar</b> y de <b>no actuar</b>.</p></div>
+          <div class="card t-sun pop" style="--i:3"><div class="ico">👥</div><h3>Social</h3><p>¿Quiénes <b>ganan</b> o <b>pierden</b>?</p></div>
+          <div class="card t-purple pop" style="--i:4"><div class="ico">⚖️</div><h3>Ética</h3><p>Nuestra responsabilidad con las <b>generaciones futuras</b>.</p></div>
+          <div class="card t-sky pop" style="--i:5"><div class="ico">🏛️</div><h3>Ciudadana</h3><p>¿Qué le toca a <b>cada sector</b>?</p></div>
+        </div>
+        <div class="pop" style="--i:6">
+          <div class="timer" data-seconds="600">
+            <div class="t-label">⏳ Preparen su postura</div>
+            <div class="t-display">10:00</div>
+            <div class="t-bar"><span></span></div>
+            <div class="t-btns"><button class="btn sm go" data-act="toggle">▶ Iniciar</button><button class="btn sm ghost" data-act="reset">↺</button></div>
+          </div>
+          <p style="margin-top:.8em;text-align:center">Cada equipo <b>adopta una postura</b> frente al dilema.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. CONCEPTO IMPRESCINDIBLE: ESTRUCTURA PARA ARGUMENTAR -->
+  <section class="slide" data-phase="desarrollo" data-time="Min 20-30" data-end="30">
+    <div class="wrap">
+      <span class="kicker pop" style="--i:0">⭐ Concepto imprescindible</span>
+      <h2 class="pop" style="--i:1">Estructura para argumentar con evidencia</h2>
+      <div class="pen pop" style="--i:2">🗣️ Basen su participación oral en esta estructura</div>
+      <div class="stairs">
+        <div class="card t-sun pop" style="--i:3"><span class="num">1</span><span>Nuestra postura es... <b>porque...</b></span></div>
+        <div class="card t-sky pop" style="--i:4"><span class="num">2</span><span>La evidencia científica que nos sustenta es...</span></div>
+        <div class="card t-purple pop" style="--i:5"><span class="num">3</span><span>Desde la ética consideramos que...</span></div>
+        <div class="card t-leaf pop" style="--i:6"><span class="num">4</span><span>Por ello proponemos...</span></div>
+      </div>
+      <div class="teacher pop" style="--i:7"><span class="who">Docente</span><span>Muestra esta estructura en el pizarrón.</span></div>
+    </div>
+  </section>
+
+  <!-- 14. MINI-DEBATE -->
+  <section class="slide" data-phase="desarrollo" data-time="Min 30-40" data-end="40">
+    <div class="wrap">
+      <span class="kicker pop" style="--i:0">Mini-debate</span>
+      <h2 class="pop" style="--i:1">🎤 60 segundos por equipo</h2>
+      <div class="split">
+        <div class="grid">
+          <div class="card t-sun pop" style="--i:2"><b>"Nuestra postura es... porque...</b></div>
+          <div class="card t-sky pop" style="--i:3"><b>La evidencia que lo sustenta es...</b></div>
+          <div class="card t-purple pop" style="--i:4"><b>Desde la ética consideramos que...</b></div>
+          <div class="card t-leaf pop" style="--i:5"><b>Por ello proponemos..."</b></div>
+        </div>
+        <div class="pop" style="--i:3">
+          <div class="timer big" data-seconds="60" id="debateTimer">
+            <div class="t-label">⏳ Turno del equipo</div>
+            <div class="t-display">01:00</div>
+            <div class="t-bar"><span></span></div>
+            <div class="t-btns"><button class="btn sm go" data-act="toggle">▶ Iniciar</button><button class="btn sm ghost" data-act="reset">↺</button></div>
+            <div class="team">
+              <button class="btn sm ghost" data-team="-1" aria-label="Equipo anterior">◀</button>
+              <span>Equipo <span id="teamN">1</span></span>
+              <button class="btn sm" data-team="1" aria-label="Siguiente equipo">▶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="teacher pop" style="--i:6"><span class="who">Docente</span><span>Para que no sea solo un choque de opiniones sin fundamento, exige usar <b>estrictamente</b> esta estructura al hablar.</span></div>
+    </div>
+  </section>
+
+  <!-- 15. DIVISOR CIERRE -->
+  <section class="slide divider" data-phase="cierre" data-time="Min 40-60" data-end="60">
+    <div class="wrap">
+      <div class="minbadge pop" style="--i:0"><b>20</b><span>minutos</span></div>
+      <h1 class="pop" style="--i:1">CIERRE</h1>
+      <p class="sub pop" style="--i:2">Posicionamiento ciudadano</p>
+      <span class="range pop" style="--i:3">Minuto 40 → 60</span>
+    </div>
+  </section>
+
+  <!-- 16. POSICIONAMIENTO CIUDADANO -->
+  <section class="slide" data-phase="cierre" data-time="Min 40-50" data-end="50">
+    <div class="wrap">
+      <div class="row pop" style="--i:0;flex-wrap:wrap;margin-bottom:.6em">
+        <span class="kicker" style="margin:0">Redacción de la evidencia final</span>
+        <span class="stamp">⭐ OBLIGATORIO · SE EVALÚA</span>
+      </div>
+      <h2 class="pop" style="--i:1">🤫 Silencio: trabajo individual</h2>
+      <div class="split">
+        <div>
+          <div class="pen pop" style="--i:2">✏️ Transcribe esta plantilla exacta en tu libreta y complétala</div>
+          <div class="notebook pop" style="--i:3">
+            <h3>Posicionamiento Ciudadano</h3>
+            <p>"Después de analizar la información, considero que México y la ciudadanía deberían <span class="blank"></span>, porque <span class="blank"></span>. Una responsabilidad que considero que nos corresponde como ciudadanos es <span class="blank"></span>. Esta decisión es éticamente importante porque <span class="blank"></span>."</p>
+          </div>
+        </div>
+        <div class="pop" style="--i:4">
+          <div class="timer" data-seconds="600">
+            <div class="t-label">⏳ Redacción individual</div>
+            <div class="t-display">10:00</div>
+            <div class="t-bar"><span></span></div>
+            <div class="t-btns"><button class="btn sm go" data-act="toggle">▶ Iniciar</button><button class="btn sm ghost" data-act="reset">↺</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="teacher pop" style="--i:5"><span class="who">Docente</span><span>Pide silencio y escribe la plantilla obligatoria en el pizarrón.</span></div>
+    </div>
+  </section>
+
+  <!-- 17. PLENARIA Y REFLEXIÓN -->
+  <section class="slide" data-phase="cierre" data-time="Min 50-60" data-end="60">
+    <div class="wrap">
+      <span class="kicker pop" style="--i:0">Plenaria y reflexión de cierre</span>
+      <h2 class="pop" style="--i:1">🎙️ ¿Quién lee su párrafo?</h2>
+      <div class="card pop row" style="--i:2;display:inline-flex;flex-wrap:wrap;gap:1em">
+        <b>2 o 3 voluntarios:</b>
+        <div class="dots"><button>1</button><button>2</button><button>3</button></div>
+      </div>
+      <div class="card t-purple pop" style="--i:3;margin-top:1.2em;text-align:center">
+        <p style="font-size:1.1em">El cambio climático <b>no es solo una fórmula científica</b> ni <b>un tema político</b>. Es un problema de:</p>
+        <div class="values">
+          <span style="background:var(--sun)">Justicia</span>
+          <span style="background:var(--sky)">Solidaridad</span>
+          <span style="background:var(--leaf)">Responsabilidad ética</span>
+        </div>
+        <p style="font-size:1.1em">...con las consecuencias de nuestras <mark>decisiones colectivas</mark>.</p>
+      </div>
+      <div class="teacher pop" style="--i:4"><span class="who">Docente</span><span>Cierra la clase destacando esta idea.</span></div>
+    </div>
+  </section>
+
+  <!-- 18. GUIÓN RÁPIDO -->
+  <section class="slide" data-phase="prep">
+    <div class="wrap">
+      <span class="kicker teach pop" style="--i:0">👩‍🏫 Guion rápido de clase (síntesis)</span>
+      <h2 class="pop" style="--i:1">Todo en una mirada</h2>
+      <div class="grid g3">
+        <div class="card t-orange pop" style="--i:2">
+          <h3>🟠 INICIO (10m): El problema</h3>
+          <ul class="clean" style="font-size:.88em">
+            <li>Premisa: México tiene compromisos climáticos que nos exigen cambiar hábitos. ¿A quién le toca actuar?</li>
+            <li>4 preguntas diagnósticas (qué es, acciones, responsabilidades, consecuencias).</li>
+            <li>Sondeo sin validar o juzgar respuestas.</li>
+          </ul>
+        </div>
+        <div class="card t-sky pop" style="--i:3">
+          <h3>🔵 DESARROLLO (30m): Dilema y posturas</h3>
+          <ul class="clean" style="font-size:.88em">
+            <li>Equipos (4-5) buscan datos en fuentes confiables (IPCC, SEMARNAT).</li>
+            <li>Dilema: ¿es ético aceptar sacrificios económicos hoy por beneficios ambientales a largo plazo?</li>
+            <li>Analizan dimensiones Ambiental, Social, Ética y Ciudadana.</li>
+            <li>Exposiciones de 1 min con estructura estricta.</li>
+          </ul>
+        </div>
+        <div class="card t-purple pop" style="--i:4">
+          <h3>🟣 CIERRE (20m): Evidencia individual</h3>
+          <ul class="clean" style="font-size:.88em">
+            <li>Plantilla de Posicionamiento Ciudadano en el pizarrón.</li>
+            <li>Alumnos la completan en sus libretas.</li>
+            <li>Cierre: justicia, solidaridad y responsabilidad compartida.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 19. FIN -->
+  <section class="slide" data-phase="general">
+    <div class="wrap split">
+      <div>
+        <span class="kicker pop" style="--i:0">Fin de la sesión</span>
+        <h1 class="pop" style="--i:1">¡Gracias!</h1>
+        <p class="lead pop" style="--i:2;margin-top:.6em">El clima no es tarea de uno solo: es <mark>responsabilidad compartida</mark>.</p>
+      </div>
+      <div class="pop" style="--i:2">
+        <svg class="earth" viewBox="0 0 220 220" aria-label="Planeta Tierra feliz">
+          <circle cx="110" cy="112" r="92" fill="#3A86FF" stroke="#23214A" stroke-width="7"/>
+          <path d="M58 70c16-18 44-20 55-6 8 11-4 22 6 33 10 10 26 2 30 15 4 14-13 24-28 22-17-2-22 13-37 11-15-2-32-18-32-37 0-15-2-27 6-38z" fill="#5BD46B" stroke="#23214A" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M140 42c13 2 28 13 32 26-11 4-24 0-32-9-5-5-6-13 0-17z" fill="#5BD46B" stroke="#23214A" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M128 166c11-9 28-7 35 2-7 13-24 19-37 13-4-4-2-11 2-15z" fill="#5BD46B" stroke="#23214A" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M76 110q10-12 20 0M124 110q10-12 20 0" stroke="#23214A" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <circle cx="70" cy="130" r="9" fill="#FF7EB6" opacity=".85"/><circle cx="150" cy="130" r="9" fill="#FF7EB6" opacity=".85"/>
+          <path d="M86 138q24 26 48 0z" fill="#FF5E5B" stroke="#23214A" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M184 52l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#FFD23F" stroke="#23214A" stroke-width="3"/>
+          <path d="M30 150l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#FFD23F" stroke="#23214A" stroke-width="3"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== NAVEGACIÓN ===== -->
+<div class="hint" id="hint">← → para navegar · F pantalla completa</div>
+<nav class="navbar">
+  <button class="btn ghost" id="prev" aria-label="Anterior">◀ Atrás</button>
+  <div class="progress" id="progress"></div>
+  <button class="btn" id="next" aria-label="Siguiente">Siguiente ▶</button>
+</nav>
+
+<script>
+(function(){
+  const PH = {
+    general:   {name:'🌎 Clase completa',        color:'#FF5E5B'},
+    prep:      {name:'👩‍🏫 Preparación docente',  color:'#2EC4B6'},
+    inicio:    {name:'Inicio · 10 min',          color:'#FF9F1C'},
+    desarrollo:{name:'Desarrollo · 30 min',      color:'#3A86FF'},
+    cierre:    {name:'Cierre · 20 min',          color:'#8C5CF6'}
+  };
+  const slides = [...document.querySelectorAll('.slide')];
+  const phaseTag = document.getElementById('phaseTag');
+  const timeTag = document.getElementById('timeTag');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const hint = document.getElementById('hint');
+  let cur = 0;
+
+  // Color por fase + barra de progreso
+  slides.forEach((s,i)=>{
+    const p = PH[s.dataset.phase] || PH.general;
+    s.style.setProperty('--pc', p.color);
+    const seg = document.createElement('i');
+    seg.style.setProperty('--c', p.color);
+    seg.title = 'Ir a la diapositiva ' + (i+1);
+    seg.addEventListener('click', ()=>go(i));
+    progress.appendChild(seg);
+  });
+  const segs = [...progress.children];
+
+  function go(n){
+    n = Math.max(0, Math.min(slides.length-1, n));
+    slides.forEach((s,i)=>{
+      s.classList.toggle('active', i===n);
+      s.classList.toggle('past', i<n);
+    });
+    segs.forEach((g,i)=>{ g.classList.toggle('on', i<=n); g.classList.toggle('now', i===n); });
+    cur = n;
+    const s = slides[n];
+    const p = PH[s.dataset.phase] || PH.general;
+    phaseTag.textContent = p.name;
+    document.documentElement.style.setProperty('--phase', p.color);
+    if (s.dataset.time){ timeTag.textContent = '⏰ ' + s.dataset.time; timeTag.classList.remove('hidden'); }
+    else timeTag.classList.add('hidden');
+    counter.textContent = (n+1) + ' / ' + slides.length;
+    prevBtn.disabled = n===0;
+    nextBtn.disabled = n===slides.length-1;
+    s.scrollTop = 0;
+    checkLate();
+    try { history.replaceState(null,'','#'+(n+1)); } catch(e){}
+  }
+
+  prevBtn.addEventListener('click', ()=>go(cur-1));
+  nextBtn.addEventListener('click', ()=>go(cur+1));
+
+  document.addEventListener('keydown', e=>{
+    if (e.target.tagName==='BUTTON' && (e.key===' ' || e.key==='Enter')) return;
+    switch(e.key){
+      case 'ArrowRight': case 'PageDown': case ' ': e.preventDefault(); go(cur+1); break;
+      case 'ArrowLeft': case 'PageUp': e.preventDefault(); go(cur-1); break;
+      case 'Home': go(0); break;
+      case 'End': go(slides.length-1); break;
+      case 'f': case 'F': toggleFS(); break;
+    }
+    hint.classList.add('gone');
+  });
+
+  // Deslizar en pantallas táctiles
+  let tx = null;
+  document.addEventListener('touchstart', e=>{ tx = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', e=>{
+    if (tx===null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 60) go(cur + (dx<0 ? 1 : -1));
+    tx = null;
+  });
+
+  function toggleFS(){
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+  setTimeout(()=>hint.classList.add('gone'), 7000);
+
+  // Sonido de alarma
+  function beep(){
+    try{
+      const a = new (window.AudioContext||window.webkitAudioContext)();
+      [0,.3,.6].forEach(t=>{
+        const o=a.createOscillator(), g=a.createGain();
+        o.type='triangle'; o.frequency.value=880;
+        o.connect(g); g.connect(a.destination);
+        g.gain.setValueAtTime(.25,a.currentTime+t);
+        g.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.25);
+        o.start(a.currentTime+t); o.stop(a.currentTime+t+.27);
+      });
+    }catch(e){}
+  }
+  const fmt = s => String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+
+  // Temporizadores de actividad
+  const timers = [];
+  document.querySelectorAll('.timer').forEach(t=>{
+    const total = +t.dataset.seconds;
+    const disp = t.querySelector('.t-display');
+    const bar = t.querySelector('.t-bar span');
+    const tog = t.querySelector('[data-act="toggle"]');
+    let left = total, id = null;
+    const render = ()=>{
+      disp.textContent = fmt(left);
+      bar.style.width = (left/total*100) + '%';
+      t.classList.toggle('warn', left>0 && left <= Math.max(10, total*0.2));
+    };
+    const stop = ()=>{ clearInterval(id); id=null; tog.textContent = left===0 ? '✔ Tiempo' : '▶ Seguir'; };
+    const start = ()=>{
+      if (left===0) reset();
+      tog.textContent = '⏸ Pausa';
+      id = setInterval(()=>{
+        left--; render();
+        if (left<=0){ left=0; render(); stop(); t.classList.add('done'); beep(); }
+      },1000);
+    };
+    const reset = ()=>{ clearInterval(id); id=null; left=total; t.classList.remove('done'); tog.textContent='▶ Iniciar'; render(); };
+    tog.addEventListener('click', ()=> id ? stop() : start());
+    t.querySelector('[data-act="reset"]').addEventListener('click', reset);
+    render();
+    timers.push({el:t, reset});
+  });
+
+  // Contador de equipos del mini-debate
+  let team = 1;
+  const teamN = document.getElementById('teamN');
+  const debate = timers.find(x=>x.el.id==='debateTimer');
+  document.querySelectorAll('[data-team]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      team = Math.max(1, team + (+b.dataset.team));
+      teamN.textContent = team;
+      debate && debate.reset();
+    });
+  });
+
+  // Puntos de participación
+  document.querySelectorAll('.dots button').forEach(b=>b.addEventListener('click', ()=>b.classList.toggle('on')));
+
+  // Reloj general de clase (60 min)
+  const clock = document.getElementById('clock');
+  let elapsed = 0, cid = null, started = false;
+  function renderClock(){ clock.textContent = '⏱ ' + fmt(elapsed) + ' / 60:00'; }
+  function checkLate(){
+    const end = +slides[cur].dataset.end;
+    timeTag.classList.toggle('late', started && !!end && elapsed > end*60);
+  }
+  clock.addEventListener('click', ()=>{
+    if (cid){ clearInterval(cid); cid=null; clock.classList.remove('run'); return; }
+    started = true; clock.classList.add('run'); renderClock();
+    cid = setInterval(()=>{ elapsed++; renderClock(); checkLate(); },1000);
+  });
+  clock.addEventListener('dblclick', ()=>{
+    clearInterval(cid); cid=null; elapsed=0; started=false;
+    clock.classList.remove('run'); clock.textContent='⏱ Iniciar reloj de clase'; checkLate();
+  });
+
+  // Inicio (respeta #número en la URL)
+  const h = parseInt(location.hash.slice(1),10);
+  go(isNaN(h) ? 0 : h-1);
+})();
+</script>
+</body>
+</html>
